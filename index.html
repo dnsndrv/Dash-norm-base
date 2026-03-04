@@ -129,6 +129,19 @@
 
   a { color:inherit; }
   @media(max-width:1100px) { .grid-2,.grid-4,.grid-5,.scatter-grid { grid-template-columns:1fr; } }
+
+  /* Metric tooltips */
+  .tip { position:relative; display:inline-flex; align-items:center; justify-content:center; gap:4px; cursor:help; }
+  .tip-icon { display:inline-flex; align-items:center; justify-content:center; width:14px; height:14px; border-radius:50%; background:rgba(148,153,179,0.15); border:1px solid var(--border); color:var(--text2); font-size:9px; font-weight:700; flex-shrink:0; line-height:1; text-transform:none; letter-spacing:0; }
+  .tip:hover .tip-box { display:block; }
+  .tip-box { display:none; position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%); background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px 14px; font-size:11px; line-height:1.6; color:var(--text); white-space:normal; width:270px; z-index:1000; box-shadow:var(--shadow); pointer-events:none; text-align:left; text-transform:none; letter-spacing:0; font-weight:400; }
+  .tip-box::after { content:""; position:absolute; top:100%; left:50%; transform:translateX(-50%); border:5px solid transparent; border-top-color:var(--border); }
+  .tip-box strong { color:var(--accent); }
+  .kpi-avg { font-size:10px; color:var(--text2); margin-top:2px; }
+  th.has-tip { position:relative; }
+  th.has-tip:hover .th-tip { display:block; }
+  .th-tip { display:none; position:absolute; top:calc(100% + 4px); left:50%; transform:translateX(-50%); background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:8px 12px; font-size:11px; line-height:1.5; color:var(--text); white-space:normal; width:250px; z-index:1000; box-shadow:var(--shadow); pointer-events:none; font-weight:400; text-transform:none; letter-spacing:0; cursor:default; }
+  .th-tip::before { content:""; position:absolute; bottom:100%; left:50%; transform:translateX(-50%); border:5px solid transparent; border-bottom-color:var(--border); }
 </style>
 </head>
 <body>
@@ -219,10 +232,10 @@
 <!-- ======================== SCREEN 2: КРЕАТИВНЫЙ РЕЙТИНГ ======================== -->
 <div class="screen" id="screen2">
   <div class="section-title">Креативный рейтинг</div>
-  <div class="section-subtitle">Сортировка по намерению. Цветовая индикация: отклонение от среднего. Индекс = среднее по 4 ключевым метрикам.</div>
+  <div class="section-subtitle">Сортировка по намерению. Цветовая индикация: отклонение от среднего ±5 п.п. Индекс = среднее по 4 ключевым метрикам.</div>
   <div class="legend-row">
-    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> Выше среднего</div>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> Ниже среднего</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> Выше среднего на 5+ п.п.</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> Ниже среднего на 5+ п.п.</div>
   </div>
   <div class="card">
     <div class="table-wrap" style="max-height:calc(100vh - 300px)">
@@ -233,14 +246,14 @@
           <th data-col="product">Продукт</th>
           <th data-col="campaign">Кампания</th>
           <th data-col="period">Период</th>
-          <th data-col="base">База</th>
-          <th data-col="like">Нравится</th>
-          <th data-col="clarity">Понятность</th>
-          <th data-col="uniqueness">Уникальность</th>
-          <th data-col="brandRecognition">Узнаваемость</th>
-          <th data-col="intent">Намерение</th>
-          <th data-col="delta">Δ Намерение</th>
-          <th data-col="index">Индекс</th>
+          <th data-col="base" class="has-tip">База<span class="th-tip">Количество респондентов, смотревших этот ролик. Чем выше база — тем надёжнее показатели.</span></th>
+          <th data-col="like" class="has-tip">Нравится<span class="th-tip">Насколько вам нравится этот ролик? (Топ-2 по шкале от 1 до 5)</span></th>
+          <th data-col="clarity" class="has-tip">Понятность<span class="th-tip">Насколько понятна идея ролика? (Топ-1 по шкале от 1 до 5)</span></th>
+          <th data-col="uniqueness" class="has-tip">Уникальность<span class="th-tip">Насколько этот ролик непохож на другие рекламные ролики? (Топ-2 по шкале от 1 до 5)</span></th>
+          <th data-col="brandRecognition" class="has-tip">Узнаваемость<span class="th-tip">Удалось ли вам узнать бренд в ролике? (Топ-2 по шкале от 1 до 5)</span></th>
+          <th data-col="intent" class="has-tip">Намерение<span class="th-tip">Захотелось ли вам воспользоваться / приобрести продукт после просмотра? (Топ-1 по шкале от 1 до 5)</span></th>
+          <th data-col="delta" class="has-tip">Δ Намерение<span class="th-tip">Отклонение Намерения данного креатива от среднего по всем. Статзначимым считается отклонение ±5 п.п.</span></th>
+          <th data-col="index" class="has-tip">Индекс<span class="th-tip">Среднее по 4 ключевым метрикам: Нравится, Понятность, Уникальность, Намерение</span></th>
         </tr></thead>
         <tbody id="creativeTableBody"></tbody>
       </table>
@@ -265,7 +278,15 @@
     <div class="card-title">Таблица бренд-диагностики</div>
     <div class="table-wrap" style="max-height:500px">
       <table id="brandTable"><thead><tr>
-        <th>Креатив</th><th>Продукт</th><th>Brand Recall</th><th>Product Recall</th><th>Узнаваемость</th><th>Функции ✓</th><th>Функции ✗</th><th>Индекс чистоты</th><th>База</th>
+        <th data-bcol="name">Креатив</th>
+        <th data-bcol="product">Продукт</th>
+        <th data-bcol="brandRecall" class="has-tip">Brand Recall<span class="th-tip">Какой бренд рекламировался в ролике? (открытый ответ, % верно назвавших)</span></th>
+        <th data-bcol="productRecall" class="has-tip">Product Recall<span class="th-tip">Какой продукт или функция рекламировались? (открытый ответ, % верно назвавших)</span></th>
+        <th data-bcol="brandRecognition" class="has-tip">Узнаваемость<span class="th-tip">Удалось ли вам узнать бренд в ролике? (Топ-2 по шкале от 1 до 5)</span></th>
+        <th data-bcol="correctFeatures" class="has-tip">Функции ✓<span class="th-tip">% правильно названных функций продукта (открытый вопрос)</span></th>
+        <th data-bcol="incorrectFeatures" class="has-tip">Функции ✗<span class="th-tip">% неправильно названных функций продукта (открытый вопрос)</span></th>
+        <th data-bcol="commIndex" class="has-tip">Индекс чистоты<span class="th-tip">Правильные − Неправильные ответы о функциях продукта (в п.п.)</span></th>
+        <th data-bcol="base" class="has-tip">База<span class="th-tip">Количество респондентов, смотревших этот ролик. Чем выше база — тем надёжнее показатели.</span></th>
       </tr></thead><tbody id="brandTableBody"></tbody></table>
     </div>
   </div>
@@ -335,7 +356,8 @@ const AVG = {};
 
 function cls(val, avgVal) {
   if (val == null || avgVal == null) return "";
-  return val - avgVal > 0.02 ? "cv-hi" : val - avgVal < -0.02 ? "cv-lo" : "";
+  const diff = val - avgVal;
+  return diff > 0.05 ? "cv-hi" : diff < -0.05 ? "cv-lo" : "";
 }
 
 function pearson(x, y) {
@@ -359,6 +381,22 @@ const METRICS = [
   { key: "brandRecognition", label: "Узнаваемость" },
 ];
 const KEY_METRICS = ["like","clarity","uniqueness","intent"];
+
+const METRIC_QUESTIONS = {
+  intent:           "Захотелось ли вам воспользоваться / приобрести продукт после просмотра?\n(Топ-1 по шкале от 1 до 5)",
+  like:             "Насколько вам нравится этот ролик?\n(Топ-2 по шкале от 1 до 5)",
+  clarity:          "Насколько понятна идея ролика?\n(Топ-1 по шкале от 1 до 5)",
+  uniqueness:       "Насколько этот ролик непохож на другие рекламные ролики?\n(Топ-2 по шкале от 1 до 5)",
+  brandRecognition: "Удалось ли вам узнать бренд в ролике?\n(Топ-2 по шкале от 1 до 5)",
+  brandRecall:      "Какой бренд рекламировался в ролике?\n(открытый ответ, % верно назвавших)",
+  productRecall:    "Какой продукт или функция рекламировались?\n(открытый ответ, % верно назвавших)",
+  brandFit:         "Насколько ролик соответствует образу и стилю бренда?\n(Топ-2 по шкале от 1 до 5)",
+  brandAttitude:    "Как изменилось ваше отношение к бренду после просмотра?\n(Топ-2 по шкале от 1 до 5)",
+  interesting:      "Насколько интересно было смотреть ролик?\n(Топ-2 по шкале от 1 до 5)",
+  relevance:        "Насколько актуально для вас данное предложение?\n(Топ-2 по шкале от 1 до 5)",
+  correctFeatures:  "Какие функции продукта упоминались в ролике?\n(% правильно названных ответов)",
+  incorrectFeatures:"Какие функции продукта упоминались в ролике?\n(% неправильно названных ответов)",
+};
 
 function nameLink(c, maxLen) {
   const n = maxLen && c.name.length > maxLen ? c.name.slice(0,maxLen) + "…" : c.name;
@@ -514,11 +552,16 @@ function renderTop(elId, key, top, n=5) {
   });
 }
 
+function tipHtml(key) {
+  const q = METRIC_QUESTIONS[key] || "";
+  return `<span class="tip-icon">i</span><span class="tip-box"><strong>${METRICS.find(m=>m.key===key)?.label||key}</strong><br>${q.replace(/\n/g,"<br>")}</span>`;
+}
+
 function renderScreen1() {
   const el = document.getElementById("kpiRow"); el.innerHTML = "";
   METRICS.forEach(m => {
     const a = AVG[m.key];
-    el.innerHTML += `<div class="card kpi"><div class="kpi-label">${m.label}</div><div class="kpi-value">${pct(a)}</div><div class="kpi-sub" style="color:var(--text2)">среднее по ${D.creatives.length} креативам</div></div>`;
+    el.innerHTML += `<div class="card kpi"><div class="kpi-label"><span class="tip">${m.label}${tipHtml(m.key)}</span></div><div class="kpi-value">${pct(a)}</div><div class="kpi-sub" style="color:var(--text2)">среднее по ${D.creatives.length} креативам</div></div>`;
   });
   renderCompare();
   renderTop("topIntent","intent",true); renderTop("botIntent","intent",false);
@@ -559,16 +602,31 @@ function renderScreen2() {
     if (th.dataset.col === sortCol) th.classList.add(sortDir === "asc" ? "sort-asc" : "sort-desc");
   });
 
+  // Average row at top
+  const avgRow = document.createElement("tr");
+  avgRow.style.cssText = "background:var(--surface2);border-bottom:2px solid var(--accent)";
+  const avgIndex = avg(KEY_METRICS.map(k => AVG[k]));
+  avgRow.innerHTML = `<td style="color:var(--accent);font-weight:700">∅</td><td colspan="5" style="color:var(--accent);font-weight:700;font-size:11px">Среднее по всем ${D.creatives.length} креативам</td>
+    <td><strong>${pct(AVG.like)}</strong></td>
+    <td><strong>${pct(AVG.clarity)}</strong></td>
+    <td><strong>${pct(AVG.uniqueness)}</strong></td>
+    <td><strong>${pct(AVG.brandRecognition)}</strong></td>
+    <td><strong>${pct(AVG.intent)}</strong></td>
+    <td><strong style="color:var(--text2)">—</strong></td>
+    <td><strong>${avgIndex!=null?(avgIndex*100).toFixed(1)+"%":"—"}</strong></td>`;
+  tbody.appendChild(avgRow);
+
   enriched.forEach((c,i) => {
     const m = c.metrics;
     const tr = document.createElement("tr");
+    const deltaClass = c.delta != null ? (c.delta > 0.05 ? 'cv-hi' : c.delta < -0.05 ? 'cv-lo' : '') : '';
     tr.innerHTML = `<td>${i+1}</td><td style="max-width:250px;overflow:hidden;text-overflow:ellipsis" title="${c.name}">${nameLink(c)}</td><td>${c.product}</td><td style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${c.campaign}">${c.campaign}</td><td>${c.period}</td><td>${c.base||"—"}</td>
       <td><span class="cv ${cls(m.like,AVG.like)}">${pct(m.like)}</span></td>
       <td><span class="cv ${cls(m.clarity,AVG.clarity)}">${pct(m.clarity)}</span></td>
       <td><span class="cv ${cls(m.uniqueness,AVG.uniqueness)}">${pct(m.uniqueness)}</span></td>
       <td><span class="cv ${cls(m.brandRecognition,AVG.brandRecognition)}">${pct(m.brandRecognition)}</span></td>
       <td><span class="cv ${cls(m.intent,AVG.intent)}">${pct(m.intent)}</span></td>
-      <td><span class="cv ${c.delta!=null?(c.delta>0?'cv-hi':c.delta<-0.02?'cv-lo':''):''}">${c.delta!=null?(c.delta>=0?"+":"")+(c.delta*100).toFixed(1)+" пп":"—"}</span></td>
+      <td><span class="cv ${deltaClass}">${c.delta!=null?(c.delta>=0?"+":"")+(c.delta*100).toFixed(1)+" пп":"—"}</span></td>
       <td><strong>${c.index!=null?(c.index*100).toFixed(1)+"%":"—"}</strong></td>`;
     tbody.appendChild(tr);
   });
@@ -584,34 +642,101 @@ document.querySelectorAll("#creativeTable th").forEach(th => {
 });
 
 // ======================== SCREEN 3: BRAND DIAGNOSTICS ========================
+let brandSortCol = "brandRecall", brandSortDir = "desc";
+
+document.querySelectorAll("#brandTable th[data-bcol]").forEach(th => {
+  th.addEventListener("click", () => {
+    const col = th.dataset.bcol;
+    if (brandSortCol === col) brandSortDir = brandSortDir === "desc" ? "asc" : "desc";
+    else { brandSortCol = col; brandSortDir = "desc"; }
+    renderBrandTable();
+  });
+});
+
+function renderBrandTable() {
+  const fc = filteredCreatives;
+  document.querySelectorAll("#brandTable th[data-bcol]").forEach(th => {
+    th.classList.remove("sort-asc","sort-desc");
+    if (th.dataset.bcol === brandSortCol) th.classList.add(brandSortDir === "asc" ? "sort-asc" : "sort-desc");
+  });
+
+  const enriched = fc.map(c => {
+    const m = c.metrics;
+    const ci = m.correctFeatures != null && m.incorrectFeatures != null ? m.correctFeatures - m.incorrectFeatures : null;
+    return { ...c, commIndex: ci };
+  });
+
+  enriched.sort((a, b) => {
+    let va, vb;
+    if (brandSortCol === "name") { va = a.name; vb = b.name; }
+    else if (brandSortCol === "product") { va = a.product; vb = b.product; }
+    else if (brandSortCol === "base") { va = a.base||0; vb = b.base||0; }
+    else if (brandSortCol === "commIndex") { va = a.commIndex ?? -999; vb = b.commIndex ?? -999; }
+    else { va = a.metrics[brandSortCol] ?? -999; vb = b.metrics[brandSortCol] ?? -999; }
+    if (typeof va === "string") return brandSortDir === "asc" ? va.localeCompare(vb) : vb.localeCompare(va);
+    return brandSortDir === "asc" ? va - vb : vb - va;
+  });
+
+  const bt = document.getElementById("brandTableBody"); bt.innerHTML = "";
+  enriched.forEach(c => {
+    const m = c.metrics; const ci = c.commIndex;
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td style="max-width:220px;overflow:hidden;text-overflow:ellipsis" title="${c.name}">${nameLink(c)}</td><td>${c.product}</td>
+      <td><span class="cv ${cls(m.brandRecall,AVG.brandRecall)}">${pct(m.brandRecall)}</span></td>
+      <td><span class="cv ${cls(m.productRecall,AVG.productRecall)}">${pct(m.productRecall)}</span></td>
+      <td><span class="cv ${cls(m.brandRecognition,AVG.brandRecognition)}">${pct(m.brandRecognition)}</span></td>
+      <td><span class="cv ${m.correctFeatures!=null?'cv-hi':''}">${pct(m.correctFeatures)}</span></td>
+      <td><span class="cv ${m.incorrectFeatures!=null?'cv-lo':''}">${pct(m.incorrectFeatures)}</span></td>
+      <td><strong style="color:${ci==null?'':(ci>0?'var(--green)':ci<0?'var(--red)':'var(--text2)')}">${ci!=null?(ci*100).toFixed(1)+" пп":"—"}</strong></td>
+      <td>${c.base||"—"}</td>`;
+    bt.appendChild(tr);
+  });
+}
+
 function renderScreen3() {
   const fc = filteredCreatives;
 
   const bkRow = document.getElementById("brandKpiRow"); bkRow.innerHTML = "";
-  [{ key:"brandRecall", label:"Brand Recall" },{ key:"productRecall", label:"Product Recall" },{ key:"brandRecognition", label:"Узнаваемость" },{ key:"brandFit", label:"Соответствие бренду" }].forEach(m => {
+  const brandKpiList = [
+    { key:"brandRecall", label:"Brand Recall" },
+    { key:"productRecall", label:"Product Recall" },
+    { key:"brandRecognition", label:"Узнаваемость" },
+    { key:"brandFit", label:"Соответствие бренду" }
+  ];
+  brandKpiList.forEach(m => {
     const vals = fc.map(c => c.metrics[m.key]).filter(v => v != null); const a = avg(vals);
-    bkRow.innerHTML += `<div class="card kpi"><div class="kpi-label">${m.label}</div><div class="kpi-value">${pct(a)}</div></div>`;
+    const q = (METRIC_QUESTIONS[m.key]||"").replace(/\n/g,"<br>");
+    bkRow.innerHTML += `<div class="card kpi"><div class="kpi-label"><span class="tip">${m.label}<span class="tip-icon">i</span><span class="tip-box"><strong>${m.label}</strong><br>${q}</span></span></div><div class="kpi-value">${pct(a)}</div><div class="kpi-avg">глобальное среднее: ${pct(AVG[m.key])}</div></div>`;
   });
   const commVals = fc.map(c => c.metrics.correctFeatures != null && c.metrics.incorrectFeatures != null ? c.metrics.correctFeatures - c.metrics.incorrectFeatures : null).filter(v => v != null);
   const ac = avg(commVals);
-  bkRow.innerHTML += `<div class="card kpi"><div class="kpi-label">Индекс чистоты</div><div class="kpi-value" style="color:${ac!=null&&ac>0?'var(--green)':'var(--red)'}">${ac!=null?(ac*100).toFixed(1)+" пп":"—"}</div></div>`;
+  const acColor = ac == null ? '' : ac > 0 ? 'var(--green)' : ac < 0 ? 'var(--red)' : 'var(--text2)';
+  bkRow.innerHTML += `<div class="card kpi"><div class="kpi-label"><span class="tip">Индекс чистоты<span class="tip-icon">i</span><span class="tip-box"><strong>Индекс чистоты коммуникации</strong><br>% правильно названных функций − % неправильно. Положительный = больше верных считываний.</span></span></div><div class="kpi-value" style="color:${acColor}">${ac!=null?(ac*100).toFixed(1)+" пп":"—"}</div></div>`;
 
   const byP = {}; fc.forEach(c => { if (!byP[c.product]) byP[c.product]=[]; byP[c.product].push(c); });
   const pL = Object.keys(byP).sort();
 
+  const avgBrandRecallLine = Array(pL.length).fill(pctN(AVG.brandRecall));
+  const avgProductRecallLine = Array(pL.length).fill(pctN(AVG.productRecall));
   destroy("chartBrandRecall");
   charts.chartBrandRecall = new Chart(document.getElementById("chartBrandRecall"), {
     type: "bar", data: { labels: pL, datasets: [
       { label: "Brand Recall", data: pL.map(p => pctN(avg(byP[p].map(c => c.metrics.brandRecall)))), backgroundColor: "#00cec9", borderRadius: 6 },
-      { label: "Product Recall", data: pL.map(p => pctN(avg(byP[p].map(c => c.metrics.productRecall)))), backgroundColor: "#a29bfe", borderRadius: 6 }
+      { label: "Product Recall", data: pL.map(p => pctN(avg(byP[p].map(c => c.metrics.productRecall)))), backgroundColor: "#a29bfe", borderRadius: 6 },
+      { type:"line", label:"Ср. Brand Recall", data: avgBrandRecallLine, borderColor:"#00cec9", borderWidth:2, borderDash:[6,4], pointRadius:0, fill:false, tension:0 },
+      { type:"line", label:"Ср. Product Recall", data: avgProductRecallLine, borderColor:"#a29bfe", borderWidth:2, borderDash:[6,4], pointRadius:0, fill:false, tension:0 }
     ] },
-    options: { responsive: true, plugins: { legend: { labels: { color: () => cText() } }, datalabels: { display: false } },
+    options: { responsive: true, plugins: { legend: { labels: { color: () => cText(), filter: item => !item.text.startsWith("Ср.") } }, datalabels: { display: false } },
       scales: { x: { ticks: { color: () => cText2(), font: { size: 10 }, maxRotation: 45 }, grid: { display: false } }, y: { ticks: { color: () => cText2(), callback: v => v+"%" }, grid: { color: () => cGrid() }, min: 0 } } }
   });
 
+  const avgBrandRecogLine = Array(pL.length).fill(pctN(AVG.brandRecognition));
   destroy("chartBrandRecog");
   charts.chartBrandRecog = new Chart(document.getElementById("chartBrandRecog"), {
-    type: "bar", data: { labels: pL, datasets: [{ data: pL.map(p => pctN(avg(byP[p].map(c => c.metrics.brandRecognition)))), backgroundColor: pL.map((_,i) => CHART_COLORS[i%CHART_COLORS.length]), borderRadius: 6 }] },
+    type: "bar", data: { labels: pL, datasets: [
+      { data: pL.map(p => pctN(avg(byP[p].map(c => c.metrics.brandRecognition)))), backgroundColor: pL.map((_,i) => CHART_COLORS[i%CHART_COLORS.length]), borderRadius: 6 },
+      { type:"line", label:"Среднее", data: avgBrandRecogLine, borderColor:"#fdcb6e", borderWidth:2, borderDash:[6,4], pointRadius:0, fill:false, tension:0 }
+    ] },
     options: { responsive: true, plugins: { legend: { display: false }, datalabels: { display: false } },
       scales: { x: { ticks: { color: () => cText2(), font: { size: 10 }, maxRotation: 45 }, grid: { display: false } }, y: { ticks: { color: () => cText2(), callback: v => v+"%" }, grid: { color: () => cGrid() }, min: 0 } } }
   });
@@ -631,20 +756,7 @@ function renderScreen3() {
     });
   }
 
-  const bt = document.getElementById("brandTableBody"); bt.innerHTML = "";
-  [...fc].sort((a,b) => (b.metrics.brandRecall||0)-(a.metrics.brandRecall||0)).forEach(c => {
-    const m = c.metrics; const ci = m.correctFeatures != null && m.incorrectFeatures != null ? m.correctFeatures - m.incorrectFeatures : null;
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td style="max-width:220px;overflow:hidden;text-overflow:ellipsis" title="${c.name}">${nameLink(c)}</td><td>${c.product}</td>
-      <td><span class="cv ${cls(m.brandRecall,AVG.brandRecall)}">${pct(m.brandRecall)}</span></td>
-      <td><span class="cv ${cls(m.productRecall,AVG.productRecall)}">${pct(m.productRecall)}</span></td>
-      <td><span class="cv ${cls(m.brandRecognition,AVG.brandRecognition)}">${pct(m.brandRecognition)}</span></td>
-      <td><span class="cv ${m.correctFeatures!=null?'cv-hi':''}">${pct(m.correctFeatures)}</span></td>
-      <td><span class="cv ${m.incorrectFeatures!=null?'cv-lo':''}">${pct(m.incorrectFeatures)}</span></td>
-      <td><strong style="color:${ci!=null?(ci>0?'var(--green)':'var(--red)'):''}">${ci!=null?(ci*100).toFixed(1)+" пп":"—"}</strong></td>
-      <td>${c.base||"—"}</td>`;
-    bt.appendChild(tr);
-  });
+  renderBrandTable();
 }
 
 // ======================== SCREEN 4: DRIVER ANALYTICS ========================
@@ -684,12 +796,16 @@ function renderScreen4() {
   scatter("scatterBrand","brandRecognition","Узнаваемость");
 
   const sorted = [...fc].filter(c => c.metrics.intent != null).sort((a,b) => b.metrics.intent - a.metrics.intent).slice(0,30);
+  const avgIntentLine = Array(sorted.length).fill(pctN(AVG.intent));
   destroy("chartIntentRank");
   charts.chartIntentRank = new Chart(document.getElementById("chartIntentRank"), {
     type: "bar", data: { labels: sorted.map(c => c.name.length > 30 ? c.name.slice(0,30)+"…" : c.name),
-      datasets: [{ data: sorted.map(c => pctN(c.metrics.intent)), backgroundColor: sorted.map(c => c.metrics.intent > AVG.intent ? "#00b894" : "#ff6b6b"), borderRadius: 4 }] },
+      datasets: [
+        { data: sorted.map(c => pctN(c.metrics.intent)), backgroundColor: sorted.map(c => c.metrics.intent - AVG.intent > 0.05 ? "#00b894" : c.metrics.intent - AVG.intent < -0.05 ? "#ff6b6b" : "#74b9ff"), borderRadius: 4 },
+        { type:"line", label:"Среднее", data: avgIntentLine, borderColor:"#fdcb6e", borderWidth:2, borderDash:[6,4], pointRadius:0, fill:false, tension:0, xAxisID:"x" }
+      ] },
     options: { indexAxis: "y", responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, datalabels: { display: true, color: "#fff", font: { size: 10 }, anchor: "end", align: "end", formatter: v => v != null ? v.toFixed(1)+"%" : "" } },
+      plugins: { legend: { display: false }, datalabels: { display: ctx => ctx.datasetIndex === 0, color: "#fff", font: { size: 10 }, anchor: "end", align: "end", formatter: v => v != null ? v.toFixed(1)+"%" : null } },
       scales: { x: { ticks: { color: () => cText2(), callback: v => v+"%" }, grid: { color: () => cGrid() }, min: 0 }, y: { ticks: { color: () => cText(), font: { size: 10 } }, grid: { display: false } } } }
   });
 }
@@ -719,16 +835,21 @@ function renderScreen5() {
       scales: { x: { ticks: { color: () => cText2() }, grid: { display: false } }, y: { ticks: { color: () => cText2(), callback: v => v+"%" }, grid: { color: () => cGrid() }, min: 0 } } }
   });
 
+  const avgIntentFmtLine = Array(fL.length).fill(pctN(AVG.intent));
   destroy("chartFormatIntent");
   charts.chartFormatIntent = new Chart(document.getElementById("chartFormatIntent"), {
-    type: "bar", data: { labels: fL, datasets: [{ label: "Намерение", data: fL.map(f => pctN(avg(byF[f].map(c => c.metrics.intent)))), backgroundColor: fL.map((_,i) => CHART_COLORS[i%CHART_COLORS.length]), borderRadius: 6 }] },
+    type: "bar", data: { labels: fL, datasets: [
+      { label: "Намерение", data: fL.map(f => pctN(avg(byF[f].map(c => c.metrics.intent)))), backgroundColor: fL.map((_,i) => CHART_COLORS[i%CHART_COLORS.length]), borderRadius: 6 },
+      { type:"line", label:"Среднее", data: avgIntentFmtLine, borderColor:"#fdcb6e", borderWidth:2, borderDash:[6,4], pointRadius:0, fill:false, tension:0 }
+    ] },
     options: { responsive: true, maintainAspectRatio: false, layout: { padding: { top: 24 } },
-      plugins: { legend: { display: false }, datalabels: { display: true, color: () => cText(), font: { size: 11, weight: "bold" }, anchor: "end", align: "top", formatter: v => v != null ? v.toFixed(1)+"%" : "" } },
+      plugins: { legend: { display: false }, datalabels: { display: ctx => ctx.datasetIndex === 0, color: () => cText(), font: { size: 11, weight: "bold" }, anchor: "end", align: "top", formatter: v => v != null ? v.toFixed(1)+"%" : null } },
       scales: { x: { ticks: { color: () => cText2() }, grid: { display: false } }, y: { ticks: { color: () => cText2(), callback: v => v+"%" }, grid: { color: () => cGrid() }, min: 0, grace: "5%" } } }
   });
 
   const hd = document.getElementById("fmtHead"), bd = document.getElementById("fmtBody");
-  hd.innerHTML = ["Формат","Кол-во",...fM.map(m => m.label)].map(c => `<th>${c}</th>`).join("");
+  const fmtThTips = { like:"Насколько вам нравится этот ролик? (Топ-2)", clarity:"Насколько понятна идея ролика? (Топ-1)", intent:"Захотелось ли воспользоваться продуктом? (Топ-1)", uniqueness:"Насколько ролик непохож на другие? (Топ-2)", brandRecognition:"Удалось ли узнать бренд в ролике? (Топ-2)" };
+  hd.innerHTML = `<th>Формат</th><th>Кол-во</th>` + fM.map(m => `<th class="has-tip">${m.label}<span class="th-tip">${fmtThTips[m.key]||""}</span></th>`).join("");
   bd.innerHTML = "";
   fL.forEach(f => {
     const items = byF[f]; const tr = document.createElement("tr");

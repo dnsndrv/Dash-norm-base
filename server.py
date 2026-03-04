@@ -10,8 +10,9 @@ import socket
 import os
 import sys
 import webbrowser
+import errno
 
-PORT = 8899
+DEFAULT_PORT = 8899
 DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
 def get_local_ip():
@@ -40,16 +41,34 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 class ReusableTCPServer(socketserver.TCPServer):
     allow_reuse_address = True
 
+def find_available_port(start_port: int, attempts: int = 50) -> int:
+    """Return the first free TCP port starting from start_port."""
+    for port in range(start_port, start_port + max(1, attempts)):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            try:
+                s.bind(("0.0.0.0", port))
+                return port
+            except OSError as e:
+                if e.errno == errno.EADDRINUSE:
+                    continue
+                raise
+    return start_port
+
 def main():
     local_ip = get_local_ip()
+    port = find_available_port(DEFAULT_PORT)
 
     print()
     print("=" * 56)
     print("  Creative Testing Dashboard — Local Server")
     print("=" * 56)
     print()
-    print(f"  Этот компьютер:  http://localhost:{PORT}/dashboard.html")
-    print(f"  Другие устройства: http://{local_ip}:{PORT}/dashboard.html")
+    if port != DEFAULT_PORT:
+        print(f"  Порт {DEFAULT_PORT} занят — использую {port}")
+        print()
+    print(f"  Этот компьютер:  http://localhost:{port}/dashboard.html")
+    print(f"  Другие устройства: http://{local_ip}:{port}/dashboard.html")
     print()
     print("  Откройте ссылку выше на любом устройстве")
     print("  в той же Wi-Fi / локальной сети.")
@@ -58,9 +77,9 @@ def main():
     print("=" * 56)
     print()
 
-    with ReusableTCPServer(("0.0.0.0", PORT), Handler) as httpd:
+    with ReusableTCPServer(("0.0.0.0", port), Handler) as httpd:
         try:
-            webbrowser.open(f"http://localhost:{PORT}/dashboard.html")
+            webbrowser.open(f"http://localhost:{port}/dashboard.html")
             httpd.serve_forever()
         except KeyboardInterrupt:
             print("\n  Сервер остановлен.")
