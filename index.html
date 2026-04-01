@@ -42,7 +42,7 @@
   .theme-icon { font-size:16px; line-height:1; }
 
   /* Filters */
-  .filters-bar { background:var(--surface); border-bottom:1px solid var(--border); padding:10px 32px; display:none; flex-wrap:wrap; gap:12px; align-items:center; }
+  .filters-bar { background:var(--surface); border-top:1px solid var(--border); padding:10px 32px; display:none; flex-wrap:wrap; gap:12px; align-items:center; }
   .filters-bar.visible { display:flex; }
   .filter-group { display:flex; align-items:center; gap:6px; }
   .filter-group label { font-size:11px; font-weight:600; color:var(--text2); white-space:nowrap; }
@@ -91,7 +91,7 @@
   .chart-wrap canvas { max-width:100%; }
 
   /* Table */
-  table { width:100%; border-collapse:collapse; font-size:12px; }
+  table { width:100%; border-collapse:separate; border-spacing:0; font-size:12px; }
   th { text-align:left; padding:8px; border-bottom:2px solid var(--border); color:var(--text2); font-weight:600; font-size:11px; text-transform:uppercase; white-space:nowrap; position:sticky; top:0; background:var(--surface); z-index:2; cursor:pointer; }
   th:hover { color:var(--text); }
   th.sort-asc::after { content:" ▲"; font-size:9px; }
@@ -101,7 +101,7 @@
   .cv { display:inline-block; padding:2px 6px; border-radius:4px; font-weight:500; }
   .cv-hi { background:var(--green-bg); color:var(--green); }
   .cv-lo { background:var(--red-bg); color:var(--red); }
-  .table-wrap { overflow-x:auto; max-height:600px; overflow-y:auto; }
+  .table-wrap { overflow-x:auto; overflow-y:auto; max-height:calc(100vh - 260px); }
 
   /* Top lists */
   .top-list { list-style:none; }
@@ -128,7 +128,34 @@
   .legend-dot { width:10px; height:10px; border-radius:50%; }
 
   a { color:inherit; }
-  @media(max-width:1100px) { .grid-2,.grid-4,.grid-5,.scatter-grid { grid-template-columns:1fr; } }
+
+  /* Chat panel */
+  .chat-fab { position:fixed; bottom:24px; right:24px; width:52px; height:52px; border-radius:50%; background:var(--accent); border:none; color:#fff; font-size:24px; cursor:pointer; box-shadow:0 4px 16px rgba(108,92,231,0.4); z-index:200; display:flex; align-items:center; justify-content:center; transition:transform .2s; }
+  .chat-fab:hover { transform:scale(1.1); }
+  .chat-fab.hidden { display:none; }
+  .chat-panel { position:fixed; bottom:24px; right:24px; width:420px; height:560px; background:var(--surface); border:1px solid var(--border); border-radius:16px; box-shadow:0 8px 40px rgba(0,0,0,0.3); z-index:200; display:none; flex-direction:column; overflow:hidden; }
+  .chat-panel.open { display:flex; }
+  .chat-header { padding:12px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+  .chat-header-title { font-size:14px; font-weight:700; }
+  .chat-header-sub { font-size:10px; color:var(--text2); }
+  .chat-close { background:none; border:none; color:var(--text2); font-size:20px; cursor:pointer; padding:0 4px; } .chat-close:hover { color:var(--text); }
+  .chat-messages { flex:1; overflow-y:auto; padding:12px 16px; display:flex; flex-direction:column; gap:10px; }
+  .chat-msg { max-width:88%; padding:8px 12px; border-radius:12px; font-size:13px; line-height:1.5; word-wrap:break-word; white-space:pre-wrap; }
+  .chat-msg p { margin:0 0 6px; } .chat-msg p:last-child { margin:0; }
+  .chat-msg ul, .chat-msg ol { margin:4px 0 4px 18px; padding:0; } .chat-msg li { margin-bottom:2px; }
+  .chat-msg strong { font-weight:700; }
+  .chat-msg-user { align-self:flex-end; background:var(--accent); color:#fff; border-bottom-right-radius:4px; }
+  .chat-msg-bot { align-self:flex-start; background:var(--surface2); color:var(--text); border-bottom-left-radius:4px; }
+  .chat-msg-error { align-self:center; background:var(--red-bg); color:var(--red); font-size:12px; text-align:center; }
+  .chat-msg-bot .typing-dot { display:inline-block; animation:blink 1s infinite; } @keyframes blink { 0%,100%{opacity:.2} 50%{opacity:1} }
+  .chat-input-row { padding:10px 12px; border-top:1px solid var(--border); display:flex; gap:8px; flex-shrink:0; }
+  .chat-input { flex:1; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:8px 12px; border-radius:8px; font-size:13px; outline:none; resize:none; font-family:inherit; min-height:36px; max-height:100px; }
+  .chat-input:focus { border-color:var(--accent); }
+  .chat-input::placeholder { color:var(--text2); }
+  .chat-send { background:var(--accent); border:none; color:#fff; width:36px; height:36px; border-radius:8px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; flex-shrink:0; align-self:flex-end; }
+  .chat-send:disabled { opacity:.4; cursor:default; }
+
+  @media(max-width:1100px) { .grid-2,.grid-4,.grid-5,.scatter-grid { grid-template-columns:1fr; } .chat-panel { width:calc(100vw - 16px); right:8px; left:8px; bottom:8px; height:70vh; } }
 
   /* Metric tooltips */
   .tip { position:relative; display:inline-flex; align-items:center; justify-content:center; gap:4px; cursor:help; }
@@ -163,15 +190,14 @@
     <button class="tab" data-screen="screen4">Драйверы намерения</button>
     <button class="tab" data-screen="screen5">Сравнение форматов</button>
   </div>
-</div>
-
-<div class="filters-bar" id="filtersBar">
-  <div class="filter-group"><label>Продукт:</label><select id="filterProduct"><option value="">Все</option></select></div>
-  <div class="filter-group"><label>Кампания:</label><select id="filterCampaign"><option value="">Все</option></select></div>
-  <div class="filter-group"><label>Период:</label><select id="filterPeriod"><option value="">Все</option></select></div>
-  <div class="filter-group"><label>Формат:</label><select id="filterFormat"><option value="">Все</option></select></div>
-  <div class="filter-group"><label>Таск:</label><select id="filterTask"><option value="">Все</option></select></div>
-  <span class="filter-count" id="filterCount"></span>
+  <div class="filters-bar" id="filtersBar">
+    <div class="filter-group"><label>Продукт:</label><select id="filterProduct"><option value="">Все</option></select></div>
+    <div class="filter-group"><label>Кампания:</label><select id="filterCampaign"><option value="">Все</option></select></div>
+    <div class="filter-group"><label>Период:</label><select id="filterPeriod"><option value="">Все</option></select></div>
+    <div class="filter-group"><label>Формат:</label><select id="filterFormat"><option value="">Все</option></select></div>
+    <div class="filter-group"><label>Таск:</label><select id="filterTask"><option value="">Все</option></select></div>
+    <span class="filter-count" id="filterCount"></span>
+  </div>
 </div>
 
 <div class="main">
@@ -238,7 +264,7 @@
     <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> Ниже среднего на 5+ п.п.</div>
   </div>
   <div class="card">
-    <div class="table-wrap" style="max-height:calc(100vh - 300px)">
+    <div class="table-wrap">
       <table id="creativeTable">
         <thead><tr>
           <th data-col="rank">#</th>
@@ -276,7 +302,7 @@
   </div>
   <div class="card">
     <div class="card-title">Таблица бренд-диагностики</div>
-    <div class="table-wrap" style="max-height:500px">
+    <div class="table-wrap">
       <table id="brandTable"><thead><tr>
         <th data-bcol="name">Креатив</th>
         <th data-bcol="product">Продукт</th>
@@ -331,6 +357,22 @@
 </div>
 
 </div><!-- /main -->
+
+<!-- Chat panel -->
+<button class="chat-fab" id="chatFab" title="Чат с ИИ-ассистентом">&#128172;</button>
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-header">
+    <div><div class="chat-header-title">ИИ-ассистент</div><div class="chat-header-sub">Задайте вопрос по данным дашборда</div></div>
+    <button class="chat-close" id="chatClose">&times;</button>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="chat-msg chat-msg-bot">Привет! Я могу ответить на вопросы по данным дашборда: метрики креативов, сравнения, тренды. Спрашивайте!</div>
+  </div>
+  <div class="chat-input-row">
+    <textarea class="chat-input" id="chatInput" placeholder="Какой креатив лучший по намерению?" rows="1"></textarea>
+    <button class="chat-send" id="chatSend" title="Отправить">&#10148;</button>
+  </div>
+</div>
 
 <script src="data.js"></script>
 <script>
@@ -885,6 +927,119 @@ populateFilters();
 document.getElementById("filterCount").textContent = `${D.creatives.length} из ${D.creatives.length}`;
 initCompare();
 renderScreen1();
+
+// ======================== CHAT ========================
+const chatFab = document.getElementById("chatFab");
+const chatPanel = document.getElementById("chatPanel");
+const chatClose = document.getElementById("chatClose");
+const chatMessages = document.getElementById("chatMessages");
+const chatInput = document.getElementById("chatInput");
+const chatSend = document.getElementById("chatSend");
+let chatHistory = [];
+let chatBusy = false;
+
+chatFab.addEventListener("click", () => { chatPanel.classList.add("open"); chatFab.classList.add("hidden"); chatInput.focus(); });
+chatClose.addEventListener("click", () => { chatPanel.classList.remove("open"); chatFab.classList.remove("hidden"); });
+
+chatInput.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); } });
+chatInput.addEventListener("input", () => { chatInput.style.height = "auto"; chatInput.style.height = Math.min(chatInput.scrollHeight, 100) + "px"; });
+chatSend.addEventListener("click", sendChat);
+
+function mdToHtml(text) {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    .replace(/`(.+?)`/g, '<code style="background:var(--surface2);padding:1px 4px;border-radius:3px;font-size:12px">$1</code>')
+    .replace(/^[-•] (.+)$/gm, "<li>$1</li>")
+    .replace(/(<li>.*<\/li>)/gs, m => "<ul>" + m + "</ul>")
+    .replace(/<\/ul>\s*<ul>/g, "")
+    .replace(/\n{2,}/g, "</p><p>")
+    .replace(/\n/g, "<br>")
+    .replace(/^/, "<p>").replace(/$/, "</p>")
+    .replace(/<p><\/p>/g, "");
+}
+
+function appendMsg(role, html) {
+  const div = document.createElement("div");
+  div.className = `chat-msg chat-msg-${role}`;
+  div.innerHTML = html;
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+  return div;
+}
+
+async function sendChat() {
+  const text = chatInput.value.trim();
+  if (!text || chatBusy) return;
+  chatBusy = true;
+  chatSend.disabled = true;
+  chatInput.value = "";
+  chatInput.style.height = "auto";
+
+  appendMsg("user", text.replace(/</g, "&lt;").replace(/\n/g, "<br>"));
+  chatHistory.push({ role: "user", content: text });
+
+  const botDiv = appendMsg("bot", '<span class="typing-dot">...</span>');
+  let fullText = "";
+
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: chatHistory }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: "Ошибка сервера" }));
+      botDiv.className = "chat-msg chat-msg-error";
+      botDiv.textContent = err.error || `Ошибка ${res.status}`;
+      chatBusy = false; chatSend.disabled = false;
+      return;
+    }
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
+
+      const lines = buf.split("\n");
+      buf = lines.pop() || "";
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed === "data: [DONE]") continue;
+        if (!trimmed.startsWith("data: ")) continue;
+        try {
+          const obj = JSON.parse(trimmed.slice(6));
+          const delta = obj.choices?.[0]?.delta?.content;
+          if (delta) {
+            fullText += delta;
+            botDiv.innerHTML = mdToHtml(fullText);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+          }
+        } catch {}
+      }
+    }
+
+    if (!fullText) {
+      botDiv.innerHTML = "<em>Пустой ответ от модели</em>";
+    }
+
+    chatHistory.push({ role: "assistant", content: fullText });
+    if (chatHistory.length > 20) chatHistory = chatHistory.slice(-16);
+
+  } catch (e) {
+    botDiv.className = "chat-msg chat-msg-error";
+    botDiv.textContent = "Не удалось подключиться к серверу. Запустите server.py";
+  }
+
+  chatBusy = false;
+  chatSend.disabled = false;
+}
 </script>
 </body>
 </html>

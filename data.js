@@ -1,16 +1,18 @@
-// Auto-generated from CSV data
+// Auto-generated from Google Sheets
 const DASHBOARD_DATA = {
   "creatives": [
     {
       "id": 0,
       "name": "Дино (детская комната)",
       "task": "MR-3900",
-      "period": "фев.25",
+      "period": "февр.25",
       "product": "Поиск с Нейро",
       "campaign": "Нейро реально помогает",
       "base": 259,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "20с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/59e4a9d013243194a2c7a6fb299d49e8/?p=mb43DJQBV9bxv1OFtYfBjA",
       "metrics": {
         "interesting": 0.664,
         "like": 0.529,
@@ -21,23 +23,24 @@ const DASHBOARD_DATA = {
         "brandFit": 0.625,
         "brandAttitude": 0.556,
         "intent": 0.413,
-        "brandRecall": 0.7931034483,
-        "productRecall": 0.7567567568,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/59e4a9d013243194a2c7a6fb299d49e8/?p=mb43DJQBV9bxv1OFtYfBjA"
+        "incorrectFeatures": null,
+        "brandRecall": 0.793103,
+        "productRecall": 0.756757
+      }
     },
     {
       "id": 1,
       "name": "Пушистый кот",
       "task": "MR-3900",
-      "period": "фев.25",
+      "period": "февр.25",
       "product": "Поиск с Нейро",
       "campaign": "Нейро реально помогает",
       "base": 269,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "20с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/dacf60e83485092acbdbe4ba146db148/?p=qlq7sGgywmeQMvHhbExKeA",
       "metrics": {
         "interesting": 0.658,
         "like": 0.509,
@@ -48,23 +51,24 @@ const DASHBOARD_DATA = {
         "brandFit": 0.598,
         "brandAttitude": 0.506,
         "intent": 0.353,
-        "brandRecall": 0.7472118959,
-        "productRecall": 0.7063197026,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/dacf60e83485092acbdbe4ba146db148/?p=qlq7sGgywmeQMvHhbExKeA"
+        "incorrectFeatures": null,
+        "brandRecall": 0.747212,
+        "productRecall": 0.70632
+      }
     },
     {
       "id": 2,
       "name": "Хурма вяжет",
       "task": "MR-3900",
-      "period": "фев.25",
+      "period": "февр.25",
       "product": "Поиск с Нейро",
       "campaign": "Нейро реально помогает",
       "base": 260,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "20с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/e2e916cf1bdcbf98b8b0ddf93a24ed48/?p=7i2b4FQO8XHm6e1ZVjWhsw",
       "metrics": {
         "interesting": 0.731,
         "like": 0.585,
@@ -75,23 +79,24 @@ const DASHBOARD_DATA = {
         "brandFit": 0.712,
         "brandAttitude": 0.634,
         "intent": 0.404,
-        "brandRecall": 0.7846153846,
-        "productRecall": 0.6961538462,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/e2e916cf1bdcbf98b8b0ddf93a24ed48/?p=7i2b4FQO8XHm6e1ZVjWhsw"
+        "incorrectFeatures": null,
+        "brandRecall": 0.784615,
+        "productRecall": 0.696154
+      }
     },
     {
       "id": 3,
       "name": "Мама",
       "task": "MR-3900",
-      "period": "фев.25",
+      "period": "февр.25",
       "product": "РК Гигачат",
       "campaign": "РК Гигачат",
       "base": 302,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "60с",
+      "productionType": "Продакшн",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/dca6c03d5b6a605ea429b504acc3de65/?p=jlBjs4VhF4G3qYAIV5F4TQ",
       "metrics": {
         "interesting": 0.834,
         "like": 0.695,
@@ -102,23 +107,24 @@ const DASHBOARD_DATA = {
         "brandFit": 0.623,
         "brandAttitude": 0.599,
         "intent": 0.444,
-        "brandRecall": 0.6904761905,
-        "productRecall": 0.5537848606,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/dca6c03d5b6a605ea429b504acc3de65/?p=jlBjs4VhF4G3qYAIV5F4TQ"
+        "incorrectFeatures": null,
+        "brandRecall": 0.690476,
+        "productRecall": 0.553785
+      }
     },
     {
       "id": 4,
       "name": "Суперсила",
       "task": "MR-3900",
-      "period": "фев.25",
+      "period": "февр.25",
       "product": "РК Гигачат",
       "campaign": "РК Гигачат",
       "base": 301,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "20с",
+      "productionType": "ИИ",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/b25cce71d98b9380058a5481c96ef663/?p=NzRx_amyX6dT1bduex6RUA",
       "metrics": {
         "interesting": 0.663,
         "like": 0.528,
@@ -129,23 +135,24 @@ const DASHBOARD_DATA = {
         "brandFit": 0.607,
         "brandAttitude": 0.498,
         "intent": 0.343,
-        "brandRecall": 0.8412698413,
-        "productRecall": 0.6666666667,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/b25cce71d98b9380058a5481c96ef663/?p=NzRx_amyX6dT1bduex6RUA"
+        "incorrectFeatures": null,
+        "brandRecall": 0.84127,
+        "productRecall": 0.666667
+      }
     },
     {
       "id": 5,
       "name": "Гупи",
       "task": "MR-3900",
-      "period": "фев.25",
+      "period": "февр.25",
       "product": "Поиск с Нейро",
       "campaign": "Нейро реально помогает",
       "base": 300,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "15с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/476ed65bb0c669bdca427aac113182e9/?p=flR2eOpLlidsD8jLKzB5JA",
       "metrics": {
         "interesting": 0.724,
         "like": 0.568,
@@ -156,23 +163,24 @@ const DASHBOARD_DATA = {
         "brandFit": 0.738,
         "brandAttitude": 0.656,
         "intent": 0.485,
-        "brandRecall": 0.8977272727,
-        "productRecall": 0.7878787879,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/476ed65bb0c669bdca427aac113182e9/?p=flR2eOpLlidsD8jLKzB5JA"
+        "incorrectFeatures": null,
+        "brandRecall": 0.897727,
+        "productRecall": 0.787879
+      }
     },
     {
       "id": 6,
       "name": "Диета",
       "task": "MR-3900",
-      "period": "фев.25",
+      "period": "февр.25",
       "product": "Поиск с Нейро",
       "campaign": "Нейро реально помогает",
       "base": 304,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "30с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/ad1c6ac0bde77eddcc92f347c0ee2e4b/?p=9xd7nb7MjpLwKHTs-MOsEw",
       "metrics": {
         "interesting": 0.656,
         "like": 0.519,
@@ -183,23 +191,24 @@ const DASHBOARD_DATA = {
         "brandFit": 0.606,
         "brandAttitude": 0.527,
         "intent": 0.371,
-        "brandRecall": 0.7689393939,
-        "productRecall": 0.6515151515,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/ad1c6ac0bde77eddcc92f347c0ee2e4b/?p=9xd7nb7MjpLwKHTs-MOsEw"
+        "incorrectFeatures": null,
+        "brandRecall": 0.768939,
+        "productRecall": 0.651515
+      }
     },
     {
       "id": 7,
       "name": "Кот",
       "task": "MR-3900",
-      "period": "фев.25",
+      "period": "февр.25",
       "product": "Поиск с Нейро",
       "campaign": "Нейро реально помогает",
       "base": 303,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "23с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/e5ad3da810893c61aadbe7427d4a7f99/?p=PNE1bwddjsBL6kShUazxRw",
       "metrics": {
         "interesting": 0.751,
         "like": 0.609,
@@ -210,23 +219,24 @@ const DASHBOARD_DATA = {
         "brandFit": 0.666,
         "brandAttitude": 0.587,
         "intent": 0.429,
-        "brandRecall": 0.8275862069,
-        "productRecall": 0.7394636015,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/e5ad3da810893c61aadbe7427d4a7f99/?p=PNE1bwddjsBL6kShUazxRw"
+        "incorrectFeatures": null,
+        "brandRecall": 0.827586,
+        "productRecall": 0.739464
+      }
     },
     {
       "id": 8,
       "name": "Поиск",
       "task": "MR-3900",
-      "period": "фев.25",
+      "period": "февр.25",
       "product": "Поиск с Нейро",
       "campaign": "Нейро реально помогает",
       "base": 301,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "30с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/68cd6d2b09ba3d3b8f6ed1a50238e383/?p=eEVbPmAQ6SXhZoGOu2nXNg",
       "metrics": {
         "interesting": 0.779,
         "like": 0.599,
@@ -237,23 +247,24 @@ const DASHBOARD_DATA = {
         "brandFit": 0.729,
         "brandAttitude": 0.649,
         "intent": 0.454,
-        "brandRecall": 0.9236641221,
-        "productRecall": 0.8396946565,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/68cd6d2b09ba3d3b8f6ed1a50238e383/?p=eEVbPmAQ6SXhZoGOu2nXNg"
+        "incorrectFeatures": null,
+        "brandRecall": 0.923664,
+        "productRecall": 0.839695
+      }
     },
     {
       "id": 9,
       "name": "Часы для бега",
       "task": "MR-3900",
-      "period": "фев.25",
+      "period": "февр.25",
       "product": "Поиск с Нейро",
       "campaign": "Нейро реально помогает",
       "base": 300,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "15с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/66398fdfd4214b2a3d73a0bd50da16b2/?p=aUsKlkz4zsknZ-KRxmSAAg",
       "metrics": {
         "interesting": 0.735,
         "like": 0.563,
@@ -264,23 +275,24 @@ const DASHBOARD_DATA = {
         "brandFit": 0.731,
         "brandAttitude": 0.655,
         "intent": 0.452,
-        "brandRecall": 0.8735632184,
-        "productRecall": 0.785440613,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/66398fdfd4214b2a3d73a0bd50da16b2/?p=aUsKlkz4zsknZ-KRxmSAAg"
+        "incorrectFeatures": null,
+        "brandRecall": 0.873563,
+        "productRecall": 0.785441
+      }
     },
     {
       "id": 10,
       "name": "Помощь с креативом",
       "task": "MR-3900",
-      "period": "фев.25",
+      "period": "февр.25",
       "product": "РК Гигачат",
       "campaign": "РК Гигачат",
       "base": 305,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "17с",
+      "productionType": "ИИ",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/315b6643e5a0fde45130768a4ab388b0/?p=AjTSwPFlAWZUaExiXWG8pQ",
       "metrics": {
         "interesting": 0.669,
         "like": 0.508,
@@ -291,23 +303,24 @@ const DASHBOARD_DATA = {
         "brandFit": 0.577,
         "brandAttitude": 0.521,
         "intent": 0.371,
-        "brandRecall": 0.6774193548,
-        "productRecall": 0.564516129,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/315b6643e5a0fde45130768a4ab388b0/?p=AjTSwPFlAWZUaExiXWG8pQ"
+        "incorrectFeatures": null,
+        "brandRecall": 0.677419,
+        "productRecall": 0.564516
+      }
     },
     {
       "id": 11,
       "name": "Занять ребенка",
       "task": "MR-3900",
-      "period": "фев.25",
+      "period": "февр.25",
       "product": "РК Гигачат",
       "campaign": "РК Гигачат",
       "base": 296,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "17с",
+      "productionType": "ИИ",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/8386676aeef523c2ec1bfb4431908cfe/?p=QrKjoQbR8OSZPQqICb0uIQ",
       "metrics": {
         "interesting": 0.699,
         "like": 0.541,
@@ -318,12 +331,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.578,
         "brandAttitude": 0.549,
         "intent": 0.378,
-        "brandRecall": 0.6585365854,
-        "productRecall": 0.6422764228,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/8386676aeef523c2ec1bfb4431908cfe/?p=QrKjoQbR8OSZPQqICb0uIQ"
+        "incorrectFeatures": null,
+        "brandRecall": 0.658537,
+        "productRecall": 0.642276
+      }
     },
     {
       "id": 12,
@@ -333,8 +345,10 @@ const DASHBOARD_DATA = {
       "product": "Яндекс.Поиск",
       "campaign": "Яндекс.Поиск",
       "base": 200,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "9с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://youtu.be/OaSS_7fiNjo",
       "metrics": {
         "interesting": 0.65,
         "like": 0.47,
@@ -345,12 +359,11 @@ const DASHBOARD_DATA = {
         "brandFit": null,
         "brandAttitude": null,
         "intent": 0.61,
-        "brandRecall": null,
-        "productRecall": null,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": "https://youtu.be/OaSS_7fiNjo"
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
     },
     {
       "id": 13,
@@ -360,8 +373,10 @@ const DASHBOARD_DATA = {
       "product": "Яндекс.Поиск",
       "campaign": "Яндекс.Поиск",
       "base": 181,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "10с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://youtu.be/wa8LD13ZH_Q",
       "metrics": {
         "interesting": 0.73,
         "like": 0.55,
@@ -372,66 +387,67 @@ const DASHBOARD_DATA = {
         "brandFit": null,
         "brandAttitude": null,
         "intent": 0.66,
-        "brandRecall": null,
-        "productRecall": null,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": "https://youtu.be/wa8LD13ZH_Q"
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
     },
     {
       "id": 14,
       "name": "Человек-паук",
       "task": "MR-3462",
-      "period": "фев.24",
+      "period": "февр.24",
       "product": "Я.Бро",
       "campaign": "РК \"Нейробраузер\"",
       "base": 538,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "30c",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://youtu.be/ukvVDVzjwoQ",
       "metrics": {
-        "interesting": 0.7472118959,
-        "like": 0.5650557621,
-        "clarity": 0.592936803,
-        "relevance": 0.6542750929,
-        "uniqueness": 0.6226765799,
-        "brandRecognition": 0.4814126394,
-        "brandFit": 0.7137546468,
-        "brandAttitude": 0.6078066914,
-        "intent": 0.4330855019,
-        "brandRecall": 0.8494423792,
-        "productRecall": 0.6468401487,
+        "interesting": 0.747212,
+        "like": 0.565056,
+        "clarity": 0.592937,
+        "relevance": 0.654275,
+        "uniqueness": 0.622677,
+        "brandRecognition": 0.481413,
+        "brandFit": 0.713755,
+        "brandAttitude": 0.607807,
+        "intent": 0.433086,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": null,
+        "brandRecall": 0.849442,
+        "productRecall": 0.64684
+      }
     },
     {
       "id": 15,
       "name": "Дедпул",
       "task": "MR-3462",
-      "period": "фев.24",
+      "period": "февр.24",
       "product": "Я.Бро",
       "campaign": "РК \"Нейробраузер\"",
       "base": 532,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "30c",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://youtu.be/N0zz0zVt_cY",
       "metrics": {
-        "interesting": 0.7086466165,
-        "like": 0.5620300752,
-        "clarity": 0.5488721805,
-        "relevance": 0.6127819549,
-        "uniqueness": 0.6184210526,
-        "brandRecognition": 0.469924812,
-        "brandFit": 0.6616541353,
-        "brandAttitude": 0.5620300752,
-        "intent": 0.3928571429,
-        "brandRecall": 0.8552631579,
-        "productRecall": 0.6484962406,
+        "interesting": 0.708647,
+        "like": 0.56203,
+        "clarity": 0.548872,
+        "relevance": 0.612782,
+        "uniqueness": 0.618421,
+        "brandRecognition": 0.469925,
+        "brandFit": 0.661654,
+        "brandAttitude": 0.56203,
+        "intent": 0.392857,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": null,
+        "brandRecall": 0.855263,
+        "productRecall": 0.648496
+      }
     },
     {
       "id": 16,
@@ -441,24 +457,25 @@ const DASHBOARD_DATA = {
       "product": "Я.Бро",
       "campaign": "РК \"ЕКОМ\"",
       "base": 434,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "20с",
+      "productionType": "Продакшн",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/2fd287bafae980b4fb05ff0dea11c395/?p=RPMLtJRtIlQOiTtj6h-Hgg",
       "metrics": {
-        "interesting": 0.7004608295,
-        "like": 0.5460829493,
-        "clarity": 0.6451612903,
-        "relevance": 0.5529953917,
-        "uniqueness": 0.5529953917,
-        "brandRecognition": 0.4631336406,
-        "brandFit": 0.6428571429,
-        "brandAttitude": 0.4953917051,
-        "intent": 0.2995391705,
+        "interesting": 0.700461,
+        "like": 0.546083,
+        "clarity": 0.645161,
+        "relevance": 0.552995,
+        "uniqueness": 0.552995,
+        "brandRecognition": 0.463134,
+        "brandFit": 0.642857,
+        "brandAttitude": 0.495392,
+        "intent": 0.299539,
+        "correctFeatures": 0.68894,
+        "incorrectFeatures": 0.145161,
         "brandRecall": 0.82,
-        "productRecall": 0.72,
-        "correctFeatures": 0.6889400922,
-        "incorrectFeatures": 0.1451612903
-      },
-      "rutubeUrl": null
+        "productRecall": 0.72
+      }
     },
     {
       "id": 17,
@@ -468,24 +485,25 @@ const DASHBOARD_DATA = {
       "product": "Я.Бро",
       "campaign": "РК \"ЕКОМ\"",
       "base": 428,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "19с",
+      "productionType": "Продакшн",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/920f3173ed13a3aa2cf976e69d9be906/?r=wd&p=bzEWNV_t5n6FELE9_Iy3Ww",
       "metrics": {
-        "interesting": 0.7663551402,
-        "like": 0.6378504673,
-        "clarity": 0.6074766355,
-        "relevance": 0.6682242991,
-        "uniqueness": 0.6308411215,
-        "brandRecognition": 0.441588785,
-        "brandFit": 0.6682242991,
-        "brandAttitude": 0.5630841121,
-        "intent": 0.3714953271,
+        "interesting": 0.766355,
+        "like": 0.63785,
+        "clarity": 0.607477,
+        "relevance": 0.668224,
+        "uniqueness": 0.630841,
+        "brandRecognition": 0.441589,
+        "brandFit": 0.668224,
+        "brandAttitude": 0.563084,
+        "intent": 0.371495,
+        "correctFeatures": 0.436916,
+        "incorrectFeatures": 0.301402,
         "brandRecall": 0.79,
-        "productRecall": 0.48,
-        "correctFeatures": 0.4369158879,
-        "incorrectFeatures": 0.3014018692
-      },
-      "rutubeUrl": null
+        "productRecall": 0.48
+      }
     },
     {
       "id": 18,
@@ -495,24 +513,25 @@ const DASHBOARD_DATA = {
       "product": "Я.Бро",
       "campaign": "РК \"ЕКОМ\"",
       "base": 438,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "20с",
+      "productionType": "Продакшн",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/7667309b7f22c7b352e71ea84434f825/?r=wd&p=aC3JdGaJ9rnlJC2giPUMfw",
       "metrics": {
-        "interesting": 0.703196347,
-        "like": 0.5091324201,
-        "clarity": 0.5730593607,
-        "relevance": 0.6073059361,
-        "uniqueness": 0.5456621005,
-        "brandRecognition": 0.4337899543,
-        "brandFit": 0.6301369863,
-        "brandAttitude": 0.502283105,
-        "intent": 0.3310502283,
+        "interesting": 0.703196,
+        "like": 0.509132,
+        "clarity": 0.573059,
+        "relevance": 0.607306,
+        "uniqueness": 0.545662,
+        "brandRecognition": 0.43379,
+        "brandFit": 0.630137,
+        "brandAttitude": 0.502283,
+        "intent": 0.33105,
+        "correctFeatures": 0.374429,
+        "incorrectFeatures": 0.342466,
         "brandRecall": 0.87,
-        "productRecall": 0.51,
-        "correctFeatures": 0.3744292237,
-        "incorrectFeatures": 0.3424657534
-      },
-      "rutubeUrl": null
+        "productRecall": 0.51
+      }
     },
     {
       "id": 19,
@@ -522,8 +541,10 @@ const DASHBOARD_DATA = {
       "product": "Я.Бро",
       "campaign": "РК \"Нейропродуктивность\" (Always on)",
       "base": 414,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "28с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/d44e98dda41778a8cbab9085b0c467ed/?p=5UtweU61JEFwG2XLwVqdfg",
       "metrics": {
         "interesting": 0.71,
         "like": 0.56,
@@ -534,12 +555,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.68,
         "brandAttitude": 0.52,
         "intent": 0.38,
-        "brandRecall": 0.85,
-        "productRecall": 0.72,
         "correctFeatures": 0.52,
-        "incorrectFeatures": 0.3
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/d44e98dda41778a8cbab9085b0c467ed/?p=5UtweU61JEFwG2XLwVqdfg"
+        "incorrectFeatures": 0.3,
+        "brandRecall": 0.85,
+        "productRecall": 0.72
+      }
     },
     {
       "id": 20,
@@ -549,8 +569,10 @@ const DASHBOARD_DATA = {
       "product": "Я.Бро",
       "campaign": "РК \"Нейропродуктивность\" (Always on)",
       "base": 435,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "26с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/c2e060a3b1fcc684302615dc6d21bdcd/?p=HfuGyXS0vtpEZeCv_4_4rQ",
       "metrics": {
         "interesting": 0.74,
         "like": 0.59,
@@ -561,12 +583,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.73,
         "brandAttitude": 0.61,
         "intent": 0.44,
-        "brandRecall": 0.8,
-        "productRecall": 0.63,
         "correctFeatures": 0.74,
-        "incorrectFeatures": 0.1
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/c2e060a3b1fcc684302615dc6d21bdcd/?p=HfuGyXS0vtpEZeCv_4_4rQ"
+        "incorrectFeatures": 0.1,
+        "brandRecall": 0.8,
+        "productRecall": 0.63
+      }
     },
     {
       "id": 21,
@@ -576,8 +597,10 @@ const DASHBOARD_DATA = {
       "product": "Я.Бро",
       "campaign": "РК \"Нейропродуктивность\" (Always on)",
       "base": 424,
-      "format": "10 сек",
-      "productionType": "Стандарт",
+      "format": "10с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/0c0453c803007e69131dc7bb8d9725eb/?p=lyid4Y9cyabE8BmBSenG1g",
       "metrics": {
         "interesting": 0.6,
         "like": 0.42,
@@ -588,12 +611,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.59,
         "brandAttitude": 0.46,
         "intent": 0.34,
-        "brandRecall": 0.81,
-        "productRecall": 0.49,
         "correctFeatures": 0.36,
-        "incorrectFeatures": 0.25
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": 0.25,
+        "brandRecall": 0.81,
+        "productRecall": 0.49
+      }
     },
     {
       "id": 22,
@@ -603,8 +625,10 @@ const DASHBOARD_DATA = {
       "product": "Я.Бро",
       "campaign": "РК \"Нейропродуктивность\" (Always on)",
       "base": 412,
-      "format": "25 сек",
-      "productionType": "Стандарт",
+      "format": "25с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/5131e70da3a7c3051b77fe99bdd50aa2/?p=H8PZXaqjlUlzDS8VqNoZyw",
       "metrics": {
         "interesting": 0.69,
         "like": 0.52,
@@ -615,12 +639,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.67,
         "brandAttitude": 0.49,
         "intent": 0.38,
-        "brandRecall": 0.83,
-        "productRecall": 0.63,
         "correctFeatures": 0.43,
-        "incorrectFeatures": 0.28
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": 0.28,
+        "brandRecall": 0.83,
+        "productRecall": 0.63
+      }
     },
     {
       "id": 23,
@@ -630,8 +653,10 @@ const DASHBOARD_DATA = {
       "product": "Я.Бро",
       "campaign": "РК \"Нейропродуктивность\" (Always on)",
       "base": 408,
-      "format": "10 сек",
-      "productionType": "Стандарт",
+      "format": "10с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/2a516425ca1fe89ef437095fa4a87224/?p=nL7AelNju-Gq7Iy4pPcqlw",
       "metrics": {
         "interesting": 0.57,
         "like": 0.4,
@@ -642,12 +667,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.6,
         "brandAttitude": 0.4,
         "intent": 0.29,
-        "brandRecall": 0.86,
-        "productRecall": 0.68,
         "correctFeatures": 0.37,
-        "incorrectFeatures": 0.29
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": 0.29,
+        "brandRecall": 0.86,
+        "productRecall": 0.68
+      }
     },
     {
       "id": 24,
@@ -657,8 +681,10 @@ const DASHBOARD_DATA = {
       "product": "Я.Бро",
       "campaign": "РК \"Нейропродуктивность\" (Always on)",
       "base": 418,
-      "format": "25 сек",
-      "productionType": "Стандарт",
+      "format": "25с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/d6b05d6934136cde5a077527970eba0d/?p=Job-xV9I0ZkWqjNg1Q-YkQ",
       "metrics": {
         "interesting": 0.71,
         "like": 0.54,
@@ -669,12 +695,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.69,
         "brandAttitude": 0.5,
         "intent": 0.37,
-        "brandRecall": 0.86,
-        "productRecall": 0.72,
         "correctFeatures": 0.43,
-        "incorrectFeatures": 0.26
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": 0.26,
+        "brandRecall": 0.86,
+        "productRecall": 0.72
+      }
     },
     {
       "id": 25,
@@ -684,8 +709,10 @@ const DASHBOARD_DATA = {
       "product": "Я.Бро",
       "campaign": "РК \"Нейропродуктивность\" (Always on)",
       "base": 409,
-      "format": "10 сек",
-      "productionType": "Стандарт",
+      "format": "10с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/b066faf31af3f2e39c5d3301313e803f/?p=mW8ytX_B3SiNQRH0oDSHrQ",
       "metrics": {
         "interesting": 0.63,
         "like": 0.48,
@@ -696,12 +723,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.59,
         "brandAttitude": 0.48,
         "intent": 0.33,
-        "brandRecall": 0.82,
-        "productRecall": 0.7,
         "correctFeatures": 0.5,
-        "incorrectFeatures": 0.26
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": 0.26,
+        "brandRecall": 0.82,
+        "productRecall": 0.7
+      }
     },
     {
       "id": 26,
@@ -711,8 +737,10 @@ const DASHBOARD_DATA = {
       "product": "Я.Бро",
       "campaign": "РК \"Нейропродуктивность\" (Always on)",
       "base": 411,
-      "format": "25 сек",
-      "productionType": "Стандарт",
+      "format": "25с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/a4ea911790c617580c4724c5960124b0/?p=5ghTVXeLJV5BDcqsh8nwbQ",
       "metrics": {
         "interesting": 0.73,
         "like": 0.58,
@@ -723,12 +751,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.66,
         "brandAttitude": 0.57,
         "intent": 0.36,
-        "brandRecall": 0.84,
-        "productRecall": 0.77,
         "correctFeatures": 0.54,
-        "incorrectFeatures": 0.32
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": 0.32,
+        "brandRecall": 0.84,
+        "productRecall": 0.77
+      }
     },
     {
       "id": 27,
@@ -738,8 +765,10 @@ const DASHBOARD_DATA = {
       "product": "Я.Бро",
       "campaign": "РК \"Нейропродуктивность\" (Always on)",
       "base": 399,
-      "format": "10 сек",
-      "productionType": "Стандарт",
+      "format": "10с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/a2780afb0dcfe408dcdacb1f89edae74/?p=QdEm0Ai-AHq4B3MG0c5IHg",
       "metrics": {
         "interesting": 0.67,
         "like": 0.47,
@@ -750,12 +779,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.64,
         "brandAttitude": 0.45,
         "intent": 0.29,
-        "brandRecall": 0.84,
-        "productRecall": 0.66,
         "correctFeatures": 0.53,
-        "incorrectFeatures": 0.2
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": 0.2,
+        "brandRecall": 0.84,
+        "productRecall": 0.66
+      }
     },
     {
       "id": 28,
@@ -765,8 +793,10 @@ const DASHBOARD_DATA = {
       "product": "Я.Бро",
       "campaign": "РК \"Нейропродуктивность\" (Always on)",
       "base": 405,
-      "format": "25 сек",
-      "productionType": "Стандарт",
+      "format": "25с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/de2bb37e70e9372ec7649ad456a65cec/?p=eYJZ5Z0_v0eRW56qDqogbQ",
       "metrics": {
         "interesting": 0.67,
         "like": 0.51,
@@ -777,12 +807,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.61,
         "brandAttitude": 0.49,
         "intent": 0.32,
-        "brandRecall": 0.77,
-        "productRecall": 0.61,
         "correctFeatures": 0.56,
-        "incorrectFeatures": 0.25
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": 0.25,
+        "brandRecall": 0.77,
+        "productRecall": 0.61
+      }
     },
     {
       "id": 29,
@@ -792,8 +821,10 @@ const DASHBOARD_DATA = {
       "product": "Я.Бро",
       "campaign": "РК \"Нейропродуктивность\" (Always on)",
       "base": 431,
-      "format": "10 сек",
-      "productionType": "Стандарт",
+      "format": "10с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/14188abe1c38abd3ec514f8bc4b0da0a/?p=6wWeagqx8Q6-Rk2Ws-OCHQ",
       "metrics": {
         "interesting": 0.68,
         "like": 0.52,
@@ -804,12 +835,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.71,
         "brandAttitude": 0.51,
         "intent": 0.37,
-        "brandRecall": 0.88,
-        "productRecall": 0.68,
         "correctFeatures": 0.59,
-        "incorrectFeatures": 0.07
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": 0.07,
+        "brandRecall": 0.88,
+        "productRecall": 0.68
+      }
     },
     {
       "id": 30,
@@ -819,8 +849,10 @@ const DASHBOARD_DATA = {
       "product": "Я.Бро",
       "campaign": "РК \"Нейропродуктивность\" (Always on)",
       "base": 420,
-      "format": "25 сек",
-      "productionType": "Стандарт",
+      "format": "25с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/14188abe1c38abd3ec514f8bc4b0da0a/?p=6wWeagqx8Q6-Rk2Ws-OCHQ",
       "metrics": {
         "interesting": 0.68,
         "like": 0.53,
@@ -831,12 +863,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.68,
         "brandAttitude": 0.52,
         "intent": 0.38,
-        "brandRecall": 0.81,
-        "productRecall": 0.56,
         "correctFeatures": 0.61,
-        "incorrectFeatures": 0.2
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": 0.2,
+        "brandRecall": 0.81,
+        "productRecall": 0.56
+      }
     },
     {
       "id": 31,
@@ -846,8 +877,10 @@ const DASHBOARD_DATA = {
       "product": "Поиск с Алисой",
       "campaign": "Яндекс с Алисой",
       "base": 252,
-      "format": "Ролик",
+      "format": "30c",
       "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/0edf4aa400fb72ae7f4100230a6f3f31/?p=h_3Kagq0qzlGqx6JitxAgQ",
       "metrics": {
         "interesting": 0.8,
         "like": 0.64,
@@ -858,12 +891,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.8,
         "brandAttitude": 0.63,
         "intent": 0.44,
-        "brandRecall": 0.92,
-        "productRecall": 0.83,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/0edf4aa400fb72ae7f4100230a6f3f31/?p=h_3Kagq0qzlGqx6JitxAgQ"
+        "incorrectFeatures": null,
+        "brandRecall": 0.92,
+        "productRecall": 0.83
+      }
     },
     {
       "id": 32,
@@ -873,8 +905,10 @@ const DASHBOARD_DATA = {
       "product": "Я.Бро",
       "campaign": "РК \"Нейропродуктивность\" (Always on)",
       "base": 406,
-      "format": "Ролик",
+      "format": "26с",
       "productionType": "Продакшн",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/2fd287bafae980b4fb05ff0dea11c395/?p=RPMLtJRtIlQOiTtj6h-Hgg",
       "metrics": {
         "interesting": 0.74,
         "like": 0.57,
@@ -885,12 +919,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.71,
         "brandAttitude": 0.6,
         "intent": 0.43,
-        "brandRecall": null,
-        "productRecall": null,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
     },
     {
       "id": 33,
@@ -900,8 +933,10 @@ const DASHBOARD_DATA = {
       "product": "Я.Бро",
       "campaign": "РК \"Нейропродуктивность\" (Always on)",
       "base": 431,
-      "format": "Ролик",
+      "format": "26с",
       "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/0bded83101d4e5a42e567ede925655e9/?r=wd&p=3e9Z8yt_08cyDo5BrYcRrQ",
       "metrics": {
         "interesting": 0.76,
         "like": 0.66,
@@ -912,23 +947,24 @@ const DASHBOARD_DATA = {
         "brandFit": 0.74,
         "brandAttitude": 0.59,
         "intent": 0.47,
-        "brandRecall": null,
-        "productRecall": null,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/0bded83101d4e5a42e567ede925655e9/?r=wd"
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
     },
     {
       "id": 34,
       "name": "YB_Original_Perevod",
-      "task": "MR-4081",
+      "task": "MR-4085",
       "period": "авг.25",
       "product": "Я.Бро",
       "campaign": "Кринж+ИИ VS продакшн",
       "base": 425,
-      "format": "Ролик",
+      "format": "26с",
       "productionType": "Продакшн",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/5f7527fb9352708e7911fd6e3f1b26f5/?r=wd&p=XqEjesyub-0zkaidDTcIeg",
       "metrics": {
         "interesting": 0.76,
         "like": 0.6,
@@ -939,12 +975,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.72,
         "brandAttitude": 0.65,
         "intent": 0.47,
-        "brandRecall": 0.22,
-        "productRecall": 0.33,
         "correctFeatures": 0.74,
-        "incorrectFeatures": 0.13
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/5f7527fb9352708e7911fd6e3f1b26f5/?r=wd"
+        "incorrectFeatures": 0.13,
+        "brandRecall": 0.22,
+        "productRecall": 0.33
+      }
     },
     {
       "id": 35,
@@ -954,8 +989,10 @@ const DASHBOARD_DATA = {
       "product": "Я.Бро",
       "campaign": "Кринж+ИИ VS продакшн",
       "base": 513,
-      "format": "Ролик",
+      "format": "30с",
       "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/153c2851c211a607442d966f49ba0098/?r=wd&p=M6wNZviDJQbVOUFkCKS5QQ",
       "metrics": {
         "interesting": 0.79,
         "like": 0.63,
@@ -966,12 +1003,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.77,
         "brandAttitude": 0.6,
         "intent": 0.41,
-        "brandRecall": 0.28,
-        "productRecall": 0.32,
         "correctFeatures": 0.78,
-        "incorrectFeatures": 0.09
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/153c2851c211a607442d966f49ba0098/?r=wd"
+        "incorrectFeatures": 0.09,
+        "brandRecall": 0.28,
+        "productRecall": 0.32
+      }
     },
     {
       "id": 36,
@@ -981,8 +1017,10 @@ const DASHBOARD_DATA = {
       "product": "Я.Бро",
       "campaign": "Кринж+ИИ VS продакшн",
       "base": 417,
-      "format": "Ролик",
+      "format": "26с",
       "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/e18e5ab20b6263aa55addd8a0d57203d/?r=wd&p=iy1pb9fYYVoaXMw3XWs65Q",
       "metrics": {
         "interesting": 0.72,
         "like": 0.56,
@@ -993,12 +1031,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.7,
         "brandAttitude": 0.57,
         "intent": 0.4,
-        "brandRecall": 0.21,
-        "productRecall": 0.33,
         "correctFeatures": 0.72,
-        "incorrectFeatures": 0.1
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/e18e5ab20b6263aa55addd8a0d57203d/?r=wd"
+        "incorrectFeatures": 0.1,
+        "brandRecall": 0.21,
+        "productRecall": 0.33
+      }
     },
     {
       "id": 37,
@@ -1008,8 +1045,10 @@ const DASHBOARD_DATA = {
       "product": "Я.Бро",
       "campaign": "Кринж+ИИ VS продакшн",
       "base": 413,
-      "format": "Ролик",
+      "format": "25с",
       "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/2eca7302da5f81db6c192ddc79b57e01/?r=wd&p=7fBlWxRZmpcx7n2F4_nWUw",
       "metrics": {
         "interesting": 0.74,
         "like": 0.6,
@@ -1020,12 +1059,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.74,
         "brandAttitude": 0.6,
         "intent": 0.44,
-        "brandRecall": 0.21,
-        "productRecall": 0.35,
         "correctFeatures": 0.72,
-        "incorrectFeatures": 0.09
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/2eca7302da5f81db6c192ddc79b57e01/?r=wd"
+        "incorrectFeatures": 0.09,
+        "brandRecall": 0.21,
+        "productRecall": 0.35
+      }
     },
     {
       "id": 38,
@@ -1035,8 +1073,10 @@ const DASHBOARD_DATA = {
       "product": "Я.Бро",
       "campaign": "Кринж+ИИ VS продакшн",
       "base": 410,
-      "format": "Ролик",
+      "format": "25с",
       "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/837f37ed7a907f3c74a54cad07fb158c/?r=wd&p=fI_N-dYusk2Xz9ItgrRaEg",
       "metrics": {
         "interesting": 0.77,
         "like": 0.65,
@@ -1047,12 +1087,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.77,
         "brandAttitude": 0.64,
         "intent": 0.46,
-        "brandRecall": 0.27,
-        "productRecall": 0.3,
         "correctFeatures": 0.73,
-        "incorrectFeatures": 0.1
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/837f37ed7a907f3c74a54cad07fb158c/?r=wd"
+        "incorrectFeatures": 0.1,
+        "brandRecall": 0.27,
+        "productRecall": 0.3
+      }
     },
     {
       "id": 39,
@@ -1062,8 +1101,10 @@ const DASHBOARD_DATA = {
       "product": "Я.Бро",
       "campaign": "Кринж+ИИ VS продакшн",
       "base": 424,
-      "format": "Ролик",
+      "format": "28с",
       "productionType": "Продакшн",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/0fee2b044a2afcc85907370ce2bbc4a2/?r=wd&p=xrm0HOqtemgsy4Jz239UDg",
       "metrics": {
         "interesting": 0.75,
         "like": 0.58,
@@ -1074,12 +1115,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.73,
         "brandAttitude": 0.6,
         "intent": 0.43,
-        "brandRecall": 0.2,
-        "productRecall": 0.28,
         "correctFeatures": 0.51,
-        "incorrectFeatures": 0.26
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/0fee2b044a2afcc85907370ce2bbc4a2/?r=wd"
+        "incorrectFeatures": 0.26,
+        "brandRecall": 0.2,
+        "productRecall": 0.28
+      }
     },
     {
       "id": 40,
@@ -1089,8 +1129,10 @@ const DASHBOARD_DATA = {
       "product": "Я.Бро",
       "campaign": "Кринж+ИИ VS продакшн",
       "base": 403,
-      "format": "Ролик",
+      "format": "25с",
       "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/8a2cf058087809451bf250026db5ef32/?r=wd&p=wzPvf5zqAYf2JmrBW0eKwQ",
       "metrics": {
         "interesting": 0.72,
         "like": 0.58,
@@ -1101,12 +1143,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.72,
         "brandAttitude": 0.55,
         "intent": 0.39,
-        "brandRecall": 0.16,
-        "productRecall": 0.23,
         "correctFeatures": 0.44,
-        "incorrectFeatures": 0.28
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/8a2cf058087809451bf250026db5ef32/?r=wd"
+        "incorrectFeatures": 0.28,
+        "brandRecall": 0.16,
+        "productRecall": 0.23
+      }
     },
     {
       "id": 41,
@@ -1116,8 +1157,10 @@ const DASHBOARD_DATA = {
       "product": "ВБ",
       "campaign": "Кринж+ИИ VS продакшн",
       "base": 448,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "30с",
+      "productionType": "Продакшн",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/551c1433728b5e0d2e018fc15ab002ea/?r=wd&p=n4QBf5uJ_3wStGAwhphS8A",
       "metrics": {
         "interesting": 0.74,
         "like": 0.56,
@@ -1128,12 +1171,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.75,
         "brandAttitude": 0.45,
         "intent": 0.39,
-        "brandRecall": 0.72,
-        "productRecall": 0.58,
         "correctFeatures": 0.66,
-        "incorrectFeatures": 0.07
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/551c1433728b5e0d2e018fc15ab002ea/?r=wd"
+        "incorrectFeatures": 0.07,
+        "brandRecall": 0.72,
+        "productRecall": 0.58
+      }
     },
     {
       "id": 42,
@@ -1143,8 +1185,10 @@ const DASHBOARD_DATA = {
       "product": "ГигаЧат",
       "campaign": "Кринж+ИИ VS продакшн",
       "base": 410,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "15с",
+      "productionType": "ИИ",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/c48cde587aa166e23d6169c9b1222186/?r=wd&p=tYz7U0VypQi9zWwfJ6Nrhw",
       "metrics": {
         "interesting": 0.7,
         "like": 0.54,
@@ -1155,12 +1199,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.6,
         "brandAttitude": 0.55,
         "intent": 0.38,
-        "brandRecall": 0.36,
-        "productRecall": 0.29,
         "correctFeatures": 0.29,
-        "incorrectFeatures": 0.11
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/c48cde587aa166e23d6169c9b1222186/?r=wd"
+        "incorrectFeatures": 0.11,
+        "brandRecall": 0.36,
+        "productRecall": 0.29
+      }
     },
     {
       "id": 43,
@@ -1170,8 +1213,10 @@ const DASHBOARD_DATA = {
       "product": "ГигаЧат",
       "campaign": "Кринж+ИИ VS продакшн",
       "base": 417,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "15с",
+      "productionType": "ИИ",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/61311b769554a89f33b158f362e67f09/?r=wd&p=eux_LcfIFEbo3njFkR9E1g",
       "metrics": {
         "interesting": 0.68,
         "like": 0.49,
@@ -1182,12 +1227,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.59,
         "brandAttitude": 0.52,
         "intent": 0.31,
-        "brandRecall": 0.39,
-        "productRecall": 0.48,
         "correctFeatures": 0.51,
-        "incorrectFeatures": 0.14
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/61311b769554a89f33b158f362e67f09/?r=wd"
+        "incorrectFeatures": 0.14,
+        "brandRecall": 0.39,
+        "productRecall": 0.48
+      }
     },
     {
       "id": 44,
@@ -1197,8 +1241,10 @@ const DASHBOARD_DATA = {
       "product": "Островок",
       "campaign": "Кринж+ИИ VS продакшн",
       "base": 455,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "15с",
+      "productionType": "Продакшн",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/91c02180c8e7d6c90a6244a7efbfe5a6/?r=wd&p=dDmim5THkGM4WLE5TwWFCA",
       "metrics": {
         "interesting": 0.62,
         "like": 0.45,
@@ -1209,12 +1255,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.49,
         "brandAttitude": 0.4,
         "intent": 0.27,
-        "brandRecall": 0.81,
-        "productRecall": 0.25,
         "correctFeatures": 0.56,
-        "incorrectFeatures": 0.15
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/55ed0dba4ad21eaae8d2e9b10829a596/?r=wd"
+        "incorrectFeatures": 0.15,
+        "brandRecall": 0.81,
+        "productRecall": 0.25
+      }
     },
     {
       "id": 45,
@@ -1224,8 +1269,10 @@ const DASHBOARD_DATA = {
       "product": "Авиасэйлс",
       "campaign": "Кринж+ИИ VS продакшн",
       "base": 398,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "44с",
+      "productionType": "ИИ",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/55ed0dba4ad21eaae8d2e9b10829a596/?r=wd&p=PipSb386PnpMvFbFZkh-Kg",
       "metrics": {
         "interesting": 0.68,
         "like": 0.54,
@@ -1236,12 +1283,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.61,
         "brandAttitude": 0.48,
         "intent": 0.36,
-        "brandRecall": 0.76,
-        "productRecall": 0.31,
         "correctFeatures": 0.66,
-        "incorrectFeatures": 0.47
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/55ed0dba4ad21eaae8d2e9b10829a596/?r=wd"
+        "incorrectFeatures": 0.47,
+        "brandRecall": 0.76,
+        "productRecall": 0.31
+      }
     },
     {
       "id": 46,
@@ -1251,8 +1297,10 @@ const DASHBOARD_DATA = {
       "product": "Суточно.ру",
       "campaign": "Кринж+ИИ VS продакшн",
       "base": 425,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "15с",
+      "productionType": "Продакшн",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/e495f275d6bebdf187ed01063192cf7f/?r=wd&p=CBteu5hVphfnMTCPDJ7cng",
       "metrics": {
         "interesting": 0.64,
         "like": 0.51,
@@ -1263,12 +1311,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.67,
         "brandAttitude": 0.51,
         "intent": 0.35,
-        "brandRecall": 0.84,
-        "productRecall": 0.21,
         "correctFeatures": 0.76,
-        "incorrectFeatures": 0.12
-      },
-      "rutubeUrl": "https://rutube.ru/video/c48cde587aa166e23d6169c9b1222186/?utm_source=embed&utm_medium=referral&utm_campaign=main_logo&utm_content=c48cde587aa166e23d6169c9b1222186&utm_term=surveys.yandex.ru&t=0&p=tYz7U0VypQi9zWwfJ6Nrhw"
+        "incorrectFeatures": 0.12,
+        "brandRecall": 0.84,
+        "productRecall": 0.21
+      }
     },
     {
       "id": 47,
@@ -1278,8 +1325,10 @@ const DASHBOARD_DATA = {
       "product": "Финансы",
       "campaign": "Выгодный Вклад",
       "base": 244,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "15с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/2479cd54667138c5fbbf7074d2b3f0a9/?p=uotRFjdiI14IXSK-n1Cmcg",
       "metrics": {
         "interesting": 0.76,
         "like": 0.6,
@@ -1290,12 +1339,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.71,
         "brandAttitude": 0.59,
         "intent": 0.37,
-        "brandRecall": 0.84,
-        "productRecall": 0.56,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": null,
+        "brandRecall": 0.84,
+        "productRecall": 0.56
+      }
     },
     {
       "id": 48,
@@ -1305,8 +1353,10 @@ const DASHBOARD_DATA = {
       "product": "Финансы",
       "campaign": "Выгодный Вклад",
       "base": 224,
-      "format": "Ролик + строка",
-      "productionType": "Стандарт",
+      "format": "15с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/c7b9a016517007bffc16a4f09a1f161a/?p=nFteeG1XeASQnuhkfKKWag",
       "metrics": {
         "interesting": 0.73,
         "like": 0.54,
@@ -1317,12 +1367,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.71,
         "brandAttitude": 0.56,
         "intent": 0.33,
-        "brandRecall": 0.89,
-        "productRecall": 0.62,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": null,
+        "brandRecall": 0.89,
+        "productRecall": 0.62
+      }
     },
     {
       "id": 49,
@@ -1332,8 +1381,10 @@ const DASHBOARD_DATA = {
       "product": "Финансы",
       "campaign": "Выгодный Вклад",
       "base": 221,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "15с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/88f39b318b361aa9057d516611005c95/?p=foNAAbuR3Q190NFmvhjQYQ",
       "metrics": {
         "interesting": 0.7,
         "like": 0.55,
@@ -1344,12 +1395,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.72,
         "brandAttitude": 0.55,
         "intent": 0.39,
-        "brandRecall": 0.88,
-        "productRecall": 0.51,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": null,
+        "brandRecall": 0.88,
+        "productRecall": 0.51
+      }
     },
     {
       "id": 50,
@@ -1359,8 +1409,10 @@ const DASHBOARD_DATA = {
       "product": "Финансы",
       "campaign": "Выгодный Вклад",
       "base": 248,
-      "format": "Ролик + строка",
-      "productionType": "Стандарт",
+      "format": "15с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/87f0b3c1060501ea55e369eb90414125/?p=cFhWoQjPlB1Rbm6yJ3n1eg",
       "metrics": {
         "interesting": 0.68,
         "like": 0.52,
@@ -1371,12 +1423,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.71,
         "brandAttitude": 0.52,
         "intent": 0.38,
-        "brandRecall": 0.92,
-        "productRecall": 0.54,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": null,
+        "brandRecall": 0.92,
+        "productRecall": 0.54
+      }
     },
     {
       "id": 51,
@@ -1386,8 +1437,10 @@ const DASHBOARD_DATA = {
       "product": "Финансы",
       "campaign": "Вклад",
       "base": 275,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "15с",
+      "productionType": "ИИ",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/c3cb50acc7411e0e8312f0f905405c7b/?p=FPxUUhCt_Q0h1jv7WybJeg",
       "metrics": {
         "interesting": 0.72,
         "like": 0.55,
@@ -1398,12 +1451,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.73,
         "brandAttitude": 0.52,
         "intent": 0.29,
-        "brandRecall": 0.87,
-        "productRecall": 0.37,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": null,
+        "brandRecall": 0.87,
+        "productRecall": 0.37
+      }
     },
     {
       "id": 52,
@@ -1413,8 +1465,10 @@ const DASHBOARD_DATA = {
       "product": "Финансы",
       "campaign": "Вклад",
       "base": 257,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "20с",
+      "productionType": "ИИ",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/619d2e48ec24d2e2987dc8854b46f6b6/?p=_5S9glHPBqQpljB6VbQk9w",
       "metrics": {
         "interesting": 0.76,
         "like": 0.61,
@@ -1425,12 +1479,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.74,
         "brandAttitude": 0.65,
         "intent": 0.38,
-        "brandRecall": 0.82,
-        "productRecall": 0.61,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": null,
+        "brandRecall": 0.82,
+        "productRecall": 0.61
+      }
     },
     {
       "id": 53,
@@ -1440,8 +1493,10 @@ const DASHBOARD_DATA = {
       "product": "Финансы",
       "campaign": "ОСАГО",
       "base": 310,
-      "format": "Ролик + строка",
-      "productionType": "Стандарт",
+      "format": "15с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/dc5917e1d35f12fff663c2ded9b87353/?p=3TqXvhZTDGCMm99A6WzpkA",
       "metrics": {
         "interesting": 0.76,
         "like": 0.63,
@@ -1452,12 +1507,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.73,
         "brandAttitude": 0.58,
         "intent": 0.43,
-        "brandRecall": 0.8,
-        "productRecall": 0.76,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": null,
+        "brandRecall": 0.8,
+        "productRecall": 0.76
+      }
     },
     {
       "id": 54,
@@ -1467,8 +1521,10 @@ const DASHBOARD_DATA = {
       "product": "Финансы",
       "campaign": "ОСАГО",
       "base": 303,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "15с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/a33f9ed517261bf2f573f2547996461f/?p=bBo_ZRwJ1Olzu1EL3NAiHg",
       "metrics": {
         "interesting": 0.8,
         "like": 0.64,
@@ -1479,12 +1535,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.78,
         "brandAttitude": 0.65,
         "intent": 0.45,
-        "brandRecall": 0.77,
-        "productRecall": 0.74,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": null,
+        "brandRecall": 0.77,
+        "productRecall": 0.74
+      }
     },
     {
       "id": 55,
@@ -1494,8 +1549,10 @@ const DASHBOARD_DATA = {
       "product": "Финансы",
       "campaign": "ОСАГО",
       "base": 304,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "15с",
+      "productionType": "ИИ",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/77f7301b31ecb0d25a79be43c4d5cb63/?p=2vy7cs171oIELTNEK-gIFQ",
       "metrics": {
         "interesting": 0.69,
         "like": 0.6,
@@ -1506,12 +1563,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.73,
         "brandAttitude": 0.59,
         "intent": 0.35,
-        "brandRecall": 0.82,
-        "productRecall": 0.82,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": null,
+        "brandRecall": 0.82,
+        "productRecall": 0.82
+      }
     },
     {
       "id": 56,
@@ -1521,8 +1577,10 @@ const DASHBOARD_DATA = {
       "product": "Финансы",
       "campaign": "ОСАГО",
       "base": 310,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "15с",
+      "productionType": "ИИ",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/62c4442ff05a3f1c8393cc9f61c07eaf/?p=sYOUHZiMMLhtChuqKrLm6g",
       "metrics": {
         "interesting": 0.75,
         "like": 0.59,
@@ -1533,12 +1591,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.75,
         "brandAttitude": 0.64,
         "intent": 0.36,
-        "brandRecall": 0.8,
-        "productRecall": 0.92,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": null,
+        "brandRecall": 0.8,
+        "productRecall": 0.92
+      }
     },
     {
       "id": 57,
@@ -1548,8 +1605,10 @@ const DASHBOARD_DATA = {
       "product": "Финансы",
       "campaign": "ОСАГО",
       "base": 282,
-      "format": "Ролик",
-      "productionType": "Стандарт",
+      "format": "9с",
+      "productionType": "ИИ",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/91d59925803b69663e7201cec68dfaed/?p=JIKXrhnFqZss29tyrXPAfg",
       "metrics": {
         "interesting": 0.76,
         "like": 0.62,
@@ -1560,12 +1619,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.78,
         "brandAttitude": 0.64,
         "intent": 0.44,
-        "brandRecall": 0.72,
-        "productRecall": 0.9,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": null
+        "incorrectFeatures": null,
+        "brandRecall": 0.72,
+        "productRecall": 0.9
+      }
     },
     {
       "id": 58,
@@ -1575,8 +1633,10 @@ const DASHBOARD_DATA = {
       "product": "Алиса AI",
       "campaign": "Запуск 28.10",
       "base": 225,
-      "format": "30 сек",
-      "productionType": "Стандарт",
+      "format": "30с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/09871b274791d0ebe954c8a457f10a4c/?p=hVW8_9EJLLpEtYhsyCQoAg",
       "metrics": {
         "interesting": 0.76,
         "like": 0.59,
@@ -1587,12 +1647,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.75,
         "brandAttitude": 0.62,
         "intent": 0.44,
-        "brandRecall": 0.6,
-        "productRecall": 0.64,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/09871b274791d0ebe954c8a457f10a4c/?p=hVW8_9EJLLpEtYhsyCQoAg"
+        "incorrectFeatures": null,
+        "brandRecall": 0.6,
+        "productRecall": 0.64
+      }
     },
     {
       "id": 59,
@@ -1602,8 +1661,10 @@ const DASHBOARD_DATA = {
       "product": "Алиса AI",
       "campaign": "Запуск 28.10",
       "base": 231,
-      "format": "15 сек",
-      "productionType": "Стандарт",
+      "format": "15с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/565c74638733493c26dd46fa9ba4a13a/?p=ImM-Ou2sVMuc_NbW6T6tfA",
       "metrics": {
         "interesting": 0.71,
         "like": 0.55,
@@ -1614,12 +1675,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.73,
         "brandAttitude": 0.55,
         "intent": 0.41,
-        "brandRecall": 0.68,
-        "productRecall": 0.65,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/565c74638733493c26dd46fa9ba4a13a/?p=ImM-Ou2sVMuc_NbW6T6tfA"
+        "incorrectFeatures": null,
+        "brandRecall": 0.68,
+        "productRecall": 0.65
+      }
     },
     {
       "id": 60,
@@ -1629,8 +1689,10 @@ const DASHBOARD_DATA = {
       "product": "Алиса AI",
       "campaign": "Запуск 28.10",
       "base": 234,
-      "format": "15 сек",
-      "productionType": "Стандарт",
+      "format": "15с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/343266bab24a59b4be87daa106b374be/?p=KJtvIb_tVPX2L78wW5ammA",
       "metrics": {
         "interesting": 0.76,
         "like": 0.67,
@@ -1641,12 +1703,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.79,
         "brandAttitude": 0.65,
         "intent": 0.47,
-        "brandRecall": 0.66,
-        "productRecall": 0.66,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/343266bab24a59b4be87daa106b374be/?p=KJtvIb_tVPX2L78wW5ammA"
+        "incorrectFeatures": null,
+        "brandRecall": 0.66,
+        "productRecall": 0.66
+      }
     },
     {
       "id": 61,
@@ -1656,8 +1717,10 @@ const DASHBOARD_DATA = {
       "product": "Алиса AI",
       "campaign": "Запуск 28.10",
       "base": 231,
-      "format": "15 сек",
-      "productionType": "Стандарт",
+      "format": "15с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/231758b346743a42e0a17371133a1093/?p=TnvsH-MPGh9H6-TKx9SYiA",
       "metrics": {
         "interesting": 0.76,
         "like": 0.58,
@@ -1668,12 +1731,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.71,
         "brandAttitude": 0.61,
         "intent": 0.42,
-        "brandRecall": 0.63,
-        "productRecall": 0.64,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/231758b346743a42e0a17371133a1093/?p=TnvsH-MPGh9H6-TKx9SYiA"
+        "incorrectFeatures": null,
+        "brandRecall": 0.63,
+        "productRecall": 0.64
+      }
     },
     {
       "id": 62,
@@ -1683,8 +1745,10 @@ const DASHBOARD_DATA = {
       "product": "Алиса AI",
       "campaign": "Запуск 28.10",
       "base": 240,
-      "format": "15 сек",
-      "productionType": "Стандарт",
+      "format": "15с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/bbbc0ae3270f9100381c102b0dbd1937/?p=5DXsRCImieQvJEgixqYD_w",
       "metrics": {
         "interesting": 0.77,
         "like": 0.57,
@@ -1695,12 +1759,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.82,
         "brandAttitude": 0.6,
         "intent": 0.45,
-        "brandRecall": 0.62,
-        "productRecall": 0.71,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/bbbc0ae3270f9100381c102b0dbd1937/?p=5DXsRCImieQvJEgixqYD_w"
+        "incorrectFeatures": null,
+        "brandRecall": 0.62,
+        "productRecall": 0.71
+      }
     },
     {
       "id": 63,
@@ -1710,8 +1773,10 @@ const DASHBOARD_DATA = {
       "product": "Chad AI",
       "campaign": "Запуск 28.10",
       "base": 230,
-      "format": "Ролик",
+      "format": "15с",
       "productionType": "ИИ",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/16eae9e9bc2892bc0ee11fdf56772be3/?p=skYDH7uR2tY-kxGGMqnIHg",
       "metrics": {
         "interesting": 0.73,
         "like": 0.53,
@@ -1722,12 +1787,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.61,
         "brandAttitude": 0.55,
         "intent": 0.36,
-        "brandRecall": 0.1,
-        "productRecall": 0.1,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/16eae9e9bc2892bc0ee11fdf56772be3/?p=skYDH7uR2tY-kxGGMqnIHg"
+        "incorrectFeatures": null,
+        "brandRecall": 0.1,
+        "productRecall": 0.1
+      }
     },
     {
       "id": 64,
@@ -1737,8 +1801,10 @@ const DASHBOARD_DATA = {
       "product": "GigaChat",
       "campaign": "Запуск 28.10",
       "base": 233,
-      "format": "20 сек",
-      "productionType": "Стандарт",
+      "format": "20с",
+      "productionType": "Продакшн",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/29fcf2d7a44c615225087c89429efea2/?p=ZI57vYqyXz5sunP9KlagTQ",
       "metrics": {
         "interesting": 0.69,
         "like": 0.52,
@@ -1749,12 +1815,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.61,
         "brandAttitude": 0.53,
         "intent": 0.28,
-        "brandRecall": 0.75,
-        "productRecall": 0.46,
         "correctFeatures": null,
-        "incorrectFeatures": null
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/29fcf2d7a44c615225087c89429efea2/?p=ZI57vYqyXz5sunP9KlagTQ"
+        "incorrectFeatures": null,
+        "brandRecall": 0.75,
+        "productRecall": 0.46
+      }
     },
     {
       "id": 65,
@@ -1764,8 +1829,10 @@ const DASHBOARD_DATA = {
       "product": "Яндекс с Алисой",
       "campaign": "претест с актером",
       "base": 582,
-      "format": "Ролик",
+      "format": "15с",
       "productionType": "Продакшн",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/46ed5890319ee85f29b48394057e5a85/?p=aXnKlYjSe0sKXwlPHWEbxg",
       "metrics": {
         "interesting": 0.71,
         "like": 0.55,
@@ -1776,12 +1843,11 @@ const DASHBOARD_DATA = {
         "brandFit": 0.71,
         "brandAttitude": 0.55,
         "intent": 0.41,
-        "brandRecall": 0.85,
-        "productRecall": 0.23,
         "correctFeatures": 0.26,
-        "incorrectFeatures": 0.74
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/46ed5890319ee85f29b48394057e5a85/?p=aXnKlYjSe0sKXwlPHWEbxg"
+        "incorrectFeatures": 0.74,
+        "brandRecall": 0.85,
+        "productRecall": 0.23
+      }
     },
     {
       "id": 66,
@@ -1791,8 +1857,10 @@ const DASHBOARD_DATA = {
       "product": "Яндекс с Алисой",
       "campaign": "претест с ИИ",
       "base": 582,
-      "format": "Ролик",
+      "format": "20с",
       "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/fc5b06da92c99aaaf9806892945c0927/?p=Aaf6ybwAvq-SndoEr6tgEg",
       "metrics": {
         "interesting": 0.69,
         "like": 0.55,
@@ -1803,54 +1871,1315 @@ const DASHBOARD_DATA = {
         "brandFit": 0.69,
         "brandAttitude": 0.52,
         "intent": 0.35,
-        "brandRecall": 0.8,
-        "productRecall": 0.33,
         "correctFeatures": 0.31,
-        "incorrectFeatures": 0.69
-      },
-      "rutubeUrl": "https://rutube.ru/video/private/fc5b06da92c99aaaf9806892945c0927/?p=Aaf6ybwAvq-SndoEr6tgEg"
+        "incorrectFeatures": 0.69,
+        "brandRecall": 0.8,
+        "productRecall": 0.33
+      }
+    },
+    {
+      "id": 67,
+      "name": "Елка 50 секунд",
+      "task": "MR-4299",
+      "period": "февр.26",
+      "product": "Алиса AI",
+      "campaign": "Елка на Главной",
+      "base": 246,
+      "format": "50с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/981b65c9f1a215ee4c436c7038973f8b/?p=bw4ETF5EGENhALnPvm3j1Q",
+      "metrics": {
+        "interesting": 0.75,
+        "like": 0.61,
+        "clarity": 0.52,
+        "relevance": 0.62,
+        "uniqueness": 0.77,
+        "brandRecognition": 0.48,
+        "brandFit": 0.69,
+        "brandAttitude": 0.59,
+        "intent": 0.4,
+        "correctFeatures": 0.59,
+        "incorrectFeatures": 0.24,
+        "brandRecall": 0.3,
+        "productRecall": 0.34
+      }
+    },
+    {
+      "id": 68,
+      "name": "Елка 20 секунд",
+      "task": "MR-4299",
+      "period": "февр.26",
+      "product": "Алиса AI",
+      "campaign": "Елка на Главной",
+      "base": 237,
+      "format": "20с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/c11b885c274ccefc67c55eaae9adfe69/?p=LTGjjy3FH9zmYvmvI2B2MQ",
+      "metrics": {
+        "interesting": 0.7,
+        "like": 0.56,
+        "clarity": 0.49,
+        "relevance": 0.57,
+        "uniqueness": 0.76,
+        "brandRecognition": 0.43,
+        "brandFit": 0.66,
+        "brandAttitude": 0.59,
+        "intent": 0.38,
+        "correctFeatures": 0.51,
+        "incorrectFeatures": 0.27,
+        "brandRecall": 0.35,
+        "productRecall": 0.38
+      }
+    },
+    {
+      "id": 69,
+      "name": "BTS_01_ПП с Алисой",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "ПП с Алисой",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 289,
+      "format": "20с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/0e2bbf349ffe28fed306f494eaa4c8ab/?p=ohHbh0cCGNNWsJqwW80IXg",
+      "metrics": {
+        "interesting": 0.58,
+        "like": 0.45,
+        "clarity": 0.58,
+        "relevance": 0.58,
+        "uniqueness": 0.68,
+        "brandRecognition": 0.46,
+        "brandFit": 0.54,
+        "brandAttitude": 0.47,
+        "intent": 0.29,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 70,
+      "name": "BTS_02_ПП с Алисой",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "ПП с Алисой",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 279,
+      "format": "25с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/40b167d8dd4dd74e5f47a3dac7662fe1/?p=wHm0F03Tb81N_nUWJGB83Q",
+      "metrics": {
+        "interesting": 0.66,
+        "like": 0.48,
+        "clarity": 0.65,
+        "relevance": 0.59,
+        "uniqueness": 0.75,
+        "brandRecognition": 0.45,
+        "brandFit": 0.61,
+        "brandAttitude": 0.48,
+        "intent": 0.37,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 71,
+      "name": "BTS_03_Домашка на отлично в Бро с Алисой",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Яндекс Браузер с Алисой",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 278,
+      "format": "25с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/48f7c2ac13adfd64731efe4198773432/?p=u_Y4J6aWmBPDFs5pcXgV4w",
+      "metrics": {
+        "interesting": 0.61,
+        "like": 0.46,
+        "clarity": 0.6,
+        "relevance": 0.49,
+        "uniqueness": 0.66,
+        "brandRecognition": 0.45,
+        "brandFit": 0.57,
+        "brandAttitude": 0.49,
+        "intent": 0.28,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 72,
+      "name": "BTS_04_Домашка на отлично в Бро с Алисой",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Яндекс Браузер с Алисой",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 277,
+      "format": "27с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/5534e2881c5c92b0bdb8ed7771400e3a/?p=fUmh2vybrQtFICCz_33c3w",
+      "metrics": {
+        "interesting": 0.51,
+        "like": 0.33,
+        "clarity": 0.57,
+        "relevance": 0.42,
+        "uniqueness": 0.66,
+        "brandRecognition": 0.4,
+        "brandFit": 0.46,
+        "brandAttitude": 0.37,
+        "intent": 0.24,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 73,
+      "name": "Алиса AI в Бро реально помогает! (помощница)",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Яндекс Браузер с Алисой",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 284,
+      "format": "15с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/ca81221d6a714ca01dc83f927df4d0e1/?p=Pm3A21qZ8imM0T7x7cPauQ",
+      "metrics": {
+        "interesting": 0.75,
+        "like": 0.62,
+        "clarity": 0.63,
+        "relevance": 0.65,
+        "uniqueness": 0.7,
+        "brandRecognition": 0.54,
+        "brandFit": 0.75,
+        "brandAttitude": 0.57,
+        "intent": 0.42,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 74,
+      "name": "Алиса_оживление фото в приложении_15 сек",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Алиса AI",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 285,
+      "format": "15с",
+      "productionType": "Продакшн",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/193cdb1cf24e84899ca5d9e300170037/?p=5CUtAgwaqcdxgl1LIM_1Gw",
+      "metrics": {
+        "interesting": 0.8,
+        "like": 0.67,
+        "clarity": 0.76,
+        "relevance": 0.73,
+        "uniqueness": 0.71,
+        "brandRecognition": 0.52,
+        "brandFit": 0.79,
+        "brandAttitude": 0.67,
+        "intent": 0.45,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 75,
+      "name": "Метапоиск_Бро",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Яндекс Браузер с Алисой",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 277,
+      "format": "20с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/f1fbaf1dee1a971cd74ebc9009ac37d9/?p=Nd_IZkNyjX2tpFq5cto9aQ",
+      "metrics": {
+        "interesting": 0.71,
+        "like": 0.53,
+        "clarity": 0.6,
+        "relevance": 0.7,
+        "uniqueness": 0.61,
+        "brandRecognition": 0.48,
+        "brandFit": 0.7,
+        "brandAttitude": 0.56,
+        "intent": 0.39,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 76,
+      "name": "Метапоиск_ПП",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "ПП с Алисой",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 278,
+      "format": "30с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/001f2b8eccc09814c4bfe05947681298/?p=0eXIprRU3Ej6GfougwvUYQ",
+      "metrics": {
+        "interesting": 0.76,
+        "like": 0.56,
+        "clarity": 0.62,
+        "relevance": 0.68,
+        "uniqueness": 0.63,
+        "brandRecognition": 0.5,
+        "brandFit": 0.68,
+        "brandAttitude": 0.53,
+        "intent": 0.34,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 77,
+      "name": "Новая Алиса AI_60 сек",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Алиса AI",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 278,
+      "format": "62с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/63529d401c2d44b8ee43ea6cf013b923/?p=stEHuffIcrML6Vj6T0_KKQ",
+      "metrics": {
+        "interesting": 0.8,
+        "like": 0.67,
+        "clarity": 0.75,
+        "relevance": 0.73,
+        "uniqueness": 0.67,
+        "brandRecognition": 0.52,
+        "brandFit": 0.79,
+        "brandAttitude": 0.57,
+        "intent": 0.42,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 78,
+      "name": "Новая Алиса AI_память_40 сек",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Алиса AI",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 278,
+      "format": "38с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/4e2cc15df7aad52033cdec64e0911b41/?p=1SM2lKRoPzsQ5Oh4XXkIiw",
+      "metrics": {
+        "interesting": 0.81,
+        "like": 0.68,
+        "clarity": 0.77,
+        "relevance": 0.74,
+        "uniqueness": 0.6,
+        "brandRecognition": 0.61,
+        "brandFit": 0.8,
+        "brandAttitude": 0.64,
+        "intent": 0.44,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 79,
+      "name": "Яндекс Браузер с Алисой AI_ИИ креатив",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Яндекс Браузер с Алисой",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 297,
+      "format": "30с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/aa03ad37797a7742b6de21fc3af12000/?p=SfqlbIk31-M_hnC31PuHPw",
+      "metrics": {
+        "interesting": 0.72,
+        "like": 0.54,
+        "clarity": 0.52,
+        "relevance": 0.66,
+        "uniqueness": 0.7,
+        "brandRecognition": 0.43,
+        "brandFit": 0.63,
+        "brandAttitude": 0.47,
+        "intent": 0.33,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 80,
+      "name": "Яндекс Браузер с Алисой AI_как школьнику_20 сек",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Яндекс Браузер с Алисой",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 284,
+      "format": "20с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/a6cd0ea1a11e96d4feafcba7ff9a8c01/?p=E5Jgk7ZLAEabONJIdc__jA",
+      "metrics": {
+        "interesting": 0.71,
+        "like": 0.58,
+        "clarity": 0.68,
+        "relevance": 0.67,
+        "uniqueness": 0.56,
+        "brandRecognition": 0.54,
+        "brandFit": 0.75,
+        "brandAttitude": 0.55,
+        "intent": 0.35,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 81,
+      "name": "Яндекс Браузер с Алисой AI_на каждой странице_20 сек",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Яндекс Браузер с Алисой",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 279,
+      "format": "20с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/cacd6d52d8723cf5d1a3d75fb29bd9fa/?p=yTVe6zX1hHFyn4tieR3Ixw",
+      "metrics": {
+        "interesting": 0.71,
+        "like": 0.57,
+        "clarity": 0.67,
+        "relevance": 0.69,
+        "uniqueness": 0.65,
+        "brandRecognition": 0.59,
+        "brandFit": 0.77,
+        "brandAttitude": 0.59,
+        "intent": 0.4,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 82,
+      "name": "Яндекс Браузер с Алисой AI_НТП",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Яндекс Браузер с Алисой",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 271,
+      "format": "20с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/31cea83559c26a35dc938566fabc4073/?p=J9qQG8rpE3eG0D8J1wHzmw",
+      "metrics": {
+        "interesting": 0.76,
+        "like": 0.65,
+        "clarity": 0.66,
+        "relevance": 0.65,
+        "uniqueness": 0.65,
+        "brandRecognition": 0.58,
+        "brandFit": 0.77,
+        "brandAttitude": 0.58,
+        "intent": 0.38,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 83,
+      "name": "Яндекс Браузер с Алисой AI_НТП_десктоп",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Яндекс Браузер с Алисой",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 152,
+      "format": "10с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/69f82e33f3ed594115c1821324d9f55e/?p=gK56FgenCXtC8_LUeRmjCw",
+      "metrics": {
+        "interesting": 0.7,
+        "like": 0.49,
+        "clarity": 0.62,
+        "relevance": 0.69,
+        "uniqueness": 0.64,
+        "brandRecognition": 0.64,
+        "brandFit": 0.78,
+        "brandAttitude": 0.58,
+        "intent": 0.41,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 84,
+      "name": "Яндекс Браузер с Алисой AI_пересказ_20 сек",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Яндекс Браузер с Алисой",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 280,
+      "format": "20с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/4ad5f6fdc73ef3f89f456f33c4d17131/?p=nld17y1yX-r5Xa2BKBDxqQ",
+      "metrics": {
+        "interesting": 0.74,
+        "like": 0.59,
+        "clarity": 0.69,
+        "relevance": 0.7,
+        "uniqueness": 0.61,
+        "brandRecognition": 0.59,
+        "brandFit": 0.76,
+        "brandAttitude": 0.59,
+        "intent": 0.4,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 85,
+      "name": "Яндекс Браузер с Алисой AI_сплитвью_30 сек",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Яндекс Браузер с Алисой",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 276,
+      "format": "30с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/aabf6f6829acc4f8b2ec353ae58feb7b/?p=PfUGbdXtiVRDLE3kh_8B3g",
+      "metrics": {
+        "interesting": 0.67,
+        "like": 0.51,
+        "clarity": 0.65,
+        "relevance": 0.64,
+        "uniqueness": 0.58,
+        "brandRecognition": 0.54,
+        "brandFit": 0.75,
+        "brandAttitude": 0.51,
+        "intent": 0.38,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 86,
+      "name": "Яндекс Браузер с нейросетями (роверы)",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Яндекс Браузер с Алисой",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 267,
+      "format": "40с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/21104cc6a0dbfb98dbb59293f385d776/?p=dMr93-9vspjoHYePlHy0Tg",
+      "metrics": {
+        "interesting": 0.67,
+        "like": 0.51,
+        "clarity": 0.6,
+        "relevance": 0.58,
+        "uniqueness": 0.62,
+        "brandRecognition": 0.51,
+        "brandFit": 0.66,
+        "brandAttitude": 0.47,
+        "intent": 0.34,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 87,
+      "name": "Яндекс Браузер с нейросетями и выгодными покупками",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Яндекс Браузер с Алисой",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 280,
+      "format": "10с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/488b9d0c073ad66af82edabc35a6d84f/?p=53o_XV2Xkeju1LjsZex72Q",
+      "metrics": {
+        "interesting": 0.67,
+        "like": 0.53,
+        "clarity": 0.63,
+        "relevance": 0.68,
+        "uniqueness": 0.52,
+        "brandRecognition": 0.49,
+        "brandFit": 0.7,
+        "brandAttitude": 0.51,
+        "intent": 0.31,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 88,
+      "name": "забронировать столик в бро_30 сек",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Яндекс Браузер с Алисой",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 283,
+      "format": "30с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/a100e814d35e46220b44197309c0f228/?p=YKm13p1qXAvdQ0Mkfk904w",
+      "metrics": {
+        "interesting": 0.71,
+        "like": 0.56,
+        "clarity": 0.7,
+        "relevance": 0.64,
+        "uniqueness": 0.58,
+        "brandRecognition": 0.5,
+        "brandFit": 0.77,
+        "brandAttitude": 0.57,
+        "intent": 0.38,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 89,
+      "name": "записаться в барбершоп_30 сек",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Яндекс Браузер с Алисой",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 279,
+      "format": "30с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/20d81377729b7bd635ce1b545de678f3/?p=gYc4mWCrxnikFPLzJFi8Gw",
+      "metrics": {
+        "interesting": 0.75,
+        "like": 0.6,
+        "clarity": 0.66,
+        "relevance": 0.64,
+        "uniqueness": 0.61,
+        "brandRecognition": 0.58,
+        "brandFit": 0.81,
+        "brandAttitude": 0.59,
+        "intent": 0.42,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 90,
+      "name": "записаться на ноготочки_30 сек",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Яндекс Браузер с Алисой",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 276,
+      "format": "30с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/217f3b6b2ac78960ba3f12b900094836/?p=I_VQ0H9uaXpfAqS8bVGfUQ",
+      "metrics": {
+        "interesting": 0.74,
+        "like": 0.55,
+        "clarity": 0.64,
+        "relevance": 0.67,
+        "uniqueness": 0.6,
+        "brandRecognition": 0.48,
+        "brandFit": 0.73,
+        "brandAttitude": 0.54,
+        "intent": 0.34,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 91,
+      "name": "найти дешевле в бро_30 сек",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Яндекс Браузер с Алисой",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 283,
+      "format": "30с",
+      "productionType": "ИИ",
+      "competitorType": "Яндекс",
+      "rutubeUrl": "https://rutube.ru/video/private/fcf26021e86aa4e81a2004356c64b385/?p=ENqgjY2iiWmN489WMYp_RQ",
+      "metrics": {
+        "interesting": 0.76,
+        "like": 0.56,
+        "clarity": 0.71,
+        "relevance": 0.74,
+        "uniqueness": 0.61,
+        "brandRecognition": 0.57,
+        "brandFit": 0.8,
+        "brandAttitude": 0.6,
+        "intent": 0.42,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 92,
+      "name": "13 Apple Intelligence Clean Up Photos Cat _ iPhone 16",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Apple",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 286,
+      "format": "65с",
+      "productionType": "Продакшн",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/1fd2f8b977342ea9b30e7013a1d90ae0/?p=sAKMA3T1dQ_7aZhB7uAtgQ",
+      "metrics": {
+        "interesting": 0.68,
+        "like": 0.54,
+        "clarity": 0.55,
+        "relevance": 0.57,
+        "uniqueness": 0.67,
+        "brandRecognition": 0.38,
+        "brandFit": 0.53,
+        "brandAttitude": 0.45,
+        "intent": 0.31,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 93,
+      "name": "Apple Intelligence _ More personal Siri",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Apple",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 281,
+      "format": "33с",
+      "productionType": "Продакшн",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/9e0b8b47df24585ee931497a841efa58/?p=PBtMhaffYiBj1b4bEbIsBQ",
+      "metrics": {
+        "interesting": 0.59,
+        "like": 0.43,
+        "clarity": 0.48,
+        "relevance": 0.46,
+        "uniqueness": 0.56,
+        "brandRecognition": 0.39,
+        "brandFit": 0.56,
+        "brandAttitude": 0.41,
+        "intent": 0.25,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 94,
+      "name": "ChatGPT _ The Intelligence Age",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "ChatGPT",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 279,
+      "format": "60с",
+      "productionType": "ИИ",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/596785b528144c5e52a5acf1f76c3ab8/?p=Km-ROE0Dnm8n13a7V78JFQ",
+      "metrics": {
+        "interesting": 0.71,
+        "like": 0.56,
+        "clarity": 0.43,
+        "relevance": 0.52,
+        "uniqueness": 0.76,
+        "brandRecognition": 0.27,
+        "brandFit": 0.51,
+        "brandAttitude": 0.4,
+        "intent": 0.28,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 95,
+      "name": "Dish with ChatGPT",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "ChatGPT",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 273,
+      "format": "30с",
+      "productionType": "Продакшн",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/fa4e680cf855f24390481f2044f77171/?p=r6DVLDR8oGHEWCzKFya0EA",
+      "metrics": {
+        "interesting": 0.58,
+        "like": 0.4,
+        "clarity": 0.33,
+        "relevance": 0.45,
+        "uniqueness": 0.58,
+        "brandRecognition": 0.25,
+        "brandFit": 0.43,
+        "brandAttitude": 0.38,
+        "intent": 0.27,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 96,
+      "name": "Road Trip with_ChatGPT",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "ChatGPT",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 261,
+      "format": "30с",
+      "productionType": "Продакшн",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/f4998299aab969a1d26dcfc6dcd71ebe/?p=eHILzhV_qf0f5QdHFdBIGg",
+      "metrics": {
+        "interesting": 0.54,
+        "like": 0.39,
+        "clarity": 0.36,
+        "relevance": 0.4,
+        "uniqueness": 0.53,
+        "brandRecognition": 0.26,
+        "brandFit": 0.39,
+        "brandAttitude": 0.38,
+        "intent": 0.25,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 97,
+      "name": "1 Keep thinking with Claude",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Claude",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 276,
+      "format": "90с",
+      "productionType": "Продакшн",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/c4b20e6d5f72b03e0ffed0597dd2afe2/?p=K-l8PASuLUHnZ308H4SndA",
+      "metrics": {
+        "interesting": 0.66,
+        "like": 0.51,
+        "clarity": 0.39,
+        "relevance": 0.52,
+        "uniqueness": 0.73,
+        "brandRecognition": 0.24,
+        "brandFit": 0.39,
+        "brandAttitude": 0.44,
+        "intent": 0.25,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 98,
+      "name": "2 Dream_Job_Google_Pixel",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Gemini",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 268,
+      "format": "125с",
+      "productionType": "Продакшн",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/f316e2b2b96cd553ff36fbadab2452d9/?p=N73XwAeuh6JBMcaPVMdwlQ",
+      "metrics": {
+        "interesting": 0.67,
+        "like": 0.51,
+        "clarity": 0.46,
+        "relevance": 0.53,
+        "uniqueness": 0.66,
+        "brandRecognition": 0.25,
+        "brandFit": 0.4,
+        "brandAttitude": 0.46,
+        "intent": 0.26,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 99,
+      "name": "4 Google Pixel 9 With Gemini Live _ Dirty Dishes",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Gemini",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 282,
+      "format": "41с",
+      "productionType": "Продакшн",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/d7b29acbae254a871d9458065cca4d79/?p=2u1FzchMfQa6Mds6zAaxbA",
+      "metrics": {
+        "interesting": 0.65,
+        "like": 0.49,
+        "clarity": 0.5,
+        "relevance": 0.49,
+        "uniqueness": 0.63,
+        "brandRecognition": 0.29,
+        "brandFit": 0.44,
+        "brandAttitude": 0.43,
+        "intent": 0.24,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 100,
+      "name": "5 Make Everyday Easier With Gemini",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Gemini",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 275,
+      "format": "56с",
+      "productionType": "ИИ",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/bfd56921264919e547a45541f90dae17/?p=W3jwXbc8Yafh_Zfqo5r-ng",
+      "metrics": {
+        "interesting": 0.71,
+        "like": 0.54,
+        "clarity": 0.54,
+        "relevance": 0.6,
+        "uniqueness": 0.64,
+        "brandRecognition": 0.32,
+        "brandFit": 0.57,
+        "brandAttitude": 0.49,
+        "intent": 0.37,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 101,
+      "name": "Google Pixel 9 Gemini Live Talk About Anything",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Gemini",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 285,
+      "format": "15с",
+      "productionType": "Продакшн",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/7384675d9c09eaeec0c65654b0b5830d/?p=c17dI0BPCsqSSZT18tmr7Q",
+      "metrics": {
+        "interesting": 0.56,
+        "like": 0.41,
+        "clarity": 0.41,
+        "relevance": 0.47,
+        "uniqueness": 0.49,
+        "brandRecognition": 0.24,
+        "brandFit": 0.4,
+        "brandAttitude": 0.39,
+        "intent": 0.21,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 102,
+      "name": "10 Microsoft Copilot_ Your everyday AI companion",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Microsoft Copilot",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 279,
+      "format": "45с",
+      "productionType": "ИИ",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/3c3b17dadd36f4342117f70c11bac267/?p=XZUIdeKNV8w5AbFfysaigA",
+      "metrics": {
+        "interesting": 0.64,
+        "like": 0.51,
+        "clarity": 0.33,
+        "relevance": 0.4,
+        "uniqueness": 0.59,
+        "brandRecognition": 0.25,
+        "brandFit": 0.44,
+        "brandAttitude": 0.39,
+        "intent": 0.24,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 103,
+      "name": "Microsoft Copilot TV Spot, 'Five Minute Presentation",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Microsoft Copilot",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 281,
+      "format": "30с",
+      "productionType": "Продакшн",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/7f5c459626082ed312509c4fb1602df8/?p=6HAj6u3VOt-cDI-0Vm1NOw",
+      "metrics": {
+        "interesting": 0.65,
+        "like": 0.53,
+        "clarity": 0.4,
+        "relevance": 0.45,
+        "uniqueness": 0.58,
+        "brandRecognition": 0.29,
+        "brandFit": 0.53,
+        "brandAttitude": 0.45,
+        "intent": 0.29,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 104,
+      "name": "7 Perplexity Questions _ Lee Jung-jae",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Perplexity",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 284,
+      "format": "60с",
+      "productionType": "Продакшн",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/1aa02413bcfad2ac5faec1c2868cdd0d/?p=FFEgV2U_gLOfMib9KrNHnA",
+      "metrics": {
+        "interesting": 0.79,
+        "like": 0.63,
+        "clarity": 0.57,
+        "relevance": 0.62,
+        "uniqueness": 0.69,
+        "brandRecognition": 0.19,
+        "brandFit": 0.43,
+        "brandAttitude": 0.49,
+        "intent": 0.3,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 105,
+      "name": "8 Perplexity – “The Garage”",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Perplexity",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 266,
+      "format": "121с",
+      "productionType": "Продакшн",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/823cfa59a65e8bf847d5cac2a042b954/?p=qdq6-8OV_WYl564lREfGkw",
+      "metrics": {
+        "interesting": 0.5,
+        "like": 0.33,
+        "clarity": 0.29,
+        "relevance": 0.33,
+        "uniqueness": 0.66,
+        "brandRecognition": 0.17,
+        "brandFit": 0.26,
+        "brandAttitude": 0.29,
+        "intent": 0.17,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 106,
+      "name": "9 Introducing Comet Browse at the Speed of Thought",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Comet",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 272,
+      "format": "72с",
+      "productionType": "Продакшн",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/a6a0ca560eefa5eec510dc2e03f14f07/?p=2W0aQIUEq4kiBJ9Ta5r7uQ",
+      "metrics": {
+        "interesting": 0.49,
+        "like": 0.37,
+        "clarity": 0.32,
+        "relevance": 0.43,
+        "uniqueness": 0.57,
+        "brandRecognition": 0.18,
+        "brandFit": 0.29,
+        "brandAttitude": 0.35,
+        "intent": 0.21,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 107,
+      "name": "Betrayal_Claude",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Claude",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 274,
+      "format": "60с",
+      "productionType": "Продакшн",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/70775432380a9c2e4e35a668c422fdb0/?p=TfCvs_q4o6lZSc0upf5IOw",
+      "metrics": {
+        "interesting": 0.59,
+        "like": 0.41,
+        "clarity": 0.46,
+        "relevance": 0.31,
+        "uniqueness": 0.61,
+        "brandRecognition": 0.21,
+        "brandFit": 0.32,
+        "brandAttitude": 0.34,
+        "intent": 0.15,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 108,
+      "name": "Deception_Claude",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Claude",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 282,
+      "format": "60с",
+      "productionType": "Продакшн",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/df0c098797876fb01b245cbec9bf03ea/?p=rurMED5_XVTuNQyldFf5sw",
+      "metrics": {
+        "interesting": 0.57,
+        "like": 0.38,
+        "clarity": 0.39,
+        "relevance": 0.38,
+        "uniqueness": 0.63,
+        "brandRecognition": 0.18,
+        "brandFit": 0.34,
+        "brandAttitude": 0.36,
+        "intent": 0.18,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 109,
+      "name": "Treachery_Claude",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Claude",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 275,
+      "format": "60с",
+      "productionType": "Продакшн",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/7785a7963f8871fdc174855b35c48d4c/?p=O7BxZIwF3HED5BjAgREL-w",
+      "metrics": {
+        "interesting": 0.63,
+        "like": 0.45,
+        "clarity": 0.35,
+        "relevance": 0.47,
+        "uniqueness": 0.65,
+        "brandRecognition": 0.2,
+        "brandFit": 0.37,
+        "brandAttitude": 0.44,
+        "intent": 0.24,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 110,
+      "name": "Violation_Claude",
+      "task": "MR-4336",
+      "period": "февр.26",
+      "product": "Claude",
+      "campaign": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "base": 273,
+      "format": "60с",
+      "productionType": "Продакшн",
+      "competitorType": "Конкуренты",
+      "rutubeUrl": "https://rutube.ru/video/private/10b548682c0e5883c9ab6d343155c59d/?p=Bwv7vRTDpkrnx3ktF30dVA",
+      "metrics": {
+        "interesting": 0.64,
+        "like": 0.48,
+        "clarity": 0.37,
+        "relevance": 0.5,
+        "uniqueness": 0.7,
+        "brandRecognition": 0.21,
+        "brandFit": 0.37,
+        "brandAttitude": 0.41,
+        "intent": 0.22,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": null
+      }
+    },
+    {
+      "id": 111,
+      "name": "60с",
+      "task": "февр.26",
+      "period": "Claude",
+      "product": "Поиск, Браузер, Алиса и конкуренты сравнению эффективности креативов 02.2026",
+      "campaign": "",
+      "base": 0,
+      "format": "Продакшн",
+      "productionType": "Конкуренты",
+      "competitorType": "0.64",
+      "rutubeUrl": null,
+      "metrics": {
+        "interesting": 0.48,
+        "like": 0.16,
+        "clarity": 0.5,
+        "relevance": 0.7,
+        "uniqueness": 0.21,
+        "brandRecognition": 0.08,
+        "brandFit": 0.41,
+        "brandAttitude": 0.22,
+        "intent": null,
+        "correctFeatures": null,
+        "incorrectFeatures": null,
+        "brandRecall": null,
+        "productRecall": 0.42
+      }
     }
   ],
-  "averages": {
-    "interesting": 0.7156547885,
-    "like": 0.5591538132,
-    "clarity": 0.6322579105,
-    "relevance": 0.6664027678,
-    "uniqueness": 0.6089181249,
-    "brandRecognition": 0.4745601536,
-    "brandFit": 0.6867441752,
-    "brandAttitude": 0.5581499326,
-    "intent": 0.3938185965,
-    "brandRecall": 0.7099308872,
-    "productRecall": 0.5701459166,
-    "correctFeatures": 0.5443428401,
-    "incorrectFeatures": 0.2369676304
-  },
   "periods": [
-    "янв.21",
-    "фев.24",
-    "окт.24",
-    "фев.25",
-    "май.25",
-    "июн.25",
-    "июл.25",
+    "Claude",
     "авг.25",
+    "июл.25",
+    "июн.25",
+    "май.25",
+    "нояб.25",
+    "окт.24",
     "окт.25",
-    "нояб.25"
+    "февр.24",
+    "февр.25",
+    "февр.26",
+    "янв.21"
   ],
   "metricLabels": {
-    "interesting": "Интересно (топ-2)",
+    "interesting": "Интересно ли было смотреть ролик (топ-2)",
     "like": "Нравится (топ-2)",
-    "clarity": "Понятность (топ-1)",
+    "clarity": "Понятность идеи (топ-1)",
     "relevance": "Актуальность (топ-2)",
     "uniqueness": "Уникальность (топ-2)",
-    "brandRecognition": "Узнаваемость бренда (топ-2)",
-    "brandFit": "Соответствие бренду (топ-2)",
-    "brandAttitude": "Отношение к бренду ↑ (топ-2)",
-    "intent": "Захотелось воспользоваться (топ-1)",
-    "brandRecall": "Верно назвали бренд",
-    "productRecall": "Верно назвали продукт",
-    "correctFeatures": "Функции — правильный ответ",
-    "incorrectFeatures": "Функции — НЕправильный ответ"
+    "brandRecognition": "Узнаваемость бренда в ролике (топ-2)",
+    "brandFit": "Соответствует представлению о бренде (топ-2)",
+    "brandAttitude": "Отношение к бренду после ролика улучшилось (топ-2)",
+    "intent": "Захотелось приобрести / воспользоваться (топ-1)",
+    "correctFeatures": "Возможности/функции правильный ответ",
+    "incorrectFeatures": "Возможности/функции НЕправильный ответ",
+    "brandRecall": "Верно назвали бренд (открытый вопрос)",
+    "productRecall": "Верно назвали продукт / фичу (открытый вопрос)"
+  },
+  "metricQuestions": {
+    "interesting": "Интересно ли было смотреть этот ролик? (от 1 до 5)",
+    "like": "В целом, понравился ли вам этот ролик? (от 1 до 7)",
+    "clarity": "Насколько ролик понятен и прост для понимания? (от 1 до 5)",
+    "relevance": "Насколько то, что рассказывается в этой рекламе, актуально и близко для вас? (от 1 до 5)",
+    "uniqueness": "Насколько эта реклама отличается от другой рекламы, которую вы видите по ТВ и в интернете? (от 1 до 5)",
+    "brandRecognition": "\"Я бы понял(а), что этот ролик про ХХХ, даже если бы это название не упоминали в ролике\" (от 1 до 7)",
+    "brandFit": "Насколько такая реклама соответствует вашему представлению об этом бренде? (от 1 до 5)",
+    "brandAttitude": "Как изменилось ваше отношение к ХХХ после просмотра этого ролика?",
+    "intent": "Если бы вы увидели такую рекламу по ТВ или в интернете, захотелось бы вам воспользоваться ХХХ?",
+    "correctFeatures": "Какие функции или возможности рекламировались в этом ролике? (список ответов: правильные ответы + неправильные, но что пользователь потенциально мог считать из рекламы)",
+    "incorrectFeatures": "Какие функции или возможности рекламировались в этом ролике? (список ответов: правильные ответы + неправильные, но что пользователь потенциально мог считать из рекламы)",
+    "brandRecall": "Какой бренд рекламировался в этой рекламе? (открытый вопрос,правильные и близкие к правильным ответы, например, для Я.Бро - Яндекс, Браузер, Поиск Яндекса и т.д.)",
+    "productRecall": "А какой именно продукт или его возможность? (открытый вопрос)"
   }
 };
