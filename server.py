@@ -20,12 +20,32 @@ DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 ENV_PATH = os.path.join(DIRECTORY, ".env")
 DATA_JS_PATH = os.path.join(DIRECTORY, "data.js")
 
-LLM_API_URL = "REDACTED_LLM_API_URL"
 LLM_MODEL = "google/gemini-2.5-pro"
-
-SHEET_ID = "REDACTED_SHEET_ID"
 SHEET_NAME = "Ролики, аниматики (техническая)"
-KEY_FILE = os.path.join(DIRECTORY, "REDACTED_KEY_FILE.json")
+
+
+def load_env():
+    """Parse .env file and return dict of key=value pairs."""
+    env = {}
+    if not os.path.exists(ENV_PATH):
+        return env
+    with open(ENV_PATH, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            env[key.strip()] = value.strip().strip("'\"")
+    return env
+
+
+ENV = load_env()
+
+# Sensitive config — loaded from .env
+LLM_API_URL = ENV.get("LLM_API_URL", "")
+SHEET_ID    = ENV.get("SHEET_ID", "")
+_key_file   = ENV.get("KEY_FILE", "")
+KEY_FILE    = os.path.join(DIRECTORY, _key_file) if _key_file else ""
 
 MONTHS_RU = ["янв", "февр", "март", "апр", "май", "июн",
              "июл", "авг", "сент", "окт", "нояб", "дек"]
@@ -235,21 +255,6 @@ def fetch_and_write_data_js():
         return False
 
 
-def load_env():
-    """Parse .env file and return dict of key=value pairs."""
-    env = {}
-    if not os.path.exists(ENV_PATH):
-        return env
-    with open(ENV_PATH, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            key, _, value = line.partition("=")
-            env[key.strip()] = value.strip().strip("'\"")
-    return env
-
-
 def load_data_context():
     """Load data.js and build a compact context string for the LLM system prompt."""
     if not os.path.exists(DATA_JS_PATH):
@@ -352,7 +357,6 @@ def get_local_ip():
 
 # Pre-load context at startup
 SYSTEM_PROMPT = load_data_context()
-ENV = load_env()
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
