@@ -124,6 +124,9 @@ def fetch_and_write_data_js():
             row = rows[ri] if ri < len(rows) else []
             return str(row[2]).strip() if len(row) > 2 else ""
 
+        # Values that belong in productionType but may appear in the format column due to data entry errors
+        PRODUCTION_TYPE_KEYWORDS = {"продакшн", "ии", "и.и.", "стандарт"}
+
         total_cols = len(rows[0])
         creatives = []
         for ci in range(DATA_COL_START, total_cols):
@@ -139,6 +142,13 @@ def fetch_and_write_data_js():
                 base = 0
             link = txt(ROW_LINK, ci) or None
 
+            fmt_val = txt(ROW_DURATION, ci)
+            prod_val = txt(ROW_PRODUCTION, ci)
+            if fmt_val.lower() in PRODUCTION_TYPE_KEYWORDS:
+                if not prod_val:
+                    prod_val = fmt_val
+                fmt_val = ""
+
             creatives.append({
                 "id":             ci - DATA_COL_START,
                 "name":           name,
@@ -147,8 +157,8 @@ def fetch_and_write_data_js():
                 "product":        txt(ROW_PRODUCT, ci),
                 "campaign":       txt(ROW_CAMPAIGN, ci),
                 "base":           base,
-                "format":         txt(ROW_DURATION, ci),
-                "productionType": txt(ROW_PRODUCTION, ci),
+                "format":         fmt_val,
+                "productionType": prod_val,
                 "competitorType": txt(ROW_COMPETITOR, ci),
                 "rutubeUrl":      link,
                 "metrics": {

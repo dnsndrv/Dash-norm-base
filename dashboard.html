@@ -238,6 +238,7 @@
     <div class="filter-group"><label>Период:</label><select id="filterPeriod"><option value="">Все</option></select></div>
     <div class="filter-group"><label>Формат:</label><select id="filterFormat"><option value="">Все</option></select></div>
     <div class="filter-group"><label>Таск:</label><select id="filterTask"><option value="">Все</option></select></div>
+    <div class="filter-group" id="filterCompetitorGroup" style="display:none"><label>Тип:</label><select id="filterCompetitor"><option value="">Яндекс + конк.</option></select></div>
     <span class="filter-count" id="filterCount"></span>
   </div>
 </div>
@@ -246,11 +247,6 @@
 
 <!-- ======================== SCREEN 1: ОБЗОР ======================== -->
 <div class="screen active" id="screen1">
-
-<div class="section">
-  <div class="section-title">Средние значения по всем креативам</div>
-  <div class="grid-5" id="kpiRow"></div>
-</div>
 
 <div class="section">
   <div class="section-title">Сравнение креативов</div>
@@ -338,6 +334,10 @@
     <div class="card"><div class="card-title">Узнаваемость бренда по продуктам</div><div class="chart-wrap"><canvas id="chartBrandRecog"></canvas></div></div>
   </div>
   <div class="card" style="margin-bottom:20px">
+    <div class="card-title">Соответствие бренду и Отношение к бренду по продуктам</div>
+    <div class="chart-wrap"><canvas id="chartBrandAttrs"></canvas></div>
+  </div>
+  <div class="card" style="margin-bottom:20px">
     <div class="card-title">Индекс чистоты коммуникации (правильные − неправильные ответы о функциях)</div>
     <div class="chart-wrap" style="min-height:350px"><canvas id="chartCommClarity"></canvas></div>
   </div>
@@ -367,6 +367,22 @@
     <div class="card-title">Корреляция метрик с намерением воспользоваться (Pearson)</div>
     <div id="corrBars"></div>
   </div>
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-title">Произвольное сравнение метрик</div>
+    <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <label style="font-size:12px;font-weight:600;color:var(--text2);white-space:nowrap">Ось X:</label>
+        <select id="customScatterX" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:8px;font-size:12px;outline:none;cursor:pointer"></select>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <label style="font-size:12px;font-weight:600;color:var(--text2);white-space:nowrap">Ось Y:</label>
+        <select id="customScatterY" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:8px;font-size:12px;outline:none;cursor:pointer"></select>
+      </div>
+      <div id="customScatterStat" style="font-size:12px;color:var(--text2);padding:6px 12px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)"></div>
+    </div>
+    <div class="chart-wrap" style="min-height:420px"><canvas id="scatterCustom"></canvas></div>
+  </div>
+
   <div class="scatter-grid" style="margin-bottom:20px">
     <div class="card"><div class="card-title">Нравится × Намерение</div><div class="chart-wrap"><canvas id="scatterLike"></canvas></div></div>
     <div class="card"><div class="card-title">Понятность × Намерение</div><div class="chart-wrap"><canvas id="scatterClarity"></canvas></div></div>
@@ -591,16 +607,19 @@ function pctN(v) { return v != null ? Math.round(v * 1000) / 10 : null; }
 function avg(arr) { const v = arr.filter(x => x != null); return v.length ? v.reduce((a,b) => a+b, 0) / v.length : null; }
 
 const METRIC_KEYS = ["intent","like","clarity","uniqueness","brandRecognition","brandRecall","productRecall","brandFit","brandAttitude","interesting","relevance","correctFeatures","incorrectFeatures"];
+// Шкальные метрики: 0 трактуется как «вопрос не задавался» (данные 2021 г.)
+const SCALE_METRICS = new Set(["intent","like","clarity","uniqueness","brandRecognition","brandFit","brandAttitude","interesting","relevance"]);
+function metricVal(key, v) { return (SCALE_METRICS.has(key) && v === 0) ? null : v; }
 
 const AVG = {};
 METRIC_KEYS.forEach(key => {
-  AVG[key] = avg(D.creatives.map(c => c.metrics[key]));
+  AVG[key] = avg(D.creatives.map(c => metricVal(key, c.metrics[key])));
 });
 
-// Average base per metric (only creatives that have a non-null value for it)
+// Average base per metric (only creatives that have a non-null, non-zero value for it)
 const NORM_BASE = {};
 METRIC_KEYS.forEach(key => {
-  const with_val = D.creatives.filter(c => c.metrics[key] != null && c.base > 0);
+  const with_val = D.creatives.filter(c => metricVal(key, c.metrics[key]) != null && c.base > 0);
   NORM_BASE[key] = with_val.length ? with_val.reduce((s, c) => s + c.base, 0) / with_val.length : 0;
 });
 
@@ -664,21 +683,27 @@ function populateFilters() {
   fill("filterProduct", [...new Set(D.creatives.map(c => c.product))].sort());
   fill("filterCampaign", [...new Set(D.creatives.map(c => c.campaign))].sort());
   fill("filterPeriod", D.periods || []);
-  fill("filterFormat", [...new Set(D.creatives.map(c => c.format))].sort());
+  fill("filterFormat", [...new Set(D.creatives.map(c => c.format).filter(Boolean))].sort());
   fill("filterTask", [...new Set(D.creatives.map(c => c.task))].sort());
+  const compTypes = [...new Set(D.creatives.map(c => c.competitorType).filter(Boolean))].sort();
+  if (compTypes.length > 1) {
+    fill("filterCompetitor", compTypes);
+    document.getElementById("filterCompetitorGroup").style.display = "";
+  }
 }
 
 function applyFilters() {
   const gv = id => document.getElementById(id).value;
-  const p = gv("filterProduct"), ca = gv("filterCampaign"), pe = gv("filterPeriod"), fo = gv("filterFormat"), ta = gv("filterTask");
+  const p = gv("filterProduct"), ca = gv("filterCampaign"), pe = gv("filterPeriod"), fo = gv("filterFormat"), ta = gv("filterTask"), co = gv("filterCompetitor");
   filteredCreatives = D.creatives.filter(c =>
-    (!p || c.product === p) && (!ca || c.campaign === ca) && (!pe || c.period === pe) && (!fo || c.format === fo) && (!ta || c.task === ta)
+    (!p || c.product === p) && (!ca || c.campaign === ca) && (!pe || c.period === pe) &&
+    (!fo || c.format === fo) && (!ta || c.task === ta) && (!co || c.competitorType === co)
   );
   document.getElementById("filterCount").textContent = `${filteredCreatives.length} из ${D.creatives.length}`;
   renderActiveScreen();
 }
 
-["filterProduct","filterCampaign","filterPeriod","filterFormat","filterTask"].forEach(id => {
+["filterProduct","filterCampaign","filterPeriod","filterFormat","filterTask","filterCompetitor"].forEach(id => {
   document.getElementById(id).addEventListener("change", applyFilters);
 });
 
@@ -808,11 +833,6 @@ function tipHtml(key) {
 }
 
 function renderScreen1() {
-  const el = document.getElementById("kpiRow"); el.innerHTML = "";
-  METRICS.forEach(m => {
-    const a = AVG[m.key];
-    el.innerHTML += `<div class="card kpi"><div class="kpi-label"><span class="tip">${m.label}${tipHtml(m.key)}</span></div><div class="kpi-value">${pct(a)}</div><div class="kpi-sub" style="color:var(--text2)">среднее по ${D.creatives.length} креативам</div></div>`;
-  });
   renderCompare();
   renderTop("topIntent","intent",true); renderTop("botIntent","intent",false);
   renderTop("topLike","like",true); renderTop("botLike","like",false);
@@ -944,11 +964,11 @@ function renderScreen3() {
 
   const bkRow = document.getElementById("brandKpiRow"); bkRow.innerHTML = "";
   const brandKpiList = [
-    { key:"brandRecall", label:"Brand Recall" },
-    { key:"productRecall", label:"Product Recall" },
-    { key:"brandRecognition", label:"Узнаваемость" },
-    { key:"brandFit", label:"Соответствие бренду" }
-  ];
+    { key:"brandRecall" },
+    { key:"productRecall" },
+    { key:"brandRecognition" },
+    { key:"brandFit" }
+  ].map(m => ({ ...m, label: ML[m.key] || m.key }));
   brandKpiList.forEach(m => {
     const vals = fc.map(c => c.metrics[m.key]).filter(v => v != null); const a = avg(vals);
     const q = (METRIC_QUESTIONS[m.key]||"").replace(/\n/g,"<br>");
@@ -961,19 +981,21 @@ function renderScreen3() {
 
   const byP = {}; fc.forEach(c => { if (!byP[c.product]) byP[c.product]=[]; byP[c.product].push(c); });
   const pL = Object.keys(byP).sort();
+  // Only products with at least one non-null Brand Recall or Product Recall value
+  const pLRecall = pL.filter(p => byP[p].some(c => c.metrics.brandRecall != null || c.metrics.productRecall != null));
 
-  const avgBrandRecallLine = Array(pL.length).fill(pctN(AVG.brandRecall));
-  const avgProductRecallLine = Array(pL.length).fill(pctN(AVG.productRecall));
+  const avgBrandRecallLine = Array(pLRecall.length).fill(pctN(AVG.brandRecall));
+  const avgProductRecallLine = Array(pLRecall.length).fill(pctN(AVG.productRecall));
   destroy("chartBrandRecall");
   charts.chartBrandRecall = new Chart(document.getElementById("chartBrandRecall"), {
-    type: "bar", data: { labels: pL, datasets: [
-      { label: "Brand Recall", data: pL.map(p => pctN(avg(byP[p].map(c => c.metrics.brandRecall)))), backgroundColor: "#00cec9", borderRadius: 6 },
-      { label: "Product Recall", data: pL.map(p => pctN(avg(byP[p].map(c => c.metrics.productRecall)))), backgroundColor: "#a29bfe", borderRadius: 6 },
-      { type:"line", label:"Ср. Brand Recall", data: avgBrandRecallLine, borderColor:"#00cec9", borderWidth:2, borderDash:[6,4], pointRadius:0, fill:false, tension:0 },
-      { type:"line", label:"Ср. Product Recall", data: avgProductRecallLine, borderColor:"#a29bfe", borderWidth:2, borderDash:[6,4], pointRadius:0, fill:false, tension:0 }
+    type: "bar", data: { labels: pLRecall, datasets: [
+      { label: ML.brandRecall || "Верно назвали бренд", data: pLRecall.map(p => pctN(avg(byP[p].map(c => c.metrics.brandRecall)))), backgroundColor: "#00cec9", borderRadius: 6 },
+      { label: ML.productRecall || "Верно назвали продукт / фичу", data: pLRecall.map(p => pctN(avg(byP[p].map(c => c.metrics.productRecall)))), backgroundColor: "#a29bfe", borderRadius: 6 },
+      { type:"line", label:"Ср. бренд", data: avgBrandRecallLine, borderColor:"#00cec9", borderWidth:2, borderDash:[6,4], pointRadius:0, fill:false, tension:0 },
+      { type:"line", label:"Ср. продукт", data: avgProductRecallLine, borderColor:"#a29bfe", borderWidth:2, borderDash:[6,4], pointRadius:0, fill:false, tension:0 }
     ] },
     options: { responsive: true, plugins: { legend: { labels: { color: () => cText(), filter: item => !item.text.startsWith("Ср.") } }, datalabels: { display: false } },
-      scales: { x: { ticks: { color: () => cText2(), font: { size: 10 }, maxRotation: 45 }, grid: { display: false } }, y: { ticks: { color: () => cText2(), callback: v => v+"%" }, grid: { color: () => cGrid() }, min: 0 } } }
+      scales: { x: { ticks: { color: () => cText2(), font: { size: 10 }, maxRotation: 60, minRotation: 45, autoSkip: false }, grid: { display: false } }, y: { ticks: { color: () => cText2(), callback: v => v+"%" }, grid: { color: () => cGrid() }, min: 0 } } }
   });
 
   const avgBrandRecogLine = Array(pL.length).fill(pctN(AVG.brandRecognition));
@@ -984,7 +1006,25 @@ function renderScreen3() {
       { type:"line", label:"Среднее", data: avgBrandRecogLine, borderColor:"#fdcb6e", borderWidth:2, borderDash:[6,4], pointRadius:0, fill:false, tension:0 }
     ] },
     options: { responsive: true, plugins: { legend: { display: false }, datalabels: { display: false } },
-      scales: { x: { ticks: { color: () => cText2(), font: { size: 10 }, maxRotation: 45 }, grid: { display: false } }, y: { ticks: { color: () => cText2(), callback: v => v+"%" }, grid: { color: () => cGrid() }, min: 0 } } }
+      scales: { x: { ticks: { color: () => cText2(), font: { size: 10 }, maxRotation: 60, minRotation: 45, autoSkip: false }, grid: { display: false } }, y: { ticks: { color: () => cText2(), callback: v => v+"%" }, grid: { color: () => cGrid() }, min: 0 } } }
+  });
+
+  // --- Brand attributes: brandFit + brandAttitude by product ---
+  destroy("chartBrandAttrs");
+  charts.chartBrandAttrs = new Chart(document.getElementById("chartBrandAttrs"), {
+    type: "bar", data: { labels: pL, datasets: [
+      { label: ML.brandFit || "Соответствует представлению о бренде", data: pL.map(p => pctN(avg(byP[p].map(c => c.metrics.brandFit)))), backgroundColor: "#6c5ce7", borderRadius: 6 },
+      { label: ML.brandAttitude || "Отношение к бренду после ролика улучшилось", data: pL.map(p => pctN(avg(byP[p].map(c => c.metrics.brandAttitude)))), backgroundColor: "#fd79a8", borderRadius: 6 },
+      { type:"line", label:"Ср. соответствие", data: Array(pL.length).fill(pctN(AVG.brandFit)), borderColor:"#6c5ce7", borderWidth:2, borderDash:[6,4], pointRadius:0, fill:false, tension:0 },
+      { type:"line", label:"Ср. отношение", data: Array(pL.length).fill(pctN(AVG.brandAttitude)), borderColor:"#fd79a8", borderWidth:2, borderDash:[6,4], pointRadius:0, fill:false, tension:0 }
+    ] },
+    options: { responsive: true, plugins: {
+      legend: { labels: { color: () => cText(), filter: item => !item.text.startsWith("Ср.") } },
+      datalabels: { display: false }
+    }, scales: {
+      x: { ticks: { color: () => cText2(), font: { size: 10 }, maxRotation: 60, minRotation: 45, autoSkip: false }, grid: { display: false } },
+      y: { ticks: { color: () => cText2(), callback: v => v+"%" }, grid: { color: () => cGrid() }, min: 0 }
+    } }
   });
 
   const commData = fc.filter(c => c.metrics.correctFeatures != null && c.metrics.incorrectFeatures != null)
@@ -998,7 +1038,7 @@ function renderScreen3() {
         datasets: [{ label: "Правильные", data: commData.map(d => pctN(d.correct)), backgroundColor: "#00b894", borderRadius: 4 },
                     { label: "Неправильные", data: commData.map(d => pctN(d.incorrect)), backgroundColor: "#ff6b6b", borderRadius: 4 }] },
       options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: () => cText() } }, datalabels: { display: false } },
-        scales: { x: { ticks: { color: () => cText2(), font: { size: 9 }, maxRotation: 60 }, grid: { display: false } }, y: { ticks: { color: () => cText2(), callback: v => v+"%" }, grid: { color: () => cGrid() }, min: 0 } } }
+        scales: { x: { ticks: { color: () => cText2(), font: { size: 9 }, maxRotation: 60, minRotation: 45, autoSkip: false }, grid: { display: false } }, y: { ticks: { color: () => cText2(), callback: v => v+"%" }, grid: { color: () => cGrid() }, min: 0 } } }
     });
   }
 
@@ -1006,15 +1046,81 @@ function renderScreen3() {
 }
 
 // ======================== SCREEN 4: DRIVER ANALYTICS ========================
+const SCATTER_METRICS = [
+  "intent","like","clarity","uniqueness","brandRecognition",
+  "interesting","relevance","brandFit","brandAttitude","brandRecall","productRecall"
+].map(key => ({ key, label: ML[key] || key }));
+
+function initCustomScatter() {
+  const sx = document.getElementById("customScatterX");
+  const sy = document.getElementById("customScatterY");
+  SCATTER_METRICS.forEach(m => {
+    const ox = document.createElement("option"); ox.value = m.key; ox.textContent = m.label; sx.appendChild(ox);
+    const oy = document.createElement("option"); oy.value = m.key; oy.textContent = m.label; sy.appendChild(oy);
+  });
+  sx.value = "like";
+  sy.value = "intent";
+  sx.addEventListener("change", renderCustomScatter);
+  sy.addEventListener("change", renderCustomScatter);
+}
+
+function renderCustomScatter() {
+  const fc = filteredCreatives;
+  const xKey = document.getElementById("customScatterX").value;
+  const yKey = document.getElementById("customScatterY").value;
+  const xLabel = SCATTER_METRICS.find(m => m.key === xKey)?.label || xKey;
+  const yLabel = SCATTER_METRICS.find(m => m.key === yKey)?.label || yKey;
+
+  const prods = [...new Set(fc.map(c => c.product))].sort();
+  const data = fc
+    .filter(c => c.metrics[xKey] != null && c.metrics[yKey] != null)
+    .map(c => ({ x: c.metrics[xKey] * 100, y: c.metrics[yKey] * 100, name: c.name, product: c.product, url: c.rutubeUrl || null }));
+
+  const r = pearson(fc.map(c => c.metrics[xKey]), fc.map(c => c.metrics[yKey]));
+  const stat = document.getElementById("customScatterStat");
+  if (r != null) {
+    const rAbs = Math.abs(r);
+    const strength = rAbs >= 0.7 ? "сильная" : rAbs >= 0.4 ? "средняя" : "слабая";
+    const dir = r >= 0 ? "положительная" : "отрицательная";
+    const color = rAbs >= 0.4 ? (r > 0 ? "var(--green)" : "var(--red)") : "var(--text2)";
+    stat.innerHTML = `Корреляция Пирсона: <strong style="color:${color}">${r.toFixed(3)}</strong> — ${dir}, ${strength} (n=${data.length})`;
+  } else {
+    stat.textContent = "Недостаточно данных";
+  }
+
+  destroy("scatterCustom");
+  charts.scatterCustom = new Chart(document.getElementById("scatterCustom"), {
+    type: "scatter",
+    data: { datasets: [{ data, backgroundColor: data.map(d => CHART_COLORS[prods.indexOf(d.product) % CHART_COLORS.length] + "BB"), pointRadius: 6, pointHoverRadius: 9 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      onClick: (_, els) => { if (els.length) { const u = data[els[0].index].url; if (u) window.open(u, "_blank"); } },
+      onHover: (e, els) => { e.native.target.style.cursor = (els.length && data[els[0].index].url) ? "pointer" : "default"; },
+      plugins: {
+        legend: { display: false },
+        datalabels: { display: false },
+        tooltip: { callbacks: { label: ctx => {
+          const d = ctx.raw;
+          const lines = [`${d.name}`, `${d.product}`, `${xLabel}: ${d.x.toFixed(1)}%`, `${yLabel}: ${d.y.toFixed(1)}%`];
+          if (d.url) lines.push("▶ Нажмите, чтобы открыть видео");
+          return lines;
+        }}}
+      },
+      scales: {
+        x: { title: { display: true, text: xLabel, color: () => cText2(), font: { size: 12 } }, ticks: { color: () => cText2(), callback: v => v+"%" }, grid: { color: () => cGrid() } },
+        y: { title: { display: true, text: yLabel, color: () => cText2(), font: { size: 12 } }, ticks: { color: () => cText2(), callback: v => v+"%" }, grid: { color: () => cGrid() } }
+      }
+    }
+  });
+}
+
 function renderScreen4() {
   const fc = filteredCreatives;
   const intentV = fc.map(c => c.metrics.intent);
 
   const corrMetrics = [
-    {key:"like",label:"Нравится"},{key:"clarity",label:"Понятность"},{key:"uniqueness",label:"Уникальность"},
-    {key:"relevance",label:"Актуальность"},{key:"brandRecognition",label:"Узнаваемость"},{key:"interesting",label:"Интересно"},
-    {key:"brandAttitude",label:"Отношение к бренду"},{key:"brandFit",label:"Соответствие бренду"},
-  ];
+    "like","clarity","uniqueness","relevance","brandRecognition","interesting","brandAttitude","brandFit"
+  ].map(key => ({ key, label: ML[key] || key }));
 
   const corrs = corrMetrics.map(m => ({...m, r: pearson(fc.map(c => c.metrics[m.key]), intentV)})).filter(m => m.r != null).sort((a,b) => Math.abs(b.r) - Math.abs(a.r));
   const cEl = document.getElementById("corrBars"); cEl.innerHTML = "";
@@ -1025,16 +1131,33 @@ function renderScreen4() {
 
   function scatter(canvasId, xKey, xLabel) {
     destroy(canvasId);
-    const data = fc.filter(c => c.metrics[xKey] != null && c.metrics.intent != null).map(c => ({x:c.metrics[xKey]*100, y:c.metrics.intent*100, name:c.name, product:c.product}));
+    const data = fc.filter(c => c.metrics[xKey] != null && c.metrics.intent != null)
+      .map(c => ({ x: c.metrics[xKey]*100, y: c.metrics.intent*100, name: c.name, product: c.product, url: c.rutubeUrl || null }));
     const prods = [...new Set(fc.map(c => c.product))].sort();
+    const yLabel = ML.intent || "Намерение";
     charts[canvasId] = new Chart(document.getElementById(canvasId), {
       type: "scatter", data: { datasets: [{ data, backgroundColor: data.map(d => CHART_COLORS[prods.indexOf(d.product) % CHART_COLORS.length] + "AA"), pointRadius: 5, pointHoverRadius: 8 }] },
-      options: { responsive: true, plugins: { legend: { display: false }, datalabels: { display: false },
-          tooltip: { callbacks: { label: ctx => { const d = ctx.raw; return `${d.name} (${d.product}): ${xLabel}=${d.x.toFixed(1)}%, Намерение=${d.y.toFixed(1)}%`; } } } },
-        scales: { x: { title: { display: true, text: xLabel, color: () => cText2() }, ticks: { color: () => cText2(), callback: v => v+"%" }, grid: { color: () => cGrid() } },
-                  y: { title: { display: true, text: "Намерение", color: () => cText2() }, ticks: { color: () => cText2(), callback: v => v+"%" }, grid: { color: () => cGrid() } } } }
+      options: {
+        responsive: true,
+        onClick: (_, els) => { if (els.length) { const u = data[els[0].index].url; if (u) window.open(u, "_blank"); } },
+        onHover: (e, els) => { e.native.target.style.cursor = (els.length && data[els[0].index].url) ? "pointer" : "default"; },
+        plugins: { legend: { display: false }, datalabels: { display: false },
+          tooltip: { callbacks: { label: ctx => {
+            const d = ctx.raw;
+            const lines = [`${d.name} (${d.product})`, `${xLabel}: ${d.x.toFixed(1)}%`, `${yLabel}: ${d.y.toFixed(1)}%`];
+            if (d.url) lines.push("▶ Нажмите, чтобы открыть видео");
+            return lines;
+          }}}
+        },
+        scales: {
+          x: { title: { display: true, text: xLabel, color: () => cText2() }, ticks: { color: () => cText2(), callback: v => v+"%" }, grid: { color: () => cGrid() } },
+          y: { title: { display: true, text: yLabel, color: () => cText2() }, ticks: { color: () => cText2(), callback: v => v+"%" }, grid: { color: () => cGrid() } }
+        }
+      }
     });
   }
+
+  renderCustomScatter();
 
   scatter("scatterLike","like","Нравится");
   scatter("scatterClarity","clarity","Понятность");
@@ -1087,7 +1210,10 @@ function renderScreen5() {
   });
   const durL = DUR_ORDER.filter(b => byDur[b]);
 
-  const fM = [{key:"like",label:"Нравится",color:"#6c5ce7"},{key:"clarity",label:"Понятность",color:"#00b894"},{key:"intent",label:"Намерение",color:"#fd79a8"},{key:"uniqueness",label:"Уникальность",color:"#74b9ff"},{key:"brandRecognition",label:"Узнаваемость",color:"#00cec9"}];
+  const fM = [
+    {key:"like",color:"#6c5ce7"},{key:"clarity",color:"#00b894"},{key:"intent",color:"#fd79a8"},
+    {key:"uniqueness",color:"#74b9ff"},{key:"brandRecognition",color:"#00cec9"}
+  ].map(m => ({ ...m, label: ML[m.key] || m.key }));
 
   destroy("chartFormatMetrics");
   charts.chartFormatMetrics = new Chart(document.getElementById("chartFormatMetrics"), {
@@ -1179,8 +1305,25 @@ document.getElementById("themeIcon").innerHTML = savedTheme === "light" ? "&#972
 document.getElementById("themeLabel").textContent = savedTheme === "light" ? "Тёмная тема" : "Светлая тема";
 
 populateFilters();
+initCustomScatter();
 document.getElementById("filterCount").textContent = `${D.creatives.length} из ${D.creatives.length}`;
 initCompare();
+
+// Update HTML table headers to match metricLabels from the sheet
+(function applyMetricLabels() {
+  const setThText = (th, text) => {
+    const tip = th.querySelector(".th-tip");
+    th.textContent = text;
+    if (tip) th.appendChild(tip);
+  };
+  document.querySelectorAll("#creativeTable th[data-col]").forEach(th => {
+    const k = th.dataset.col; if (ML[k]) setThText(th, ML[k]);
+  });
+  document.querySelectorAll("#brandTable th[data-bcol]").forEach(th => {
+    const k = th.dataset.bcol; if (ML[k]) setThText(th, ML[k]);
+  });
+})();
+
 renderScreen1();
 
 // ======================== CHAT ========================
