@@ -819,14 +819,14 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                 </p>
                 {isFiltered && (
                   <p className="mt-1">
-                    ▲ / ▼ рядом с подписью стороны — отклонение текущей выборки
-                    от общей нормы по базе (порог {SIG_PP}&nbsp;пп).
+                    Под полосой — отклонение позитива и негатива от общей нормы
+                    в процентных пунктах. ▲ выше нормы, ▼ ниже (порог {SIG_PP}&nbsp;пп).
                   </p>
                 )}
               </>
             }
           >
-            <div className="space-y-2 py-2">
+            <div className="space-y-3 py-2">
               {data.emotionalPairs.map(pair => {
                 const pv = (avgEmotional[pair.positiveKey] ?? 0) * 100;
                 const nv = (avgEmotional[pair.negativeKey] ?? 0) * 100;
@@ -835,62 +835,59 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                 const gnv = (globalAvgEmotional[pair.negativeKey] ?? 0) * 100;
                 const dpv = pv - gpv;
                 const dnv = nv - gnv;
-                // Per-side significance marker. Drop the inline ±пп text — only
-                // the direction matters; the absolute % is already on the bar.
-                const arrow = (d: number) => (d >= SIG_PP ? '▲' : d <= -SIG_PP ? '▼' : '');
-                const arrowCls = (d: number) =>
-                  d >= SIG_PP ? 'text-[var(--color-success)]' : 'text-[var(--color-error)]';
-                const posMark = isFiltered ? arrow(dpv) : '';
-                const negMark = isFiltered ? arrow(dnv) : '';
+                const arrow = (d: number) => (d >= SIG_PP ? '▲' : d <= -SIG_PP ? '▼' : '·');
+                const fmt = (d: number) => (d >= 0 ? '+' : '') + d.toFixed(1) + ' пп';
+                const cls = (d: number) =>
+                  d >= SIG_PP
+                    ? 'text-[var(--color-success)]'
+                    : d <= -SIG_PP
+                      ? 'text-[var(--color-error)]'
+                      : 'text-[var(--color-text-muted)]';
                 return (
                   <div key={pair.positiveKey} className="flex items-center gap-2">
-                    <span className="w-[150px] text-right text-[11px] text-[var(--color-text-secondary)] leading-tight shrink-0">
-                      {posMark && (
-                        <span
-                          className={`${arrowCls(dpv)} mr-1`}
-                          title={`Норма по базе: ${gpv.toFixed(0)}%`}
-                        >
-                          {posMark}
-                        </span>
-                      )}
+                    <span className="w-[140px] text-right text-[11px] text-[var(--color-text-secondary)] leading-tight shrink-0">
                       {pair.positiveLabel}
                     </span>
-                    <div
-                      className="flex-1 h-6 rounded-full overflow-hidden bg-[var(--color-bg-secondary)] flex"
-                      title={`Позитив ${pv.toFixed(0)}% · Негатив ${nv.toFixed(0)}% · Затрудняюсь ${dk.toFixed(0)}%`}
-                    >
-                      <div className="h-full bg-[#00b894] transition-all flex items-center justify-center overflow-visible" style={{ width: `${pv}%` }}>
-                        {pv >= 3 && (
-                          <span className="text-[10px] font-semibold text-white drop-shadow-sm whitespace-nowrap">
-                            {pv.toFixed(0)}%
-                          </span>
-                        )}
+                    <div className="flex-1">
+                      <div
+                        className="h-6 rounded-full overflow-hidden bg-[var(--color-bg-secondary)] flex"
+                        title={`Позитив ${pv.toFixed(0)}% · Негатив ${nv.toFixed(0)}% · Затрудняюсь ${dk.toFixed(0)}%`}
+                      >
+                        <div className="h-full bg-[#00b894] transition-all flex items-center justify-center overflow-visible" style={{ width: `${pv}%` }}>
+                          {pv >= 3 && (
+                            <span className="text-[10px] font-semibold text-white drop-shadow-sm whitespace-nowrap">
+                              {pv.toFixed(0)}%
+                            </span>
+                          )}
+                        </div>
+                        <div className="h-full bg-[#ff6b6b] transition-all flex items-center justify-center overflow-visible" style={{ width: `${nv}%` }}>
+                          {nv >= 3 && (
+                            <span className="text-[10px] font-semibold text-white drop-shadow-sm whitespace-nowrap">
+                              {nv.toFixed(0)}%
+                            </span>
+                          )}
+                        </div>
+                        <div className="h-full bg-[var(--color-border-strong)] transition-all flex items-center justify-center overflow-visible" style={{ width: `${dk}%` }}>
+                          {dk >= 6 && (
+                            <span className="text-[10px] font-medium text-[var(--color-text-secondary)] whitespace-nowrap">
+                              {dk.toFixed(0)}%
+                            </span>
+                          )}
+                        </div>
                       </div>
-                      <div className="h-full bg-[#ff6b6b] transition-all flex items-center justify-center overflow-visible" style={{ width: `${nv}%` }}>
-                        {nv >= 3 && (
-                          <span className="text-[10px] font-semibold text-white drop-shadow-sm whitespace-nowrap">
-                            {nv.toFixed(0)}%
+                      {isFiltered && (
+                        <div className="flex justify-between text-[10px] mt-0.5 leading-none">
+                          <span className={cls(dpv)}>
+                            {arrow(dpv)} {fmt(dpv)} <span className="text-[var(--color-text-muted)]">(норма {gpv.toFixed(0)}%)</span>
                           </span>
-                        )}
-                      </div>
-                      <div className="h-full bg-[var(--color-border-strong)] transition-all flex items-center justify-center overflow-visible" style={{ width: `${dk}%` }}>
-                        {dk >= 6 && (
-                          <span className="text-[10px] font-medium text-[var(--color-text-secondary)] whitespace-nowrap">
-                            {dk.toFixed(0)}%
+                          <span className={cls(-dnv)}>
+                            {arrow(dnv)} {fmt(dnv)} <span className="text-[var(--color-text-muted)]">(норма {gnv.toFixed(0)}%)</span>
                           </span>
-                        )}
-                      </div>
-                    </div>
-                    <span className="w-[150px] text-[11px] text-[var(--color-text-secondary)] leading-tight shrink-0">
-                      {pair.negativeLabel}
-                      {negMark && (
-                        <span
-                          className={`${arrowCls(dnv)} ml-1`}
-                          title={`Норма по базе: ${gnv.toFixed(0)}%`}
-                        >
-                          {negMark}
-                        </span>
+                        </div>
                       )}
+                    </div>
+                    <span className="w-[140px] text-[11px] text-[var(--color-text-secondary)] leading-tight shrink-0">
+                      {pair.negativeLabel}
                     </span>
                   </div>
                 );
