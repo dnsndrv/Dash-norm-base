@@ -657,19 +657,11 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
           if (!isFiltered) return null;
           return zTestProp(valueFor(row, side), globalFor(row, side), n);
         };
-        // Annotate the y-axis label with arrows when the cohort differs
-        // significantly from the norm. Left arrow → dislike side, right → like.
-        const labels = reactionRows.map(row => {
-          if (!isFiltered) return row.label;
-          const zL = zFor(row, 'like');
-          const zD = zFor(row, 'dislike');
-          const mark = (z: number | null) =>
-            z == null ? '' : z >= SIG_Z ? '▲' : z <= -SIG_Z ? '▼' : '';
-          const tagD = mark(zD);
-          const tagL = mark(zL);
-          if (!tagD && !tagL) return row.label;
-          return `${tagD ? tagD + ' ' : ''}${row.label}${tagL ? ' ' + tagL : ''}`;
-        });
+        // Significance is encoded directly on the % datalabels next to each
+        // bar (green = ▲ vs norm, red = ▼) — no more inline arrows on the
+        // y-axis ticks, which Chart.js couldn't color independently and so
+        // looked like ambiguous gray symbols.
+        const labels = reactionRows.map(row => row.label);
         const likeData = reactionRows.map(r => pctN(valueFor(r, 'like')) ?? 0);
         const dislikeData = reactionRows.map(r => {
           const v = pctN(valueFor(r, 'dislike'));
@@ -688,9 +680,12 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                 </p>
                 {isFiltered && (
                   <p className="mt-1">
-                    ▲ / ▼ рядом с категорией — значимое отклонение текущей выборки
-                    от общей нормы (z&nbsp;≥&nbsp;{SIG_Z.toFixed(2)}). Левый знак
-                    относится к «не понравилось», правый — к «понравилось».
+                    Цвет процента рядом с баром — значимое отклонение текущей выборки
+                    от общей нормы по базе (|z|&nbsp;≥&nbsp;{SIG_Z.toFixed(2)}).{' '}
+                    <span className="text-[var(--color-success)] font-medium">Зелёный</span> —
+                    значимо выше нормы,{' '}
+                    <span className="text-[var(--color-error)] font-medium">красный</span> —
+                    значимо ниже, серый — в пределах нормы.
                   </p>
                 )}
               </>
@@ -721,6 +716,10 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                   indexAxis: 'y',
                   responsive: true,
                   maintainAspectRatio: false,
+                  // Reserve space on both edges so outside-of-bar percentage
+                  // labels (left tip of red bars, right tip of green bars)
+                  // don't get clipped.
+                  layout: { padding: { left: 36, right: 36 } },
                   plugins: {
                     legend: {
                       position: 'top',
@@ -744,15 +743,27 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                       },
                     },
                     datalabels: {
-                      color: '#1F1F1F',
-                      font: { size: 10, weight: 500 },
-                      anchor: (ctx) => (ctx.datasetIndex === 0 ? 'start' : 'end'),
-                      align: (ctx) => (ctx.datasetIndex === 0 ? 'start' : 'end'),
-                      offset: 3,
+                      // Both datasets: anchor at the bar tip, align further
+                      // outside. For negative bars this puts the % on the
+                      // far left; for positive bars — on the far right.
+                      font: { size: 10, weight: 600 },
+                      anchor: 'end',
+                      align: 'end',
+                      offset: 4,
+                      // Significance vs norm encoded in color: green ▲,
+                      // red ▼, neutral gray when within norm.
+                      color: (ctx) => {
+                        const row = reactionRows[ctx.dataIndex];
+                        const side: Side = ctx.datasetIndex === 0 ? 'dislike' : 'like';
+                        const z = zFor(row, side);
+                        if (z != null && z >= SIG_Z) return '#00985F';
+                        if (z != null && z <= -SIG_Z) return '#FF3333';
+                        return '#374151';
+                      },
                       formatter: (v: number) => {
                         if (v == null) return '';
                         const abs = Math.abs(v);
-                        if (abs < 1.5) return '';
+                        if (abs < 0.5) return '';
                         return abs.toFixed(0) + '%';
                       },
                     },
