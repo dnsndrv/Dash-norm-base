@@ -746,19 +746,18 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                     datalabels: {
                       display: true,
                       clip: false,
+                      clamp: false,
                       font: { size: 11, weight: 700 },
-                      // datalabels' anchor/align are defined relative to the
-                      // bar RECTANGLE on screen, not the data direction. For
-                      // a negative bar (rect from −X to 0), 'end' = right
-                      // edge = zero line, which is the WRONG side. So:
-                      //   dataset 0 (dislike, negative): anchor & align 'start'
-                      //     → pin to LEFT edge of rect (= data tip at −X),
-                      //       push further LEFT (outside the bar).
-                      //   dataset 1 (like, positive): anchor & align 'end'
-                      //     → pin to RIGHT edge of rect (= data tip at +X),
-                      //       push further RIGHT.
-                      anchor: (ctx) => (ctx.datasetIndex === 0 ? 'start' : 'end'),
-                      align: (ctx) => (ctx.datasetIndex === 0 ? 'start' : 'end'),
+                      // chartjs-plugin-datalabels semantics for a BAR element:
+                      //   anchor 'end' = bar's data tip (where the value is)
+                      //   align  'end' = push label further in bar's growth
+                      //                  direction (away from the base)
+                      // For a positive bar growing right: align 'end' = right.
+                      // For a negative bar growing left:  align 'end' = LEFT.
+                      // Same config works symmetrically → labels always sit
+                      // just outside the tip of the bar.
+                      anchor: 'end',
+                      align: 'end',
                       offset: 6,
                       color: (ctx) => {
                         const row = reactionRows[ctx.dataIndex];
