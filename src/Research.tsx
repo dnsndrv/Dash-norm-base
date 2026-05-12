@@ -420,24 +420,61 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
     return orderLikeDislikeKeys(Object.keys(data.dislikeLabels), DISLIKE_EXTRA);
   }, [data.dislikeLabels]);
 
-  // Union of categories across likes and dislikes for the combined diverging
-  // chart. Shared keys come first (in SHARED_ORDER), then asymmetric likes
-  // (e.g. "relevant"), then asymmetric dislikes ("unclear", "irrelevant").
-  // Asymmetric keys naturally have 0 on the opposite side.
-  const reactionCategories = useMemo(() => {
-    const union = Array.from(new Set([...likeCategories, ...dislikeCategories]));
-    const sharedSet = new Set(SHARED_ORDER);
-    const shared = SHARED_ORDER.filter(k => union.includes(k));
-    const onlyLike = likeCategories.filter(k => !sharedSet.has(k));
-    const onlyDislike = dislikeCategories.filter(k => !sharedSet.has(k));
-    return [...shared, ...onlyLike, ...onlyDislike];
-  }, [likeCategories, dislikeCategories]);
+  // Combined likes/dislikes rows for the diverging "reactions" chart.
+  // Most categories share the same key on both sides (music, voice, …) — for
+  // them likeKey == dislikeKey == k. But some are semantically paired but
+  // stored under different keys, e.g. "relevant" only lives in likes and
+  // "irrelevant" only in dislikes. We bridge them into a single row so the
+  // chart reads as: «актуально» зелёный + «не актуально» красный.
+  const ASYMMETRIC_PAIRS: { key: string; likeKey: string; dislikeKey: string; label: string }[] = useMemo(() => [
+    { key: 'relevance', likeKey: 'relevant', dislikeKey: 'irrelevant', label: 'Актуально / Не актуально' },
+  ], []);
 
-  const reactionLabelFor = useCallback(
-    (k: string) =>
-      data.likeLabels?.[k] || data.dislikeLabels?.[k] || k,
-    [data.likeLabels, data.dislikeLabels],
-  );
+  type ReactionRow = { key: string; label: string; likeKey: string | null; dislikeKey: string | null };
+
+  const reactionRows = useMemo<ReactionRow[]>(() => {
+    const rows: ReactionRow[] = [];
+    const usedLike = new Set<string>();
+    const usedDislike = new Set<string>();
+    // 1. Shared categories first, ordered by SHARED_ORDER.
+    for (const k of SHARED_ORDER) {
+      if (likeCategories.includes(k) || dislikeCategories.includes(k)) {
+        rows.push({
+          key: k,
+          label: data.likeLabels?.[k] || data.dislikeLabels?.[k] || k,
+          likeKey: likeCategories.includes(k) ? k : null,
+          dislikeKey: dislikeCategories.includes(k) ? k : null,
+        });
+        usedLike.add(k);
+        usedDislike.add(k);
+      }
+    }
+    // 2. Asymmetric pairs (relevant/irrelevant etc.) — collapse them into one row.
+    for (const pair of ASYMMETRIC_PAIRS) {
+      const inLikes = likeCategories.includes(pair.likeKey);
+      const inDislikes = dislikeCategories.includes(pair.dislikeKey);
+      if (!inLikes && !inDislikes) continue;
+      rows.push({
+        key: pair.key,
+        label: pair.label,
+        likeKey: inLikes ? pair.likeKey : null,
+        dislikeKey: inDislikes ? pair.dislikeKey : null,
+      });
+      if (inLikes) usedLike.add(pair.likeKey);
+      if (inDislikes) usedDislike.add(pair.dislikeKey);
+    }
+    // 3. Remaining likes-only categories.
+    for (const k of likeCategories) {
+      if (usedLike.has(k)) continue;
+      rows.push({ key: `L:${k}`, label: data.likeLabels?.[k] || k, likeKey: k, dislikeKey: null });
+    }
+    // 4. Remaining dislikes-only categories.
+    for (const k of dislikeCategories) {
+      if (usedDislike.has(k)) continue;
+      rows.push({ key: `D:${k}`, label: data.dislikeLabels?.[k] || k, likeKey: null, dislikeKey: k });
+    }
+    return rows;
+  }, [likeCategories, dislikeCategories, data.likeLabels, data.dislikeLabels, ASYMMETRIC_PAIRS]);
 
   // Emotional averages: filtered cohort + global baseline (for делta vs norm).
   const avgEmotional = useMemo(() => avgByKey(creatives, c => c.emotional), [creatives]);
@@ -467,8 +504,14 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
 
       {/* Open-question recall by creative. Wired to the page-level filters
           (Yandex/Competitors → Product → Campaign → Creatives) — no more
-          widget-local picker. Top-10 by default, expand to all. */}
-      <BrandRecallOverview creatives={creatives} only="recall" />
+          widget-local picker. Top-10 by default, expand to all.
+          `baselineCreatives` = full dataset → the widget can mark per-row
+          significance (▲/▼) vs «база в целом». */}
+      <BrandRecallOverview
+        creatives={creatives}
+        baselineCreatives={allCreatives}
+        only="recall"
+      />
 
       {renderKpiRow('Дополнительные метрики', EXTRA_METRICS)}
 
@@ -479,15 +522,35 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
         // benchmark stable when users narrow the cohort with the top filters.
         const REF = 'Среднее по всем';
         const groupLabels = [REF, ...prodTypes];
+        const SIG_Z = 1.96;
+        // Sum-of-bases per production type — used as `n` in z-test against
+        // the global average for that metric.
+        const groupBases: Record<string, number> = {};
+        for (const p of prodTypes) {
+          groupBases[p] = prodTypeGroups[p].reduce((s, c) => s + (c.base || 0), 0);
+        }
+        // For a (group, metric) cell, compute z vs global average for the
+        // same metric. REF group is the baseline itself → no marker.
+        const zFor = (g: string, key: MetricKey): number | null => {
+          if (g === REF) return null;
+          const p = avg(prodTypeGroups[g].map(c => c.metrics[key]));
+          return zTestProp(p, globalAverages[key], groupBases[g] || 0);
+        };
         return (
         <ChartCard
           title="Средние по типу производства"
           info={
             <>
-              Сравнение средних метрик по типу производства. Первая группа
-              «{REF}» — среднее по всем креативам базы норм (без учёта
-              фильтров наверху), это бенчмарк. Остальные группы — средние
-              для роликов соответствующего production-типа в текущей выборке.
+              <p>
+                Сравнение средних метрик по типу производства. Первая группа
+                «{REF}» — среднее по всем креативам базы норм (без учёта
+                фильтров наверху), это бенчмарк. Остальные группы — средние
+                для роликов соответствующего production-типа в текущей выборке.
+              </p>
+              <p className="mt-1">
+                ▲ / ▼ возле значения — значимое отклонение группы от общей
+                нормы (|z|&nbsp;≥&nbsp;{SIG_Z}, p&nbsp;&lt;&nbsp;0.05).
+              </p>
             </>
           }
         >
@@ -507,7 +570,52 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
             }}
             options={{
               responsive: true,
-              plugins: { legend: { labels: { font: { size: 12 } } }, datalabels: { display: false } },
+              layout: { padding: { top: 16 } },
+              plugins: {
+                legend: { labels: { font: { size: 12 } } },
+                tooltip: {
+                  callbacks: {
+                    afterLabel: (ctx) => {
+                      const g = groupLabels[ctx.dataIndex];
+                      if (g === REF) return '';
+                      const m = prodTypeMetrics[ctx.datasetIndex];
+                      const ref = pctN(globalAverages[m.key]);
+                      const z = zFor(g, m.key);
+                      if (ref == null) return '';
+                      const sigTag =
+                        z == null ? '' : z >= SIG_Z ? ' ▲' : z <= -SIG_Z ? ' ▼' : '';
+                      return `Норма по базе: ${ref.toFixed(1)}%${sigTag}`;
+                    },
+                  },
+                },
+                datalabels: {
+                  display: true,
+                  font: { size: 10, weight: 600 },
+                  anchor: 'end',
+                  align: 'end',
+                  offset: 2,
+                  // Show the % value plus a tiny ▲/▼ when the cohort is
+                  // significantly above/below the global norm for this metric.
+                  formatter: (v: number | null, ctx) => {
+                    if (v == null) return '';
+                    const g = groupLabels[ctx.dataIndex];
+                    const m = prodTypeMetrics[ctx.datasetIndex];
+                    const z = zFor(g, m.key);
+                    const sig = z == null ? '' : z >= SIG_Z ? ' ▲' : z <= -SIG_Z ? ' ▼' : '';
+                    return `${v.toFixed(0)}%${sig}`;
+                  },
+                  // Marker colors the entire label so users see the direction
+                  // of deviation at a glance; neutral cells stay dark gray.
+                  color: (ctx) => {
+                    const g = groupLabels[ctx.dataIndex];
+                    const m = prodTypeMetrics[ctx.datasetIndex];
+                    const z = zFor(g, m.key);
+                    if (z != null && z >= SIG_Z) return '#00985F';
+                    if (z != null && z <= -SIG_Z) return '#FF3333';
+                    return '#1F1F1F';
+                  },
+                },
+              },
               scales: {
                 x: {
                   ticks: {
@@ -531,32 +639,40 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
           (показывается влево как отрицательное значение). Каждая строка-категория
           несёт обе доли. Если выборка отфильтрована — отмечаем значимое отклонение
           от общей нормы (z-test по сумме баз креативов). */}
-      {reactionCategories.length > 0 && (() => {
+      {reactionRows.length > 0 && (() => {
         const n = isFiltered ? nFiltered : totalBase(allCreatives);
         const SIG_Z = 1.65;
         type Side = 'like' | 'dislike';
-        const zFor = (k: string, side: Side): number | null => {
+        const valueFor = (row: ReactionRow, side: Side): number | null => {
+          const key = side === 'like' ? row.likeKey : row.dislikeKey;
+          if (!key) return null;
+          return (side === 'like' ? avgLikes : avgDislikes)[key] ?? null;
+        };
+        const globalFor = (row: ReactionRow, side: Side): number | null => {
+          const key = side === 'like' ? row.likeKey : row.dislikeKey;
+          if (!key) return null;
+          return (side === 'like' ? globalAvgLikes : globalAvgDislikes)[key] ?? null;
+        };
+        const zFor = (row: ReactionRow, side: Side): number | null => {
           if (!isFiltered) return null;
-          const p = side === 'like' ? avgLikes[k] : avgDislikes[k];
-          const p0 = side === 'like' ? globalAvgLikes[k] : globalAvgDislikes[k];
-          return zTestProp(p ?? null, p0 ?? null, n);
+          return zTestProp(valueFor(row, side), globalFor(row, side), n);
         };
         // Annotate the y-axis label with arrows when the cohort differs
-        // significantly from the global norm. Like / dislike arrows are
-        // shown side-by-side so users see both directions at a glance.
-        const labels = reactionCategories.map(k => {
-          const base = reactionLabelFor(k);
-          if (!isFiltered) return base;
-          const zL = zFor(k, 'like');
-          const zD = zFor(k, 'dislike');
-          const mark = (z: number | null, up = '▲', down = '▼') =>
-            z == null ? '' : z >= SIG_Z ? up : z <= -SIG_Z ? down : '';
-          const tags = [mark(zL), mark(zD)].filter(Boolean).join('');
-          return tags ? `${base} ${tags}` : base;
+        // significantly from the norm. Left arrow → dislike side, right → like.
+        const labels = reactionRows.map(row => {
+          if (!isFiltered) return row.label;
+          const zL = zFor(row, 'like');
+          const zD = zFor(row, 'dislike');
+          const mark = (z: number | null) =>
+            z == null ? '' : z >= SIG_Z ? '▲' : z <= -SIG_Z ? '▼' : '';
+          const tagD = mark(zD);
+          const tagL = mark(zL);
+          if (!tagD && !tagL) return row.label;
+          return `${tagD ? tagD + ' ' : ''}${row.label}${tagL ? ' ' + tagL : ''}`;
         });
-        const likeData = reactionCategories.map(k => pctN(avgLikes[k] ?? null) ?? 0);
-        const dislikeData = reactionCategories.map(k => {
-          const v = pctN(avgDislikes[k] ?? null);
+        const likeData = reactionRows.map(r => pctN(valueFor(r, 'like')) ?? 0);
+        const dislikeData = reactionRows.map(r => {
+          const v = pctN(valueFor(r, 'dislike'));
           return v == null ? 0 : -v;
         });
         return (
@@ -566,20 +682,21 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
               <>
                 <p>
                   Слева красное — доля респондентов, отметивших аспект как «не понравился»;
-                  справа зелёное — доля «понравился». Категории «ничего не понравилось» и
-                  «всё устраивает» скрыты — они мета-ответы и засоряют картинку.
+                  справа зелёное — доля «понравился». «Актуально / Не актуально» —
+                  парные категории из likes и dislikes объединены в одну строку.
+                  Мета-ответы «ничего не понравилось» и «всё устраивает» скрыты.
                 </p>
                 {isFiltered && (
                   <p className="mt-1">
                     ▲ / ▼ рядом с категорией — значимое отклонение текущей выборки
-                    от общей нормы (z&nbsp;≥&nbsp;{SIG_Z.toFixed(2)}, p&nbsp;&lt;&nbsp;0.10).
-                    Левый знак относится к «не понравилось», правый — к «понравилось».
+                    от общей нормы (z&nbsp;≥&nbsp;{SIG_Z.toFixed(2)}). Левый знак
+                    относится к «не понравилось», правый — к «понравилось».
                   </p>
                 )}
               </>
             }
           >
-            <div style={{ height: Math.max(260, reactionCategories.length * 28) }}>
+            <div style={{ height: Math.max(260, reactionRows.length * 28) }}>
               <Bar
                 data={{
                   labels,
@@ -612,19 +729,17 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                     },
                     tooltip: {
                       callbacks: {
-                        title: (items) => reactionLabelFor(reactionCategories[items[0].dataIndex]),
+                        title: (items) => reactionRows[items[0].dataIndex]?.label ?? '',
+                        // Tooltip: just the current value (the deviation is
+                        // already communicated by ▲/▼ on the y-label, so we
+                        // drop the noisy "+X пп vs норма" suffix).
                         label: (ctx) => {
-                          const k = reactionCategories[ctx.dataIndex];
+                          const row = reactionRows[ctx.dataIndex];
                           const side: Side = ctx.datasetIndex === 0 ? 'dislike' : 'like';
-                          const v = pctN(side === 'like' ? (avgLikes[k] ?? null) : (avgDislikes[k] ?? null));
-                          const g = pctN(side === 'like' ? (globalAvgLikes[k] ?? null) : (globalAvgDislikes[k] ?? null));
+                          const v = pctN(valueFor(row, side));
                           const head = side === 'like' ? 'Понравилось' : 'Не понравилось';
-                          const cur = v == null ? '—' : v.toFixed(1) + '%';
-                          if (g == null) return `${head}: ${cur}`;
-                          const d = v == null ? null : v - g;
-                          const sign = d == null ? '' : d >= 0 ? '+' : '';
-                          const delta = d == null ? '' : ` · норма ${g.toFixed(1)}% (${sign}${d.toFixed(1)} пп)`;
-                          return `${head}: ${cur}${delta}`;
+                          if (v == null) return `${head}: —`;
+                          return `${head}: ${v.toFixed(1)}%`;
                         },
                       },
                     },
@@ -683,14 +798,14 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                 </p>
                 {isFiltered && (
                   <p className="mt-1">
-                    Под полосой — отклонение позитива и негатива от общей нормы
-                    в процентных пунктах. ▲ выше нормы, ▼ ниже (порог {SIG_PP}&nbsp;пп).
+                    ▲ / ▼ рядом с подписью стороны — отклонение текущей выборки
+                    от общей нормы по базе (порог {SIG_PP}&nbsp;пп).
                   </p>
                 )}
               </>
             }
           >
-            <div className="space-y-3 py-2">
+            <div className="space-y-2 py-2">
               {data.emotionalPairs.map(pair => {
                 const pv = (avgEmotional[pair.positiveKey] ?? 0) * 100;
                 const nv = (avgEmotional[pair.negativeKey] ?? 0) * 100;
@@ -699,63 +814,62 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                 const gnv = (globalAvgEmotional[pair.negativeKey] ?? 0) * 100;
                 const dpv = pv - gpv;
                 const dnv = nv - gnv;
-                const arrow = (d: number) => (d >= SIG_PP ? '▲' : d <= -SIG_PP ? '▼' : '·');
-                const fmt = (d: number) => (d >= 0 ? '+' : '') + d.toFixed(1) + ' пп';
-                const cls = (d: number) =>
-                  d >= SIG_PP
-                    ? 'text-[var(--color-success)]'
-                    : d <= -SIG_PP
-                      ? 'text-[var(--color-error)]'
-                      : 'text-[var(--color-text-muted)]';
+                // Per-side significance marker. Drop the inline ±пп text — only
+                // the direction matters; the absolute % is already on the bar.
+                const arrow = (d: number) => (d >= SIG_PP ? '▲' : d <= -SIG_PP ? '▼' : '');
+                const arrowCls = (d: number) =>
+                  d >= SIG_PP ? 'text-[var(--color-success)]' : 'text-[var(--color-error)]';
+                const posMark = isFiltered ? arrow(dpv) : '';
+                const negMark = isFiltered ? arrow(dnv) : '';
                 return (
                   <div key={pair.positiveKey} className="flex items-center gap-2">
-                    <span className="w-[140px] text-right text-[11px] text-[var(--color-text-secondary)] leading-tight shrink-0">
+                    <span className="w-[150px] text-right text-[11px] text-[var(--color-text-secondary)] leading-tight shrink-0">
+                      {posMark && (
+                        <span
+                          className={`${arrowCls(dpv)} mr-1`}
+                          title={`Норма по базе: ${gpv.toFixed(0)}%`}
+                        >
+                          {posMark}
+                        </span>
+                      )}
                       {pair.positiveLabel}
                     </span>
-                    <div className="flex-1">
-                      <div
-                        className="h-6 rounded-full overflow-hidden bg-[var(--color-bg-secondary)] flex"
-                        title={`Позитив ${pv.toFixed(0)}% · Негатив ${nv.toFixed(0)}% · Затрудняюсь ${dk.toFixed(0)}%`}
-                      >
-                        {/* Pos/neg/dontKnow segments. The inline label is hidden
-                            only on very thin slices (<3%) — anything wider gets
-                            a label even if it overflows the segment visually
-                            (whitespace-nowrap + small font keep it readable). */}
-                        <div className="h-full bg-[#00b894] transition-all flex items-center justify-center overflow-visible" style={{ width: `${pv}%` }}>
-                          {pv >= 3 && (
-                            <span className="text-[10px] font-semibold text-white drop-shadow-sm whitespace-nowrap">
-                              {pv.toFixed(0)}%
-                            </span>
-                          )}
-                        </div>
-                        <div className="h-full bg-[#ff6b6b] transition-all flex items-center justify-center overflow-visible" style={{ width: `${nv}%` }}>
-                          {nv >= 3 && (
-                            <span className="text-[10px] font-semibold text-white drop-shadow-sm whitespace-nowrap">
-                              {nv.toFixed(0)}%
-                            </span>
-                          )}
-                        </div>
-                        <div className="h-full bg-[var(--color-border-strong)] transition-all flex items-center justify-center overflow-visible" style={{ width: `${dk}%` }}>
-                          {dk >= 6 && (
-                            <span className="text-[10px] font-medium text-[var(--color-text-secondary)] whitespace-nowrap">
-                              {dk.toFixed(0)}%
-                            </span>
-                          )}
-                        </div>
+                    <div
+                      className="flex-1 h-6 rounded-full overflow-hidden bg-[var(--color-bg-secondary)] flex"
+                      title={`Позитив ${pv.toFixed(0)}% · Негатив ${nv.toFixed(0)}% · Затрудняюсь ${dk.toFixed(0)}%`}
+                    >
+                      <div className="h-full bg-[#00b894] transition-all flex items-center justify-center overflow-visible" style={{ width: `${pv}%` }}>
+                        {pv >= 3 && (
+                          <span className="text-[10px] font-semibold text-white drop-shadow-sm whitespace-nowrap">
+                            {pv.toFixed(0)}%
+                          </span>
+                        )}
                       </div>
-                      {isFiltered && (
-                        <div className="flex justify-between text-[10px] mt-0.5 leading-none">
-                          <span className={cls(dpv)}>
-                            {arrow(dpv)} {fmt(dpv)} <span className="text-[var(--color-text-muted)]">(норма {gpv.toFixed(0)}%)</span>
+                      <div className="h-full bg-[#ff6b6b] transition-all flex items-center justify-center overflow-visible" style={{ width: `${nv}%` }}>
+                        {nv >= 3 && (
+                          <span className="text-[10px] font-semibold text-white drop-shadow-sm whitespace-nowrap">
+                            {nv.toFixed(0)}%
                           </span>
-                          <span className={cls(-dnv)}>
-                            {arrow(dnv)} {fmt(dnv)} <span className="text-[var(--color-text-muted)]">(норма {gnv.toFixed(0)}%)</span>
+                        )}
+                      </div>
+                      <div className="h-full bg-[var(--color-border-strong)] transition-all flex items-center justify-center overflow-visible" style={{ width: `${dk}%` }}>
+                        {dk >= 6 && (
+                          <span className="text-[10px] font-medium text-[var(--color-text-secondary)] whitespace-nowrap">
+                            {dk.toFixed(0)}%
                           </span>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
-                    <span className="w-[140px] text-[11px] text-[var(--color-text-secondary)] leading-tight shrink-0">
+                    <span className="w-[150px] text-[11px] text-[var(--color-text-secondary)] leading-tight shrink-0">
                       {pair.negativeLabel}
+                      {negMark && (
+                        <span
+                          className={`${arrowCls(dnv)} ml-1`}
+                          title={`Норма по базе: ${gnv.toFixed(0)}%`}
+                        >
+                          {negMark}
+                        </span>
+                      )}
                     </span>
                   </div>
                 );
@@ -878,21 +992,33 @@ function RatingTab({ creatives, allCreatives, averages }: {
               </tr>
             </thead>
             <tbody>
-              <tr className="bg-[var(--color-bg-secondary)] border-b-2 border-[#7C3AED]/30 text-xs">
-                <td className="px-2.5 py-2 text-[#7C3AED] font-bold">∅</td>
-                <td colSpan={3} className="px-2.5 py-2 text-[#7C3AED] font-semibold">
-                  Среднее по {allCreatives.length} креативам
-                </td>
-                <td className="px-2.5 py-2" />
-                <td className="px-2.5 py-2 font-bold">{pct(averages.like)}</td>
-                <td className="px-2.5 py-2 font-bold">{pct(averages.clarity)}</td>
-                <td className="px-2.5 py-2 font-bold">{pct(averages.uniqueness)}</td>
-                <td className="px-2.5 py-2 font-bold">{pct(averages.relevance)}</td>
-                <td className="px-2.5 py-2 font-bold">{pct(averages.brandRecognition)}</td>
-                <td className="px-2.5 py-2 font-bold">{pct(averages.brandFit)}</td>
-                <td className="px-2.5 py-2 font-bold">{pct(averages.brandAttitude)}</td>
-                <td className="px-2.5 py-2 font-bold">{pct(averages.intent)}</td>
-                <td className="px-2.5 py-2 font-bold">{avgIndex != null ? (avgIndex * 100).toFixed(1) + '%' : '—'}</td>
+              {/* Each cell is individually sticky — wrapping <tr> with
+                  position:sticky doesn't reliably work in scrollable tables.
+                  top-9 (~36px) clears the sticky thead above. */}
+              <tr className="text-xs">
+                {(() => {
+                  const cls = 'sticky top-9 z-[9] bg-[var(--color-bg-secondary)] border-b-2 border-[#7C3AED]/30 px-2.5 py-2';
+                  return (
+                    <>
+                      <td className={`${cls} text-[#7C3AED] font-bold`}>∅</td>
+                      <td colSpan={3} className={`${cls} text-[#7C3AED] font-semibold`}>
+                        Среднее по {allCreatives.length} креативам
+                      </td>
+                      <td className={cls} />
+                      <td className={`${cls} font-bold`}>{pct(averages.like)}</td>
+                      <td className={`${cls} font-bold`}>{pct(averages.clarity)}</td>
+                      <td className={`${cls} font-bold`}>{pct(averages.uniqueness)}</td>
+                      <td className={`${cls} font-bold`}>{pct(averages.relevance)}</td>
+                      <td className={`${cls} font-bold`}>{pct(averages.brandRecognition)}</td>
+                      <td className={`${cls} font-bold`}>{pct(averages.brandFit)}</td>
+                      <td className={`${cls} font-bold`}>{pct(averages.brandAttitude)}</td>
+                      <td className={`${cls} font-bold`}>{pct(averages.intent)}</td>
+                      <td className={`${cls} font-bold`}>
+                        {avgIndex != null ? (avgIndex * 100).toFixed(1) + '%' : '—'}
+                      </td>
+                    </>
+                  );
+                })()}
               </tr>
               {enriched.map((c, i) => {
                 return (

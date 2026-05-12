@@ -7,7 +7,7 @@ import {
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { ChevronDown, Info } from 'lucide-react';
 import type { Creative } from '../research/types';
-import { pctN } from '../research/utils';
+import { pctN, zTestProp } from '../research/utils';
 
 ChartJS.register(
   CategoryScale, LinearScale, BarElement, PointElement,
@@ -18,6 +18,10 @@ interface Props {
   /** Source of creatives. In the standalone build this is always passed in;
    *  the legacy live-fetch fallback was removed. */
   creatives: Creative[];
+  /** Full unfiltered list of creatives — used as the baseline for the
+   *  significance markers (▲/▼ vs «база в целом»). If omitted, no markers
+   *  are shown. */
+  baselineCreatives?: Creative[];
   /** Optional link shown in the header (e.g. "Подробнее в Brand Research"). */
   detailLink?: { to: string; label: string };
   /** Which widgets to render. Defaults to 'both'. */
@@ -32,13 +36,35 @@ interface Props {
  * Includes a short definition footer so non-analysts can interpret the chart
  * without bouncing to the Help tab.
  */
-export default function BrandRecallOverview({ creatives, detailLink, only = 'both' }: Props) {
+export default function BrandRecallOverview({
+  creatives,
+  baselineCreatives,
+  detailLink,
+  only = 'both',
+}: Props) {
   const showRecall = only !== 'purity';
   const showPurity = only !== 'recall';
 
-  // Wired to the parent-filtered list. Top-N by default, expand to all.
+  // Wired to the parent-filtered list (e.g. Research page filters at the top).
+  // The widget no longer has its own creative picker — instead it shows the
+  // top-N rows by brand recall and lets the user expand to all of them.
   const [expanded, setExpanded] = useState(false);
   const [showDefs, setShowDefs] = useState(false);
+
+  // Baseline averages across the FULL dataset (not the filtered cohort).
+  // Used to mark per-creative significance vs «база в целом» — ▲ if a row
+  // is significantly above the baseline, ▼ if below. Falls back to the
+  // creatives prop if no baseline was passed (≡ no comparison).
+  const baseline = baselineCreatives ?? creatives;
+  const baselineBrand = useMemo(() => {
+    const vs = baseline.map(c => c.metrics.brandRecall).filter((v): v is number => v != null);
+    return vs.length ? vs.reduce((a, b) => a + b, 0) / vs.length : null;
+  }, [baseline]);
+  const baselineProduct = useMemo(() => {
+    const vs = baseline.map(c => c.metrics.productRecall).filter((v): v is number => v != null);
+    return vs.length ? vs.reduce((a, b) => a + b, 0) / vs.length : null;
+  }, [baseline]);
+  const hasBaseline = baselineCreatives !== undefined;
 
   // Per-creative rows. Top-N by brand recall is shown by default so the chart
   // stays readable; "Показать все (N)" expands to the full filtered list.
@@ -50,8 +76,12 @@ export default function BrandRecallOverview({ creatives, detailLink, only = 'bot
         id: c.id,
         name: c.name,
         url: c.rutubeUrl,
+        base: c.base,
         brand: pctN(c.metrics.brandRecall),
         product: pctN(c.metrics.productRecall),
+        // Raw fractional values for z-test against baseline.
+        brandRaw: c.metrics.brandRecall,
+        productRaw: c.metrics.productRecall,
       }))
       .filter(r => r.brand != null || r.product != null)
       .sort((a, b) => (b.brand ?? 0) - (a.brand ?? 0));
@@ -187,15 +217,27 @@ export default function BrandRecallOverview({ creatives, detailLink, only = 'bot
           <ChartCard
             title="Верно назвали бренд и продукт — по роликам"
             subtitle={
-              canExpand && !expanded
+              (canExpand && !expanded
                 ? `Открытые вопросы. Топ-${TOP_N_RECALL} из ${recallRowsAll.length} по доле верно назвавших бренд. Кнопка «Показать все» — развернуть. Клик по названию открывает видео.`
-                : 'Открытые вопросы. Сортировка по доле верно назвавших бренд. Клик по названию открывает видео.'
+                : 'Открытые вопросы. Сортировка по доле верно назвавших бренд. Клик по названию открывает видео.')
+              + (hasBaseline ? ' ▲ / ▼ — значимое отклонение от средней по базе (|z|≥1.96).' : '')
             }
           >
             <div style={{ height: Math.max(240, recallRows.length * 40) }}>
               <Bar
                 data={{
-                  labels: recallRows.map(r => truncateName(r.name)),
+                  labels: recallRows.map(r => {
+                    // Append per-side significance markers when a baseline is
+                    // provided. SIG_Z = 1.96 → p<0.05 two-sided.
+                    if (!hasBaseline) return truncateName(r.name);
+                    const SIG = 1.96;
+                    const zB = zTestProp(r.brandRaw, baselineBrand, r.base || 0);
+                    const zP = zTestProp(r.productRaw, baselineProduct, r.base || 0);
+                    const mark = (z: number | null) =>
+                      z == null ? '' : z >= SIG ? '▲' : z <= -SIG ? '▼' : '';
+                    const tag = [mark(zB), mark(zP)].filter(Boolean).join('');
+                    return tag ? `${truncateName(r.name)} ${tag}` : truncateName(r.name);
+                  }),
                   datasets: [
                     {
                       label: 'Верно назвали бренд (открытый вопрос)',
