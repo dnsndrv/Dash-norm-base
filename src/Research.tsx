@@ -747,12 +747,18 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                       display: true,
                       clip: false,
                       font: { size: 11, weight: 700 },
-                      // X is unstacked → anchor 'end' = bar tip in data
-                      // direction (left for negative, right for positive),
-                      // align 'end' pushes further in the same direction.
-                      // Symmetric for both signs.
-                      anchor: 'end',
-                      align: 'end',
+                      // datalabels' anchor/align are defined relative to the
+                      // bar RECTANGLE on screen, not the data direction. For
+                      // a negative bar (rect from −X to 0), 'end' = right
+                      // edge = zero line, which is the WRONG side. So:
+                      //   dataset 0 (dislike, negative): anchor & align 'start'
+                      //     → pin to LEFT edge of rect (= data tip at −X),
+                      //       push further LEFT (outside the bar).
+                      //   dataset 1 (like, positive): anchor & align 'end'
+                      //     → pin to RIGHT edge of rect (= data tip at +X),
+                      //       push further RIGHT.
+                      anchor: (ctx) => (ctx.datasetIndex === 0 ? 'start' : 'end'),
+                      align: (ctx) => (ctx.datasetIndex === 0 ? 'start' : 'end'),
                       offset: 6,
                       color: (ctx) => {
                         const row = reactionRows[ctx.dataIndex];
