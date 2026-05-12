@@ -758,7 +758,12 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                     },
                   },
                   scales: {
+                    // Stacked on BOTH axes is the Chart.js idiom for diverging
+                    // bars. Without it the two datasets render as grouped bars
+                    // and Chart.js offsets them on alternating rows, which is
+                    // unreadable for category-by-category comparison.
                     x: {
+                      stacked: true,
                       ticks: {
                         font: { size: 11 },
                         callback: (v) => {
@@ -769,6 +774,7 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                       grid: { color: (ctx) => (ctx.tick.value === 0 ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.05)') },
                     },
                     y: {
+                      stacked: true,
                       ticks: { font: { size: 11 }, color: '#374151' },
                       grid: { display: false },
                     },
