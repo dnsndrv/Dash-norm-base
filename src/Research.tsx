@@ -745,16 +745,14 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                     },
                     datalabels: {
                       display: true,
-                      clamp: true,
+                      clip: false,
                       font: { size: 11, weight: 700 },
-                      // For stacked diverging bars the bar tip is at the
-                      // dataset's value (e.g. -X for negative). anchor:'end'
-                      // pins to that tip, and align uses ABSOLUTE direction
-                      // ('left' / 'right') so labels reliably land at the
-                      // outer edge regardless of sign — 'end' alone is
-                      // ambiguous in stacked mode.
+                      // X is unstacked → anchor 'end' = bar tip in data
+                      // direction (left for negative, right for positive),
+                      // align 'end' pushes further in the same direction.
+                      // Symmetric for both signs.
                       anchor: 'end',
-                      align: (ctx) => (ctx.datasetIndex === 0 ? 'left' : 'right'),
+                      align: 'end',
                       offset: 6,
                       color: (ctx) => {
                         const row = reactionRows[ctx.dataIndex];
@@ -779,12 +777,15 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                     },
                   },
                   scales: {
-                    // Stacked on BOTH axes is the Chart.js idiom for diverging
-                    // bars. Without it the two datasets render as grouped bars
-                    // and Chart.js offsets them on alternating rows, which is
-                    // unreadable for category-by-category comparison.
+                    // Only Y is stacked — this is what collapses both
+                    // datasets onto the same row (otherwise grouped bars
+                    // offset onto alternating rows). X must NOT be stacked,
+                    // because in stacked-X mode the datalabels plugin treats
+                    // bar's "end" relative to the stack base (zero) instead
+                    // of the data value, which broke outside-tip labels for
+                    // negative bars.
                     x: {
-                      stacked: true,
+                      stacked: false,
                       ticks: {
                         font: { size: 11 },
                         callback: (v) => {
