@@ -719,7 +719,7 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                   // Reserve space on both edges so outside-of-bar percentage
                   // labels (left tip of red bars, right tip of green bars)
                   // don't get clipped.
-                  layout: { padding: { left: 36, right: 36 } },
+                  layout: { padding: { left: 48, right: 48 } },
                   plugins: {
                     legend: {
                       position: 'top',
@@ -743,10 +743,16 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                       },
                     },
                     datalabels: {
+                      // display: true forces the plugin to render labels even
+                      // when its overlap heuristic would otherwise hide them
+                      // (default is 'auto'). clamp: true keeps the label
+                      // inside the chart area when it would overflow.
+                      display: true,
+                      clamp: true,
+                      font: { size: 10, weight: 600 },
                       // Both datasets: anchor at the bar tip, align further
                       // outside. For negative bars this puts the % on the
                       // far left; for positive bars — on the far right.
-                      font: { size: 10, weight: 600 },
                       anchor: 'end',
                       align: 'end',
                       offset: 4,
@@ -761,10 +767,8 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                         return '#374151';
                       },
                       formatter: (v: number) => {
-                        if (v == null) return '';
-                        const abs = Math.abs(v);
-                        if (abs < 0.5) return '';
-                        return abs.toFixed(0) + '%';
+                        if (v == null || v === 0) return '';
+                        return Math.abs(v).toFixed(0) + '%';
                       },
                     },
                   },
