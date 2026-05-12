@@ -402,9 +402,13 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
     </div>
   );
 
-  // Likes / Dislikes averages
+  // Likes / Dislikes averages — both for the current filtered cohort and the
+  // global (all creatives) baseline. The baseline lets the combined "что
+  // понравилось / не понравилось" chart mark significant deviations vs norm.
   const avgLikes = useMemo(() => avgByKey(creatives, c => c.likes), [creatives]);
   const avgDislikes = useMemo(() => avgByKey(creatives, c => c.dislikes), [creatives]);
+  const globalAvgLikes = useMemo(() => avgByKey(allCreatives, c => c.likes), [allCreatives]);
+  const globalAvgDislikes = useMemo(() => avgByKey(allCreatives, c => c.dislikes), [allCreatives]);
 
   const likeCategories = useMemo(() => {
     if (!data.likeLabels) return [];
@@ -416,8 +420,28 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
     return orderLikeDislikeKeys(Object.keys(data.dislikeLabels), DISLIKE_EXTRA);
   }, [data.dislikeLabels]);
 
-  // Emotional averages
+  // Union of categories across likes and dislikes for the combined diverging
+  // chart. Shared keys come first (in SHARED_ORDER), then asymmetric likes
+  // (e.g. "relevant"), then asymmetric dislikes ("unclear", "irrelevant").
+  // Asymmetric keys naturally have 0 on the opposite side.
+  const reactionCategories = useMemo(() => {
+    const union = Array.from(new Set([...likeCategories, ...dislikeCategories]));
+    const sharedSet = new Set(SHARED_ORDER);
+    const shared = SHARED_ORDER.filter(k => union.includes(k));
+    const onlyLike = likeCategories.filter(k => !sharedSet.has(k));
+    const onlyDislike = dislikeCategories.filter(k => !sharedSet.has(k));
+    return [...shared, ...onlyLike, ...onlyDislike];
+  }, [likeCategories, dislikeCategories]);
+
+  const reactionLabelFor = useCallback(
+    (k: string) =>
+      data.likeLabels?.[k] || data.dislikeLabels?.[k] || k,
+    [data.likeLabels, data.dislikeLabels],
+  );
+
+  // Emotional averages: filtered cohort + global baseline (for делta vs norm).
   const avgEmotional = useMemo(() => avgByKey(creatives, c => c.emotional), [creatives]);
+  const globalAvgEmotional = useMemo(() => avgByKey(allCreatives, c => c.emotional), [allCreatives]);
 
   // Group by production type (ИИ vs Продакшн etc.) — moved here from the "Форматы" tab
   // so it sits next to the main KPI rows and gives a top-level cut before deep-dives.
@@ -441,21 +465,42 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
       {renderKpiRow('Средние значения', MAIN_METRICS)}
       {renderKpiRow('Бренд-метрики', BRAND_METRICS)}
 
-      {/* Open-question recall by product — migrated here after "Бренд" tab was retired.
-          IMPORTANT: we feed the UNFILTERED list on purpose. This widget has its own
-          internal creative picker and must not react to top-of-page filters. */}
-      <BrandRecallOverview creatives={allCreatives} only="recall" />
+      {/* Open-question recall by creative. Wired to the page-level filters
+          (Yandex/Competitors → Product → Campaign → Creatives) — no more
+          widget-local picker. Top-10 by default, expand to all. */}
+      <BrandRecallOverview creatives={creatives} only="recall" />
 
       {renderKpiRow('Дополнительные метрики', EXTRA_METRICS)}
 
-      {prodTypes.length > 0 && (
-        <ChartCard title="Средние по типу производства">
+      {prodTypes.length > 0 && (() => {
+        // Prepend a virtual "Среднее по всем" group so each production-type
+        // column has a visible baseline to compare against. Using the GLOBAL
+        // (all-creatives) average — not the filtered one — keeps the
+        // benchmark stable when users narrow the cohort with the top filters.
+        const REF = 'Среднее по всем';
+        const groupLabels = [REF, ...prodTypes];
+        return (
+        <ChartCard
+          title="Средние по типу производства"
+          info={
+            <>
+              Сравнение средних метрик по типу производства. Первая группа
+              «{REF}» — среднее по всем креативам базы норм (без учёта
+              фильтров наверху), это бенчмарк. Остальные группы — средние
+              для роликов соответствующего production-типа в текущей выборке.
+            </>
+          }
+        >
           <Bar
             data={{
-              labels: prodTypes,
+              labels: groupLabels,
               datasets: prodTypeMetrics.map(m => ({
                 label: m.label,
-                data: prodTypes.map(p => pctN(avg(prodTypeGroups[p].map(c => c.metrics[m.key])))),
+                data: groupLabels.map(g =>
+                  g === REF
+                    ? pctN(globalAverages[m.key])
+                    : pctN(avg(prodTypeGroups[g].map(c => c.metrics[m.key]))),
+                ),
                 backgroundColor: m.color,
                 borderRadius: 4,
               })),
@@ -464,98 +509,263 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
               responsive: true,
               plugins: { legend: { labels: { font: { size: 12 } } }, datalabels: { display: false } },
               scales: {
-                x: { ticks: { font: { size: 11 } }, grid: { display: false } },
-                y: { ticks: { font: { size: 11 }, callback: v => v + '%' }, grid: { color: 'rgba(0,0,0,0.06)' }, min: 0 },
-              },
-            }}
-          />
-        </ChartCard>
-      )}
-
-      {/* Likes — full list, including asymmetric categories like "relevant" / "nothing" */}
-      {likeCategories.length > 0 && (
-        <ChartCard title="Что понравилось в ролике">
-          <Bar
-            data={{
-              labels: likeCategories.map(k => data.likeLabels?.[k] || k),
-              datasets: [
-                {
-                  label: 'Понравилось',
-                  data: likeCategories.map(k => pctN(avgLikes[k] ?? null)),
-                  backgroundColor: '#10B981',
-                  borderRadius: 4,
+                x: {
+                  ticks: {
+                    font: { size: 11 },
+                    // Visually mark the benchmark category so users see it's
+                    // a reference, not just another production type.
+                    color: (ctx) => (ctx.tick.label === REF ? '#7C3AED' : '#374151'),
+                  },
+                  grid: { display: false },
                 },
-              ],
-            }}
-            options={{
-              responsive: true,
-              plugins: { legend: { display: false }, datalabels: { display: false } },
-              scales: {
-                x: { ticks: { font: { size: 11 }, maxRotation: 45, minRotation: 30 }, grid: { display: false } },
                 y: { ticks: { font: { size: 11 }, callback: v => v + '%' }, grid: { color: 'rgba(0,0,0,0.06)' }, min: 0 },
               },
             }}
           />
         </ChartCard>
-      )}
+        );
+      })()}
 
-      {/* Dislikes — full list, including asymmetric categories like "unclear" / "irrelevant" / "allGood" */}
-      {dislikeCategories.length > 0 && (
-        <ChartCard title="Что НЕ понравилось в ролике">
-          <Bar
-            data={{
-              labels: dislikeCategories.map(k => data.dislikeLabels?.[k] || k),
-              datasets: [
-                {
-                  label: 'НЕ понравилось',
-                  data: dislikeCategories.map(k => pctN(avgDislikes[k] ?? null)),
-                  backgroundColor: '#EF4444',
-                  borderRadius: 4,
-                },
-              ],
-            }}
-            options={{
-              responsive: true,
-              plugins: { legend: { display: false }, datalabels: { display: false } },
-              scales: {
-                x: { ticks: { font: { size: 11 }, maxRotation: 45, minRotation: 30 }, grid: { display: false } },
-                y: { ticks: { font: { size: 11 }, callback: v => v + '%' }, grid: { color: 'rgba(0,0,0,0.06)' }, min: 0 },
-              },
-            }}
-          />
-        </ChartCard>
-      )}
+      {/* Reactions: combined diverging chart for "что понравилось / не понравилось".
+          Green = доля «понравилось» (вправо), красный = доля «не понравилось»
+          (показывается влево как отрицательное значение). Каждая строка-категория
+          несёт обе доли. Если выборка отфильтрована — отмечаем значимое отклонение
+          от общей нормы (z-test по сумме баз креативов). */}
+      {reactionCategories.length > 0 && (() => {
+        const n = isFiltered ? nFiltered : totalBase(allCreatives);
+        const SIG_Z = 1.65;
+        type Side = 'like' | 'dislike';
+        const zFor = (k: string, side: Side): number | null => {
+          if (!isFiltered) return null;
+          const p = side === 'like' ? avgLikes[k] : avgDislikes[k];
+          const p0 = side === 'like' ? globalAvgLikes[k] : globalAvgDislikes[k];
+          return zTestProp(p ?? null, p0 ?? null, n);
+        };
+        // Annotate the y-axis label with arrows when the cohort differs
+        // significantly from the global norm. Like / dislike arrows are
+        // shown side-by-side so users see both directions at a glance.
+        const labels = reactionCategories.map(k => {
+          const base = reactionLabelFor(k);
+          if (!isFiltered) return base;
+          const zL = zFor(k, 'like');
+          const zD = zFor(k, 'dislike');
+          const mark = (z: number | null, up = '▲', down = '▼') =>
+            z == null ? '' : z >= SIG_Z ? up : z <= -SIG_Z ? down : '';
+          const tags = [mark(zL), mark(zD)].filter(Boolean).join('');
+          return tags ? `${base} ${tags}` : base;
+        });
+        const likeData = reactionCategories.map(k => pctN(avgLikes[k] ?? null) ?? 0);
+        const dislikeData = reactionCategories.map(k => {
+          const v = pctN(avgDislikes[k] ?? null);
+          return v == null ? 0 : -v;
+        });
+        return (
+          <ChartCard
+            title="Реакция аудитории — понравилось / не понравилось"
+            info={
+              <>
+                <p>
+                  Слева красное — доля респондентов, отметивших аспект как «не понравился»;
+                  справа зелёное — доля «понравился». Категории «ничего не понравилось» и
+                  «всё устраивает» скрыты — они мета-ответы и засоряют картинку.
+                </p>
+                {isFiltered && (
+                  <p className="mt-1">
+                    ▲ / ▼ рядом с категорией — значимое отклонение текущей выборки
+                    от общей нормы (z&nbsp;≥&nbsp;{SIG_Z.toFixed(2)}, p&nbsp;&lt;&nbsp;0.10).
+                    Левый знак относится к «не понравилось», правый — к «понравилось».
+                  </p>
+                )}
+              </>
+            }
+          >
+            <div style={{ height: Math.max(260, reactionCategories.length * 28) }}>
+              <Bar
+                data={{
+                  labels,
+                  datasets: [
+                    {
+                      label: 'Не понравилось',
+                      data: dislikeData,
+                      backgroundColor: '#EF4444',
+                      borderRadius: 4,
+                      barThickness: 12,
+                    },
+                    {
+                      label: 'Понравилось',
+                      data: likeData,
+                      backgroundColor: '#10B981',
+                      borderRadius: 4,
+                      barThickness: 12,
+                    },
+                  ],
+                }}
+                options={{
+                  indexAxis: 'y',
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      position: 'top',
+                      align: 'start',
+                      labels: { font: { size: 12 }, boxWidth: 12, boxHeight: 12, padding: 14 },
+                    },
+                    tooltip: {
+                      callbacks: {
+                        title: (items) => reactionLabelFor(reactionCategories[items[0].dataIndex]),
+                        label: (ctx) => {
+                          const k = reactionCategories[ctx.dataIndex];
+                          const side: Side = ctx.datasetIndex === 0 ? 'dislike' : 'like';
+                          const v = pctN(side === 'like' ? (avgLikes[k] ?? null) : (avgDislikes[k] ?? null));
+                          const g = pctN(side === 'like' ? (globalAvgLikes[k] ?? null) : (globalAvgDislikes[k] ?? null));
+                          const head = side === 'like' ? 'Понравилось' : 'Не понравилось';
+                          const cur = v == null ? '—' : v.toFixed(1) + '%';
+                          if (g == null) return `${head}: ${cur}`;
+                          const d = v == null ? null : v - g;
+                          const sign = d == null ? '' : d >= 0 ? '+' : '';
+                          const delta = d == null ? '' : ` · норма ${g.toFixed(1)}% (${sign}${d.toFixed(1)} пп)`;
+                          return `${head}: ${cur}${delta}`;
+                        },
+                      },
+                    },
+                    datalabels: {
+                      color: '#1F1F1F',
+                      font: { size: 10, weight: 500 },
+                      anchor: (ctx) => (ctx.datasetIndex === 0 ? 'start' : 'end'),
+                      align: (ctx) => (ctx.datasetIndex === 0 ? 'start' : 'end'),
+                      offset: 3,
+                      formatter: (v: number) => {
+                        if (v == null) return '';
+                        const abs = Math.abs(v);
+                        if (abs < 1.5) return '';
+                        return abs.toFixed(0) + '%';
+                      },
+                    },
+                  },
+                  scales: {
+                    x: {
+                      ticks: {
+                        font: { size: 11 },
+                        callback: (v) => {
+                          const n = Number(v);
+                          return (n >= 0 ? n : -n) + '%';
+                        },
+                      },
+                      grid: { color: (ctx) => (ctx.tick.value === 0 ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.05)') },
+                    },
+                    y: {
+                      ticks: { font: { size: 11 }, color: '#374151' },
+                      grid: { display: false },
+                    },
+                  },
+                }}
+              />
+            </div>
+          </ChartCard>
+        );
+      })()}
 
-      {/* Emotional Perception — semantic differential */}
-      {data.emotionalPairs?.length > 0 && (
-        <ChartCard title="Эмоциональное восприятие">
-          <div className="space-y-2 py-2">
-            {data.emotionalPairs.map(pair => {
-              const pv = (avgEmotional[pair.positiveKey] ?? 0) * 100;
-              const nv = (avgEmotional[pair.negativeKey] ?? 0) * 100;
-              const total = pv + nv || 1;
-              const pPct = pv / total * 100;
-              return (
-                <div key={pair.positiveKey} className="flex items-center gap-2">
-                  <span className="w-[140px] text-right text-[11px] text-[var(--color-text-secondary)] leading-tight shrink-0">
-                    {pair.positiveLabel}
-                  </span>
-                  <div className="flex-1 h-6 rounded-full overflow-hidden bg-[var(--color-bg-secondary)] relative flex">
-                    <div className="h-full bg-[#00b894] transition-all" style={{ width: `${pPct}%` }} />
-                    <div className="h-full bg-[#ff6b6b] transition-all" style={{ width: `${100 - pPct}%` }} />
-                    <span className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-white drop-shadow-sm">
-                      {pv.toFixed(0)}% / {nv.toFixed(0)}%
+      {/* Emotional Perception — semantic differential with explicit "затрудняюсь
+          ответить" share + сравнение со средним. Раньше нормировали pos/neg к
+          100% и теряли «затрудняюсь»; теперь показываем три абсолютных доли. */}
+      {data.emotionalPairs?.length > 0 && (() => {
+        const SIG_PP = 3; // ≥3 пп vs norm считаем «заметным» отклонением
+        return (
+          <ChartCard
+            title="Эмоциональное восприятие"
+            info={
+              <>
+                <p>
+                  Полоса — три доли респондентов: <span className="text-[#00985F] font-medium">позитивная</span>,{' '}
+                  <span className="text-[#FF3333] font-medium">негативная</span> и{' '}
+                  <span className="text-[var(--color-text-muted)] font-medium">«затрудняюсь ответить»</span>{' '}
+                  (= 100% − позитив − негатив).
+                </p>
+                {isFiltered && (
+                  <p className="mt-1">
+                    Под полосой — отклонение позитива и негатива от общей нормы
+                    в процентных пунктах. ▲ выше нормы, ▼ ниже (порог {SIG_PP}&nbsp;пп).
+                  </p>
+                )}
+              </>
+            }
+          >
+            <div className="space-y-3 py-2">
+              {data.emotionalPairs.map(pair => {
+                const pv = (avgEmotional[pair.positiveKey] ?? 0) * 100;
+                const nv = (avgEmotional[pair.negativeKey] ?? 0) * 100;
+                const dk = Math.max(0, 100 - pv - nv);
+                const gpv = (globalAvgEmotional[pair.positiveKey] ?? 0) * 100;
+                const gnv = (globalAvgEmotional[pair.negativeKey] ?? 0) * 100;
+                const dpv = pv - gpv;
+                const dnv = nv - gnv;
+                const arrow = (d: number) => (d >= SIG_PP ? '▲' : d <= -SIG_PP ? '▼' : '·');
+                const fmt = (d: number) => (d >= 0 ? '+' : '') + d.toFixed(1) + ' пп';
+                const cls = (d: number) =>
+                  d >= SIG_PP
+                    ? 'text-[var(--color-success)]'
+                    : d <= -SIG_PP
+                      ? 'text-[var(--color-error)]'
+                      : 'text-[var(--color-text-muted)]';
+                return (
+                  <div key={pair.positiveKey} className="flex items-center gap-2">
+                    <span className="w-[140px] text-right text-[11px] text-[var(--color-text-secondary)] leading-tight shrink-0">
+                      {pair.positiveLabel}
+                    </span>
+                    <div className="flex-1">
+                      <div
+                        className="h-6 rounded-full overflow-hidden bg-[var(--color-bg-secondary)] flex"
+                        title={`Позитив ${pv.toFixed(0)}% · Негатив ${nv.toFixed(0)}% · Затрудняюсь ${dk.toFixed(0)}%`}
+                      >
+                        <div className="h-full bg-[#00b894] transition-all flex items-center justify-center" style={{ width: `${pv}%` }}>
+                          {pv >= 8 && (
+                            <span className="text-[10px] font-semibold text-white drop-shadow-sm">
+                              {pv.toFixed(0)}%
+                            </span>
+                          )}
+                        </div>
+                        <div className="h-full bg-[#ff6b6b] transition-all flex items-center justify-center" style={{ width: `${nv}%` }}>
+                          {nv >= 8 && (
+                            <span className="text-[10px] font-semibold text-white drop-shadow-sm">
+                              {nv.toFixed(0)}%
+                            </span>
+                          )}
+                        </div>
+                        <div className="h-full bg-[var(--color-border-strong)] transition-all flex items-center justify-center" style={{ width: `${dk}%` }}>
+                          {dk >= 10 && (
+                            <span className="text-[10px] font-medium text-[var(--color-text-secondary)]">
+                              {dk.toFixed(0)}%
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      {isFiltered && (
+                        <div className="flex justify-between text-[10px] mt-0.5 leading-none">
+                          <span className={cls(dpv)}>
+                            {arrow(dpv)} {fmt(dpv)} <span className="text-[var(--color-text-muted)]">(норма {gpv.toFixed(0)}%)</span>
+                          </span>
+                          <span className={cls(-dnv)}>
+                            {arrow(dnv)} {fmt(dnv)} <span className="text-[var(--color-text-muted)]">(норма {gnv.toFixed(0)}%)</span>
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <span className="w-[140px] text-[11px] text-[var(--color-text-secondary)] leading-tight shrink-0">
+                      {pair.negativeLabel}
                     </span>
                   </div>
-                  <span className="w-[140px] text-[11px] text-[var(--color-text-secondary)] leading-tight shrink-0">
-                    {pair.negativeLabel}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </ChartCard>
-      )}
+                );
+              })}
+              {/* Legend */}
+              <div className="flex items-center justify-center gap-4 text-[10px] text-[var(--color-text-muted)] pt-1">
+                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-[#00b894]" /> Позитивная сторона</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-[#ff6b6b]" /> Негативная сторона</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-[var(--color-border-strong)]" /> Затрудняюсь ответить</span>
+              </div>
+            </div>
+          </ChartCard>
+        );
+      })()}
 
       {/* Rating table */}
       <div>
@@ -806,8 +1016,35 @@ function DriversTab({ creatives, averages }: {
         })}
       </div>
 
-      {/* Top 30 by intent */}
-      <ChartCard title="Топ-30 по намерению">
+      {/* Top 30 by intent — colored by deviation from the cohort average. */}
+      <ChartCard
+        title="Топ-30 по намерению"
+        info={
+          <>
+            Цвет столбика — отклонение от среднего значения «Намерение» по
+            текущей выборке (порог ±5&nbsp;пп). Подпись справа от бара — само
+            значение метрики.
+          </>
+        }
+      >
+        {/* Color legend (always visible — the chart no longer hides it in a tooltip). */}
+        <div className="flex items-center gap-4 mb-3 text-[11px] text-[var(--color-text-secondary)]">
+          <span className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-sm bg-[#00b894]" />
+            Выше среднего (+5&nbsp;пп и больше)
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-sm bg-[#74b9ff]" />
+            В пределах ±5&nbsp;пп от среднего
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-sm bg-[#ff6b6b]" />
+            Ниже среднего (−5&nbsp;пп и меньше)
+          </span>
+          <span className="text-[var(--color-text-muted)] ml-auto">
+            Среднее по выборке: {pct(averages.intent)}
+          </span>
+        </div>
         <div style={{ height: Math.max(400, top30.length * 22) }}>
           <Bar
             data={{
@@ -825,14 +1062,32 @@ function DriversTab({ creatives, averages }: {
               indexAxis: 'y',
               responsive: true,
               maintainAspectRatio: false,
+              layout: { padding: { right: 48 } },
               plugins: {
                 legend: { display: false },
+                tooltip: {
+                  callbacks: {
+                    label: (ctx) => {
+                      const c = top30[ctx.dataIndex];
+                      const v = pctN(c.metrics.intent);
+                      const a = pctN(averages.intent);
+                      if (v == null) return 'Намерение: —';
+                      if (a == null) return `Намерение: ${v.toFixed(1)}%`;
+                      const d = v - a;
+                      const sign = d >= 0 ? '+' : '';
+                      return `Намерение: ${v.toFixed(1)}% · среднее ${a.toFixed(1)}% (${sign}${d.toFixed(1)} пп)`;
+                    },
+                  },
+                },
                 datalabels: {
                   display: true,
-                  color: '#fff',
-                  font: { size: 11 },
+                  // Dark text outside the bar — the old white-on-end label
+                  // was invisible against the page background.
+                  color: '#1F1F1F',
+                  font: { size: 11, weight: 600 },
                   anchor: 'end',
                   align: 'end',
+                  offset: 4,
                   formatter: (v: number | null) => v != null ? v.toFixed(1) + '%' : '',
                 },
               },

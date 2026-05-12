@@ -5,10 +5,9 @@ import {
   PointElement, LineElement, LineController, Tooltip, Legend,
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { Info } from 'lucide-react';
+import { ChevronDown, Info } from 'lucide-react';
 import type { Creative } from '../research/types';
 import { pctN } from '../research/utils';
-import MultiFilterSelect from './MultiFilterSelect';
 
 ChartJS.register(
   CategoryScale, LinearScale, BarElement, PointElement,
@@ -37,52 +36,15 @@ export default function BrandRecallOverview({ creatives, detailLink, only = 'bot
   const showRecall = only !== 'purity';
   const showPurity = only !== 'recall';
 
-  // Widget-local selection of creatives to compare. Empty Set = "use all".
-  // Intentionally NOT wired to parent filters — this widget is meant to be
-  // an ad-hoc comparison tool; parent filters are applied elsewhere.
-  const [picked, setPicked] = useState<Set<string>>(new Set());
+  // Wired to the parent-filtered list. Top-N by default, expand to all.
+  const [expanded, setExpanded] = useState(false);
   const [showDefs, setShowDefs] = useState(false);
 
-  // Options for the widget-local picker. Ordered by product then name so
-  // the dropdown reads as pre-grouped clusters.
-  const pickerOptions = useMemo(() => {
-    return [...creatives]
-      .sort((a, b) => {
-        const p = a.product.localeCompare(b.product);
-        return p !== 0 ? p : a.name.localeCompare(b.name);
-      })
-      .map(c => ({ value: String(c.id), label: `${c.product} — ${c.name}` }));
-  }, [creatives]);
-
-  // Sanitize selection: drop IDs that no longer exist in the data (e.g. data
-  // refreshed). Avoids stale picks quietly filtering everything out.
-  useEffect(() => {
-    if (picked.size === 0) return;
-    const known = new Set(creatives.map(c => String(c.id)));
-    let dirty = false;
-    const next = new Set<string>();
-    picked.forEach(id => {
-      if (known.has(id)) next.add(id);
-      else dirty = true;
-    });
-    if (dirty) setPicked(next);
-  }, [creatives, picked]);
-
-  const scoped = useMemo(() => {
-    if (picked.size === 0) return creatives;
-    return creatives.filter(c => picked.has(String(c.id)));
-  }, [creatives, picked]);
-
-  // Per-creative rows (previously aggregated by product).
-  // Kept the same row shape (brand/product) so the chart datasets below didn't
-  // change — only the source of rows is different.
-  //
-  // Default-view cutoff: when the user hasn't explicitly picked creatives, we
-  // show only the top-N by brand recall to keep the chart readable. As soon as
-  // they pick anything, we honor their full selection (no cutoff).
+  // Per-creative rows. Top-N by brand recall is shown by default so the chart
+  // stays readable; "Показать все (N)" expands to the full filtered list.
   const TOP_N_RECALL = 10;
   const recallRowsAll = useMemo(() => {
-    return scoped
+    return creatives
       .filter(c => c.name && c.name.trim().length > 0)
       .map(c => ({
         id: c.id,
@@ -93,18 +55,24 @@ export default function BrandRecallOverview({ creatives, detailLink, only = 'bot
       }))
       .filter(r => r.brand != null || r.product != null)
       .sort((a, b) => (b.brand ?? 0) - (a.brand ?? 0));
-  }, [scoped]);
-  const isDefaultRecallView = picked.size === 0;
+  }, [creatives]);
+  // Auto-collapse back to top-N when filters narrow the list so much that
+  // "expand" is no longer meaningful (otherwise it shows e.g. 3 rows with the
+  // button still saying "Показать все").
+  useEffect(() => {
+    if (recallRowsAll.length <= TOP_N_RECALL && expanded) setExpanded(false);
+  }, [recallRowsAll.length, expanded]);
+  const canExpand = recallRowsAll.length > TOP_N_RECALL;
   const recallRows = useMemo(
-    () => (isDefaultRecallView ? recallRowsAll.slice(0, TOP_N_RECALL) : recallRowsAll),
-    [recallRowsAll, isDefaultRecallView],
+    () => (expanded ? recallRowsAll : recallRowsAll.slice(0, TOP_N_RECALL)),
+    [recallRowsAll, expanded],
   );
 
   const truncateName = (s: string, max = 42) =>
     s.length > max ? s.slice(0, max - 1) + '…' : s;
 
   const purityRows = useMemo(() => {
-    const rows = scoped
+    const rows = creatives
       .filter(c => c.metrics.correctFeatures != null && c.metrics.incorrectFeatures != null)
       .map(c => ({
         id: c.id,
@@ -115,7 +83,7 @@ export default function BrandRecallOverview({ creatives, detailLink, only = 'bot
       .map(r => ({ ...r, delta: r.correct - r.incorrect }))
       .sort((a, b) => b.delta - a.delta);
     return rows.slice(0, 15);
-  }, [scoped]);
+  }, [creatives]);
 
   const purityLabel = (name: string) => (name.length > 32 ? name.slice(0, 32) + '…' : name);
 
@@ -137,13 +105,13 @@ export default function BrandRecallOverview({ creatives, detailLink, only = 'bot
       ? 'Чистота коммуникации'
       : 'Запоминаемость и чистота коммуникации';
 
-  const scopeLabel = picked.size === 0
-    ? `Все ролики (${creatives.length})`
-    : `Выбрано ${picked.size} из ${creatives.length}`;
+  const scopeLabel = expanded || !canExpand
+    ? `${recallRowsAll.length} ${recallRowsAll.length === 1 ? 'ролик' : 'роликов'}`
+    : `Топ-${TOP_N_RECALL} из ${recallRowsAll.length}`;
 
   return (
     <section className="space-y-3">
-      {/* Header with info toggle + widget-local picker */}
+      {/* Header with info toggle + expand/collapse */}
       <div className="flex items-center justify-between flex-wrap gap-x-4 gap-y-2">
         <div className="flex items-center gap-2">
           <h2 className="text-[14px] font-semibold text-[var(--color-text)]">{headerTitle}</h2>
@@ -160,14 +128,20 @@ export default function BrandRecallOverview({ creatives, detailLink, only = 'bot
         </div>
         <div className="flex items-center gap-3 flex-wrap">
           <span className="text-[11px] text-[var(--color-text-muted)]">{scopeLabel}</span>
-          <MultiFilterSelect
-            label="Ролики"
-            selected={picked}
-            onChange={setPicked}
-            options={pickerOptions}
-            menuWidth={360}
-            triggerMaxWidth="260px"
-          />
+          {canExpand && (
+            <button
+              type="button"
+              onClick={() => setExpanded(v => !v)}
+              className="flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-secondary)] cursor-pointer transition-colors"
+              aria-expanded={expanded}
+            >
+              <ChevronDown
+                size={12}
+                className={`transition-transform ${expanded ? 'rotate-180' : ''}`}
+              />
+              {expanded ? 'Свернуть' : `Показать все (${recallRowsAll.length})`}
+            </button>
+          )}
           {detailLink && (
             <a
               href={detailLink.to}
@@ -213,8 +187,8 @@ export default function BrandRecallOverview({ creatives, detailLink, only = 'bot
           <ChartCard
             title="Верно назвали бренд и продукт — по роликам"
             subtitle={
-              isDefaultRecallView && recallRowsAll.length > TOP_N_RECALL
-                ? `Открытые вопросы. Топ-${TOP_N_RECALL} из ${recallRowsAll.length} по доле верно назвавших бренд. Чтобы сравнить другие — выберите ролики в фильтре. Клик по названию открывает видео.`
+              canExpand && !expanded
+                ? `Открытые вопросы. Топ-${TOP_N_RECALL} из ${recallRowsAll.length} по доле верно назвавших бренд. Кнопка «Показать все» — развернуть. Клик по названию открывает видео.`
                 : 'Открытые вопросы. Сортировка по доле верно назвавших бренд. Клик по названию открывает видео.'
             }
           >
