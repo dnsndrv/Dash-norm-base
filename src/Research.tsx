@@ -717,23 +717,27 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                         className="h-6 rounded-full overflow-hidden bg-[var(--color-bg-secondary)] flex"
                         title={`Позитив ${pv.toFixed(0)}% · Негатив ${nv.toFixed(0)}% · Затрудняюсь ${dk.toFixed(0)}%`}
                       >
-                        <div className="h-full bg-[#00b894] transition-all flex items-center justify-center" style={{ width: `${pv}%` }}>
-                          {pv >= 8 && (
-                            <span className="text-[10px] font-semibold text-white drop-shadow-sm">
+                        {/* Pos/neg/dontKnow segments. The inline label is hidden
+                            only on very thin slices (<3%) — anything wider gets
+                            a label even if it overflows the segment visually
+                            (whitespace-nowrap + small font keep it readable). */}
+                        <div className="h-full bg-[#00b894] transition-all flex items-center justify-center overflow-visible" style={{ width: `${pv}%` }}>
+                          {pv >= 3 && (
+                            <span className="text-[10px] font-semibold text-white drop-shadow-sm whitespace-nowrap">
                               {pv.toFixed(0)}%
                             </span>
                           )}
                         </div>
-                        <div className="h-full bg-[#ff6b6b] transition-all flex items-center justify-center" style={{ width: `${nv}%` }}>
-                          {nv >= 8 && (
-                            <span className="text-[10px] font-semibold text-white drop-shadow-sm">
+                        <div className="h-full bg-[#ff6b6b] transition-all flex items-center justify-center overflow-visible" style={{ width: `${nv}%` }}>
+                          {nv >= 3 && (
+                            <span className="text-[10px] font-semibold text-white drop-shadow-sm whitespace-nowrap">
                               {nv.toFixed(0)}%
                             </span>
                           )}
                         </div>
-                        <div className="h-full bg-[var(--color-border-strong)] transition-all flex items-center justify-center" style={{ width: `${dk}%` }}>
-                          {dk >= 10 && (
-                            <span className="text-[10px] font-medium text-[var(--color-text-secondary)]">
+                        <div className="h-full bg-[var(--color-border-strong)] transition-all flex items-center justify-center overflow-visible" style={{ width: `${dk}%` }}>
+                          {dk >= 6 && (
+                            <span className="text-[10px] font-medium text-[var(--color-text-secondary)] whitespace-nowrap">
                               {dk.toFixed(0)}%
                             </span>
                           )}
