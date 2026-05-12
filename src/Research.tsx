@@ -680,12 +680,13 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                 </p>
                 {isFiltered && (
                   <p className="mt-1">
-                    Цвет процента рядом с баром — значимое отклонение текущей выборки
-                    от общей нормы по базе (|z|&nbsp;≥&nbsp;{SIG_Z.toFixed(2)}).{' '}
-                    <span className="text-[var(--color-success)] font-medium">Зелёный</span> —
+                    Цвет процента и значок рядом с баром — значимое отклонение
+                    текущей выборки от общей нормы по базе (|z|&nbsp;≥&nbsp;
+                    {SIG_Z.toFixed(2)}).{' '}
+                    <span className="text-[var(--color-success)] font-medium">▲ зелёный</span> —
                     значимо выше нормы,{' '}
-                    <span className="text-[var(--color-error)] font-medium">красный</span> —
-                    значимо ниже, серый — в пределах нормы.
+                    <span className="text-[var(--color-error)] font-medium">▼ красный</span> —
+                    значимо ниже, серый без значка — в пределах нормы.
                   </p>
                 )}
               </>
@@ -719,7 +720,7 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                   // Reserve space on both edges so outside-of-bar percentage
                   // labels (left tip of red bars, right tip of green bars)
                   // don't get clipped.
-                  layout: { padding: { left: 48, right: 48 } },
+                  layout: { padding: { left: 56, right: 56 } },
                   plugins: {
                     legend: {
                       position: 'top',
@@ -743,21 +744,18 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                       },
                     },
                     datalabels: {
-                      // display: true forces the plugin to render labels even
-                      // when its overlap heuristic would otherwise hide them
-                      // (default is 'auto'). clamp: true keeps the label
-                      // inside the chart area when it would overflow.
                       display: true,
                       clamp: true,
-                      font: { size: 10, weight: 600 },
-                      // Both datasets: anchor at the bar tip, align further
-                      // outside. For negative bars this puts the % on the
-                      // far left; for positive bars — on the far right.
+                      font: { size: 11, weight: 700 },
+                      // For stacked diverging bars the bar tip is at the
+                      // dataset's value (e.g. -X for negative). anchor:'end'
+                      // pins to that tip, and align uses ABSOLUTE direction
+                      // ('left' / 'right') so labels reliably land at the
+                      // outer edge regardless of sign — 'end' alone is
+                      // ambiguous in stacked mode.
                       anchor: 'end',
-                      align: 'end',
-                      offset: 4,
-                      // Significance vs norm encoded in color: green ▲,
-                      // red ▼, neutral gray when within norm.
+                      align: (ctx) => (ctx.datasetIndex === 0 ? 'left' : 'right'),
+                      offset: 6,
                       color: (ctx) => {
                         const row = reactionRows[ctx.dataIndex];
                         const side: Side = ctx.datasetIndex === 0 ? 'dislike' : 'like';
@@ -766,9 +764,17 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                         if (z != null && z <= -SIG_Z) return '#FF3333';
                         return '#374151';
                       },
-                      formatter: (v: number) => {
+                      // Append ▲ if significantly above the global norm for
+                      // this category/side, ▼ if below. No marker = within
+                      // norm. Skip empty bars (asymmetric pairs).
+                      formatter: (v: number, ctx) => {
                         if (v == null || v === 0) return '';
-                        return Math.abs(v).toFixed(0) + '%';
+                        const row = reactionRows[ctx.dataIndex];
+                        const side: Side = ctx.datasetIndex === 0 ? 'dislike' : 'like';
+                        const z = zFor(row, side);
+                        const mark =
+                          z == null ? '' : z >= SIG_Z ? ' ▲' : z <= -SIG_Z ? ' ▼' : '';
+                        return `${Math.abs(v).toFixed(0)}%${mark}`;
                       },
                     },
                   },
