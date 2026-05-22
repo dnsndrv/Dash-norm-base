@@ -648,25 +648,30 @@ function OverviewTab({ creatives, allCreatives, comparisonCreatives, comparisonH
       {renderKpiRow('Дополнительные метрики', EXTRA_METRICS)}
 
       {prodTypes.length > 0 && (() => {
-        // Prepend a virtual "Среднее по всем" group so each production-type
-        // column has a visible baseline to compare against. Using the GLOBAL
-        // (all-creatives) average — not the filtered one — keeps the
-        // benchmark stable when users narrow the cohort with the top filters.
-        const REF = comparisonLabel;
-        const groupLabels = [REF, ...prodTypes];
+        const visibleProdTypes = prodTypes.filter(p => prodTypeGroups[p]?.length > 0);
         const SIG_Z = 1.96;
-        // Sum-of-bases per production type — used as `n` in z-test against
-        // the global average for that metric.
         const groupBases: Record<string, number> = {};
-        for (const p of prodTypes) {
+        for (const p of visibleProdTypes) {
           groupBases[p] = prodTypeGroups[p].reduce((s, c) => s + (c.base || 0), 0);
         }
-        // For a (group, metric) cell, compute z vs global average for the
-        // same metric. REF group is the baseline itself → no marker.
-        const zFor = (g: string, key: MetricKey): number | null => {
-          if (g === REF) return null;
-          const p = avg(prodTypeGroups[g].map(c => c.metrics[key]));
-          return zTestProp(p, comparisonAverages[key], groupBases[g] || 0);
+        const valueFor = (type: string, key: MetricKey): number | null =>
+          avg(prodTypeGroups[type].map(c => c.metrics[key]));
+        const zTwoProp = (p1: number | null, n1: number, p2: number | null, n2: number): number | null => {
+          if (p1 == null || p2 == null || n1 <= 0 || n2 <= 0) return null;
+          const pooled = ((p1 * n1) + (p2 * n2)) / (n1 + n2);
+          if (pooled <= 0 || pooled >= 1) return null;
+          const se = Math.sqrt(pooled * (1 - pooled) * (1 / n1 + 1 / n2));
+          return se > 0 ? (p1 - p2) / se : null;
+        };
+        const zFor = (type: string, key: MetricKey): number | null => {
+          const others = visibleProdTypes.filter(t => t !== type).flatMap(t => prodTypeGroups[t]);
+          if (!others.length) return null;
+          return zTwoProp(
+            valueFor(type, key),
+            groupBases[type] || 0,
+            avg(others.map(c => c.metrics[key])),
+            totalBase(others),
+          );
         };
         return (
         <ChartCard
@@ -674,29 +679,24 @@ function OverviewTab({ creatives, allCreatives, comparisonCreatives, comparisonH
           info={
             <>
               <p>
-                Сравнение средних метрик по типу производства. Первая группа
-                «{REF}» — среднее по выбранной базе сравнения
-                ({comparisonSubLabel}), это бенчмарк. Остальные группы — средние
-                для роликов соответствующего production-типа в текущей выборке.
+                Сравнение типов производства внутри текущей выборки. Для каждой
+                метрики столбцы ИИ и Продакшн стоят рядом, чтобы сравнивать их
+                друг с другом.
               </p>
               <p className="mt-1">
-                ▲ / ▼ возле значения — значимое отклонение группы от общей
-                нормы (|z|&nbsp;≥&nbsp;{SIG_Z}, p&nbsp;&lt;&nbsp;0.05).
+                ▲ / ▼ возле значения — тип производства значимо выше/ниже
+                остальных типов по этой метрике (|z|&nbsp;≥&nbsp;{SIG_Z}, p&nbsp;&lt;&nbsp;0.05).
               </p>
             </>
           }
         >
           <Bar
             data={{
-              labels: groupLabels,
-              datasets: prodTypeMetrics.map(m => ({
-                label: m.label,
-                data: groupLabels.map(g =>
-                  g === REF
-                    ? pctN(comparisonAverages[m.key])
-                    : pctN(avg(prodTypeGroups[g].map(c => c.metrics[m.key]))),
-                ),
-                backgroundColor: m.color,
+              labels: prodTypeMetrics.map(m => m.label),
+              datasets: visibleProdTypes.map((type, idx) => ({
+                label: `${type} (${prodTypeGroups[type].length})`,
+                data: prodTypeMetrics.map(m => pctN(valueFor(type, m.key))),
+                backgroundColor: CHART_COLORS[idx % CHART_COLORS.length],
                 borderRadius: 4,
               })),
             }}
@@ -708,15 +708,12 @@ function OverviewTab({ creatives, allCreatives, comparisonCreatives, comparisonH
                 tooltip: {
                   callbacks: {
                     afterLabel: (ctx) => {
-                      const g = groupLabels[ctx.dataIndex];
-                      if (g === REF) return '';
-                      const m = prodTypeMetrics[ctx.datasetIndex];
-                      const ref = pctN(comparisonAverages[m.key]);
-                      const z = zFor(g, m.key);
-                      if (ref == null) return '';
+                      const type = visibleProdTypes[ctx.datasetIndex];
+                      const m = prodTypeMetrics[ctx.dataIndex];
+                      const z = zFor(type, m.key);
                       const sigTag =
                         z == null ? '' : z >= SIG_Z ? ' ▲' : z <= -SIG_Z ? ' ▼' : '';
-                      return `Норма по базе: ${ref.toFixed(1)}%${sigTag}`;
+                      return `Сравнение с другими типами: z=${z?.toFixed(2) ?? '—'}${sigTag}`;
                     },
                   },
                 },
@@ -727,21 +724,21 @@ function OverviewTab({ creatives, allCreatives, comparisonCreatives, comparisonH
                   align: 'end',
                   offset: 2,
                   // Show the % value plus a tiny ▲/▼ when the cohort is
-                  // significantly above/below the global norm for this metric.
+                  // significantly above/below other production types.
                   formatter: (v: number | null, ctx) => {
                     if (v == null) return '';
-                    const g = groupLabels[ctx.dataIndex];
-                    const m = prodTypeMetrics[ctx.datasetIndex];
-                    const z = zFor(g, m.key);
+                    const type = visibleProdTypes[ctx.datasetIndex];
+                    const m = prodTypeMetrics[ctx.dataIndex];
+                    const z = zFor(type, m.key);
                     const sig = z == null ? '' : z >= SIG_Z ? ' ▲' : z <= -SIG_Z ? ' ▼' : '';
                     return `${v.toFixed(0)}%${sig}`;
                   },
                   // Marker colors the entire label so users see the direction
                   // of deviation at a glance; neutral cells stay dark gray.
                   color: (ctx) => {
-                    const g = groupLabels[ctx.dataIndex];
-                    const m = prodTypeMetrics[ctx.datasetIndex];
-                    const z = zFor(g, m.key);
+                    const type = visibleProdTypes[ctx.datasetIndex];
+                    const m = prodTypeMetrics[ctx.dataIndex];
+                    const z = zFor(type, m.key);
                     if (z != null && z >= SIG_Z) return '#00985F';
                     if (z != null && z <= -SIG_Z) return '#FF3333';
                     return '#1F1F1F';
@@ -752,9 +749,7 @@ function OverviewTab({ creatives, allCreatives, comparisonCreatives, comparisonH
                 x: {
                   ticks: {
                     font: { size: 11 },
-                    // Visually mark the benchmark category so users see it's
-                    // a reference, not just another production type.
-                    color: (ctx) => (ctx.tick.label === REF ? '#7C3AED' : '#374151'),
+                    color: '#374151',
                   },
                   grid: { display: false },
                 },
