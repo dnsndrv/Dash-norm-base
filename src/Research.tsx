@@ -61,6 +61,19 @@ function creativeCountLabel(count: number): string {
   return `${count} ${word}`;
 }
 
+function roundedPercentParts(values: number[]): number[] {
+  const floors = values.map(Math.floor);
+  let remainder = 100 - floors.reduce((sum, value) => sum + value, 0);
+  const order = values
+    .map((value, index) => ({ index, fraction: value - Math.floor(value) }))
+    .sort((a, b) => b.fraction - a.fraction);
+  const result = [...floors];
+  for (let i = 0; i < order.length && remainder > 0; i++, remainder--) {
+    result[order[i].index] += 1;
+  }
+  return result;
+}
+
 type TabKey = 'overview' | 'drivers' | 'help';
 
 const TABS: { key: TabKey; label: string; icon: typeof BarChart3 }[] = [
@@ -969,6 +982,7 @@ function OverviewTab({ creatives, allCreatives, comparisonCreatives, comparisonH
                 const pv = (avgEmotional[pair.positiveKey] ?? 0) * 100;
                 const nv = (avgEmotional[pair.negativeKey] ?? 0) * 100;
                 const dk = Math.max(0, 100 - pv - nv);
+                const [pvLabel, dkLabel, nvLabel] = roundedPercentParts([pv, dk, nv]);
                 const gpv = (comparisonAvgEmotional[pair.positiveKey] ?? 0) * 100;
                 const gnv = (comparisonAvgEmotional[pair.negativeKey] ?? 0) * 100;
                 const dpv = pv - gpv;
@@ -989,26 +1003,26 @@ function OverviewTab({ creatives, allCreatives, comparisonCreatives, comparisonH
                     <div className="flex-1">
                       <div
                         className="h-6 rounded-full overflow-hidden bg-[var(--color-bg-secondary)] flex"
-                        title={`Позитив ${pv.toFixed(0)}% · Негатив ${nv.toFixed(0)}% · Затрудняюсь ${dk.toFixed(0)}%`}
+                        title={`Позитив ${pvLabel}% · Затрудняюсь ${dkLabel}% · Негатив ${nvLabel}%`}
                       >
                         <div className="h-full bg-[#00b894] transition-all flex items-center justify-center overflow-visible" style={{ width: `${pv}%` }}>
                           {pv >= 3 && (
                             <span className="text-[10px] font-semibold text-white drop-shadow-sm whitespace-nowrap">
-                              {pv.toFixed(0)}%
-                            </span>
-                          )}
-                        </div>
-                        <div className="h-full bg-[#ff6b6b] transition-all flex items-center justify-center overflow-visible" style={{ width: `${nv}%` }}>
-                          {nv >= 3 && (
-                            <span className="text-[10px] font-semibold text-white drop-shadow-sm whitespace-nowrap">
-                              {nv.toFixed(0)}%
+                              {pvLabel}%
                             </span>
                           )}
                         </div>
                         <div className="h-full bg-[var(--color-border-strong)] transition-all flex items-center justify-center overflow-visible" style={{ width: `${dk}%` }}>
                           {dk >= 6 && (
                             <span className="text-[10px] font-medium text-[var(--color-text-secondary)] whitespace-nowrap">
-                              {dk.toFixed(0)}%
+                              {dkLabel}%
+                            </span>
+                          )}
+                        </div>
+                        <div className="h-full bg-[#ff6b6b] transition-all flex items-center justify-center overflow-visible" style={{ width: `${nv}%` }}>
+                          {nv >= 3 && (
+                            <span className="text-[10px] font-semibold text-white drop-shadow-sm whitespace-nowrap">
+                              {nvLabel}%
                             </span>
                           )}
                         </div>
