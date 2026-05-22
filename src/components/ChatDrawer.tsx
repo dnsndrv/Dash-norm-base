@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { Bot, Loader2, PanelRightClose, Send } from 'lucide-react';
 
 type ChatRole = 'user' | 'assistant';
@@ -46,6 +46,67 @@ const STARTERS = [
   'Какие ролики лучшие по намерению?',
   'Что лучше у ИИ vs Продакшн в текущей выборке?',
 ];
+
+function renderInline(text: string) {
+  const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).filter(Boolean);
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={index} className="font-semibold text-[var(--color-text)]">{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith('`') && part.endsWith('`')) {
+      return (
+        <code key={index} className="rounded bg-white px-1 py-0.5 text-[12px] text-[var(--color-text-secondary)]">
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+    return <span key={index}>{part}</span>;
+  });
+}
+
+function ChatMessageText({ text }: { text: string }) {
+  const lines = text
+    .split('\n')
+    .map(line => line.trim())
+    .filter(Boolean);
+
+  const blocks: ReactNode[] = [];
+  let listItems: Array<{ ordered: boolean; text: string }> = [];
+  const flushList = () => {
+    if (!listItems.length) return;
+    const ordered = listItems[0].ordered;
+    const content = listItems.map((item, index) => (
+      <li key={index} className="pl-1">{renderInline(item.text)}</li>
+    ));
+    blocks.push(ordered
+      ? <ol key={`ol-${blocks.length}`} className="my-2 list-decimal space-y-1 pl-5">{content}</ol>
+      : <ul key={`ul-${blocks.length}`} className="my-2 list-disc space-y-1 pl-5">{content}</ul>);
+    listItems = [];
+  };
+
+  for (const line of lines) {
+    const numbered = line.match(/^\d+[\.)]\s+(.+)$/);
+    const bullet = line.match(/^[-–—]\s+(.+)$/);
+    if (numbered) {
+      if (listItems.length && !listItems[0].ordered) flushList();
+      listItems.push({ ordered: true, text: numbered[1] });
+      continue;
+    }
+    if (bullet) {
+      if (listItems.length && listItems[0].ordered) flushList();
+      listItems.push({ ordered: false, text: bullet[1] });
+      continue;
+    }
+    flushList();
+    blocks.push(
+      <p key={`p-${blocks.length}`} className="my-2 first:mt-0 last:mb-0">
+        {renderInline(line)}
+      </p>,
+    );
+  }
+  flushList();
+  return <div className="chat-message-text">{blocks}</div>;
+}
 
 export default function ChatDrawer({
   context,
@@ -156,10 +217,10 @@ export default function ChatDrawer({
             className={`rounded-2xl px-3 py-2 text-[13px] leading-relaxed ${
               msg.role === 'user'
                 ? 'ml-8 bg-[var(--color-primary)] text-white'
-                : 'mr-8 bg-[var(--color-bg-secondary)] text-[var(--color-text)]'
+                : 'mr-6 bg-[var(--color-bg-secondary)] text-[var(--color-text)]'
             }`}
           >
-            {msg.text}
+            {msg.role === 'assistant' ? <ChatMessageText text={msg.text} /> : msg.text}
           </div>
         ))}
         {loading && (
