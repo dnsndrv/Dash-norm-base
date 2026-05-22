@@ -48,6 +48,7 @@ export default function BrandRecallOverview({
   // The widget no longer has its own creative picker — instead it shows the
   // top-N rows by brand recall and lets the user expand to all of them.
   const [expanded, setExpanded] = useState(false);
+  const [recallSortBy, setRecallSortBy] = useState<'brand' | 'product'>('brand');
   const [showDefs, setShowDefs] = useState(false);
 
   // Baseline averages across the selected comparison list.
@@ -65,8 +66,9 @@ export default function BrandRecallOverview({
   }, [baseline]);
   const hasBaseline = baselineCreatives !== undefined;
 
-  // Per-creative rows. Top-N by brand recall is shown by default so the chart
-  // stays readable; "Показать все (N)" expands to the full filtered list.
+  // Per-creative rows. Top-N by the selected recall metric is shown by default
+  // so the chart stays readable; "Показать все (N)" expands to the full
+  // filtered list.
   const TOP_N_RECALL = 10;
   const recallRowsAll = useMemo(() => {
     return creatives
@@ -83,18 +85,25 @@ export default function BrandRecallOverview({
         productRaw: c.metrics.productRecall,
       }))
       .filter(r => r.brand != null || r.product != null)
-      .sort((a, b) => (b.brand ?? 0) - (a.brand ?? 0));
   }, [creatives]);
+  const sortedRecallRowsAll = useMemo(() => {
+    return [...recallRowsAll].sort((a, b) => {
+      const primary = (b[recallSortBy] ?? -1) - (a[recallSortBy] ?? -1);
+      if (primary !== 0) return primary;
+      const secondaryKey = recallSortBy === 'brand' ? 'product' : 'brand';
+      return (b[secondaryKey] ?? -1) - (a[secondaryKey] ?? -1);
+    });
+  }, [recallRowsAll, recallSortBy]);
   // Auto-collapse back to top-N when filters narrow the list so much that
   // "expand" is no longer meaningful (otherwise it shows e.g. 3 rows with the
   // button still saying "Показать все").
   useEffect(() => {
-    if (recallRowsAll.length <= TOP_N_RECALL && expanded) setExpanded(false);
-  }, [recallRowsAll.length, expanded]);
-  const canExpand = recallRowsAll.length > TOP_N_RECALL;
+    if (sortedRecallRowsAll.length <= TOP_N_RECALL && expanded) setExpanded(false);
+  }, [sortedRecallRowsAll.length, expanded]);
+  const canExpand = sortedRecallRowsAll.length > TOP_N_RECALL;
   const recallRows = useMemo(
-    () => (expanded ? recallRowsAll : recallRowsAll.slice(0, TOP_N_RECALL)),
-    [recallRowsAll, expanded],
+    () => (expanded ? sortedRecallRowsAll : sortedRecallRowsAll.slice(0, TOP_N_RECALL)),
+    [sortedRecallRowsAll, expanded],
   );
 
   const truncateName = (s: string, max = 42) =>
@@ -135,8 +144,8 @@ export default function BrandRecallOverview({
       : 'Запоминаемость и чистота коммуникации';
 
   const scopeLabel = expanded || !canExpand
-    ? `${recallRowsAll.length} ${recallRowsAll.length === 1 ? 'ролик' : 'роликов'}`
-    : `Топ-${TOP_N_RECALL} из ${recallRowsAll.length}`;
+    ? `${sortedRecallRowsAll.length} ${sortedRecallRowsAll.length === 1 ? 'ролик' : 'роликов'}`
+    : `Топ-${TOP_N_RECALL} из ${sortedRecallRowsAll.length}`;
 
   return (
     <section className="space-y-3">
@@ -156,6 +165,19 @@ export default function BrandRecallOverview({
           </button>
         </div>
         <div className="flex items-center gap-3 flex-wrap">
+          {showRecall && (
+            <label className="flex items-center gap-1.5 text-[11px] text-[var(--color-text-muted)]">
+              Сортировать:
+              <select
+                value={recallSortBy}
+                onChange={e => setRecallSortBy(e.target.value as 'brand' | 'product')}
+                className="px-2 py-1 rounded-md bg-[var(--color-bg-secondary)] border border-[var(--color-border)] text-[11px] text-[var(--color-text-secondary)] cursor-pointer"
+              >
+                <option value="brand">по бренду</option>
+                <option value="product">по продукту</option>
+              </select>
+            </label>
+          )}
           <span className="text-[11px] text-[var(--color-text-muted)]">{scopeLabel}</span>
           {canExpand && (
             <button
@@ -168,7 +190,7 @@ export default function BrandRecallOverview({
                 size={12}
                 className={`transition-transform ${expanded ? 'rotate-180' : ''}`}
               />
-              {expanded ? 'Свернуть' : `Показать все (${recallRowsAll.length})`}
+              {expanded ? 'Свернуть' : `Показать все (${sortedRecallRowsAll.length})`}
             </button>
           )}
           {detailLink && (
@@ -217,8 +239,8 @@ export default function BrandRecallOverview({
             title="Верно назвали бренд и продукт — по роликам"
             subtitle={
               (canExpand && !expanded
-                ? `Открытые вопросы. Топ-${TOP_N_RECALL} из ${recallRowsAll.length} по доле верно назвавших бренд. Кнопка «Показать все» — развернуть. Клик по названию открывает видео.`
-                : 'Открытые вопросы. Сортировка по доле верно назвавших бренд. Клик по названию открывает видео.')
+                ? `Открытые вопросы. Топ-${TOP_N_RECALL} из ${sortedRecallRowsAll.length} по выбранной метрике сортировки. Кнопка «Показать все» — развернуть. Клик по названию открывает видео.`
+                : 'Открытые вопросы. Сортировка по выбранной метрике. Клик по названию открывает видео.')
               + (hasBaseline ? ' ▲ / ▼ — значимое отклонение от средней по базе (|z|≥1.96).' : '')
             }
           >
