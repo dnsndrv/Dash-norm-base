@@ -15,6 +15,7 @@ import type { DashboardData, Creative, MetricKey } from './research/types';
 import { MAIN_METRICS, KEY_METRICS, CHART_COLORS } from './research/types';
 import { pct, pctN, avg, computeAverages, getUniqueValues, zTestProp, zScoreColor, totalBase, avgByKey } from './research/utils';
 import BrandRecallOverview from './components/BrandRecallOverview';
+import ChatDrawer, { type ChatContext } from './components/ChatDrawer';
 import MultiFilterSelect from './components/MultiFilterSelect';
 // Static snapshot of /api/research/dashboard-data — refreshed via `npm run update-data`.
 import dashboardSnapshot from './data/dashboard.json';
@@ -91,6 +92,9 @@ const data = dashboardSnapshot as unknown as DashboardData;
 
 export default function Research() {
   const [tab, setTab] = useState<TabKey>('overview');
+  const [chatOpen, setChatOpen] = useState(true);
+  const [chatWidth, setChatWidth] = useState(420);
+  const resizingRef = useRef(false);
 
   // Filters
   const [fProduct, setFProduct] = useState('');
@@ -252,44 +256,153 @@ export default function Research() {
     [comparisonCreatives, allAvg],
   );
 
+  const chatContext = useMemo<ChatContext>(() => {
+    const activeFilters = {
+      product: fProduct || null,
+      campaign: fCampaign || null,
+      competitorType: fCompetitor || null,
+      period: fPeriod || null,
+      format: fFormat || null,
+      creatives: Array.from(fCreatives),
+    };
+    const comparisonFiltersPayload = {
+      product: cmpProduct || null,
+      campaign: cmpCampaign || null,
+      competitorType: cmpCompetitor || null,
+      period: cmpPeriod || null,
+      format: cmpFormat || null,
+      creatives: Array.from(cmpCreatives),
+    };
+    const metricSummary = MAIN_METRICS.map(m => ({
+      key: m.key,
+      label: data.metricLabels[m.key] || m.label,
+      selection: filteredAvg?.[m.key] ?? null,
+      comparison: comparisonAvg?.[m.key] ?? null,
+      deltaPp: filteredAvg?.[m.key] != null && comparisonAvg?.[m.key] != null
+        ? (filteredAvg[m.key]! - comparisonAvg[m.key]!) * 100
+        : null,
+    }));
+    const topIntent = [...filtered]
+      .filter(c => c.metrics.intent != null)
+      .sort((a, b) => (b.metrics.intent ?? 0) - (a.metrics.intent ?? 0))
+      .slice(0, 10)
+      .map(c => ({
+        name: c.name,
+        product: c.product,
+        campaign: c.campaign,
+        intent: c.metrics.intent,
+        like: c.metrics.like,
+        clarity: c.metrics.clarity,
+        productionType: c.productionType,
+      }));
+    const productionTypes = Object.entries(
+      filtered.reduce<Record<string, Creative[]>>((acc, creative) => {
+        const type = creative.productionType || 'Не указан';
+        (acc[type] ??= []).push(creative);
+        return acc;
+      }, {}),
+    ).map(([type, rows]) => ({
+      type,
+      count: rows.length,
+      averages: computeAverages(rows),
+    }));
+
+    return {
+      page: 'Brand Research',
+      activeTab: tab,
+      selection: {
+        filters: activeFilters,
+        count: filtered.length,
+        total: data.creatives.length,
+        base: totalBase(filtered),
+      },
+      comparison: {
+        filters: comparisonFiltersPayload,
+        isFiltered: comparisonHasFilters,
+        count: comparisonCreatives.length,
+        total: data.creatives.length,
+        base: totalBase(comparisonCreatives),
+      },
+      metrics: metricSummary,
+      topIntent,
+      productionTypes,
+    };
+  }, [
+    fProduct, fCampaign, fCompetitor, fPeriod, fFormat, fCreatives,
+    cmpProduct, cmpCampaign, cmpCompetitor, cmpPeriod, cmpFormat, cmpCreatives,
+    filtered, filteredAvg, comparisonAvg, comparisonHasFilters, comparisonCreatives, data, tab,
+  ]);
+
+  useEffect(() => {
+    const onMove = (event: MouseEvent) => {
+      if (!resizingRef.current) return;
+      const nextWidth = Math.min(620, Math.max(340, window.innerWidth - event.clientX));
+      setChatWidth(nextWidth);
+    };
+    const onUp = () => {
+      resizingRef.current = false;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+  }, []);
+
   return (
-    <div className="page-enter">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-1">
-        <h1 className="text-lg font-semibold text-[var(--color-text)]">Brand Research</h1>
-        <span className="text-xs text-[var(--color-text-muted)]">
-          {data.creatives.length} креативов
-        </span>
-      </div>
-      <p className="text-[13px] text-[var(--color-text-muted)] mb-5">
-        Дашборд тестирования рекламных креативов · данные из{' '}
-        <a href="https://docs.google.com/spreadsheets/d/1xb9WAV74CPxMXAuOIaLbrpjXzVYAf8Cz3D9a1GldjtQ"
-          target="_blank" rel="noopener noreferrer"
-          className="underline underline-offset-2 hover:text-[var(--color-text-secondary)] transition-colors">
-          Базы норм
-        </a>
-      </p>
+    <div className="page-enter flex h-full min-h-0 gap-4">
+      <section className="min-w-0 flex-1 overflow-y-auto pr-1">
+        <div className="mx-auto max-w-[1400px]">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-1">
+            <h1 className="text-lg font-semibold text-[var(--color-text)]">Brand Research</h1>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-[var(--color-text-muted)]">
+                {data.creatives.length} креативов
+              </span>
+              {!chatOpen && (
+                <button
+                  type="button"
+                  onClick={() => setChatOpen(true)}
+                  className="rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)] cursor-pointer transition-colors"
+                >
+                  Открыть чат
+                </button>
+              )}
+            </div>
+          </div>
+          <p className="text-[13px] text-[var(--color-text-muted)] mb-5">
+            Дашборд тестирования рекламных креативов · данные из{' '}
+            <a href="https://docs.google.com/spreadsheets/d/1xb9WAV74CPxMXAuOIaLbrpjXzVYAf8Cz3D9a1GldjtQ"
+              target="_blank" rel="noopener noreferrer"
+              className="underline underline-offset-2 hover:text-[var(--color-text-secondary)] transition-colors">
+              Базы норм
+            </a>
+          </p>
 
-      {/* Tabs */}
-      <div className="flex gap-1 mb-5 border-b border-[var(--color-border)] overflow-x-auto">
-        {TABS.map(t => {
-          const Icon = t.icon;
-          return (
-            <button key={t.key} onClick={() => setTab(t.key)}
-              className={`flex items-center gap-1.5 px-4 py-2.5 text-[13px] font-medium border-b-2 -mb-px cursor-pointer transition-colors duration-150 whitespace-nowrap ${
-                tab === t.key
-                  ? 'border-[var(--color-primary)] text-[var(--color-text)]'
-                  : 'border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]'
-              }`}>
-              <Icon size={15} strokeWidth={1.5} />
-              {t.label}
-            </button>
-          );
-        })}
-      </div>
+          {/* Tabs */}
+          <div className="flex gap-1 mb-5 border-b border-[var(--color-border)] overflow-x-auto">
+            {TABS.map(t => {
+              const Icon = t.icon;
+              return (
+                <button key={t.key} onClick={() => setTab(t.key)}
+                  className={`flex items-center gap-1.5 px-4 py-2.5 text-[13px] font-medium border-b-2 -mb-px cursor-pointer transition-colors duration-150 whitespace-nowrap ${
+                    tab === t.key
+                      ? 'border-[var(--color-primary)] text-[var(--color-text)]'
+                      : 'border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]'
+                  }`}>
+                  <Icon size={15} strokeWidth={1.5} />
+                  {t.label}
+                </button>
+              );
+            })}
+          </div>
 
-      {/* Filters */}
-      <div className="mb-5 space-y-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
+          {/* Filters */}
+          <div className="mb-5 space-y-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
         <div className="flex flex-wrap gap-3 items-center">
           <span className="w-[118px] text-[11px] font-semibold uppercase tracking-wider text-[var(--color-text-secondary)]">
             Что сравниваем
@@ -327,13 +440,35 @@ export default function Research() {
             {comparisonHasFilters ? `${comparisonCreatives.length} из ${data.creatives.length}` : `вся база (${data.creatives.length})`}
           </span>
         </div>
-      </div>
+          </div>
 
-      {/* Tab content */}
-      {tab === 'overview' && <OverviewTab creatives={filtered} allCreatives={data.creatives} comparisonCreatives={comparisonCreatives} comparisonHasFilters={comparisonHasFilters} averages={filteredAvg!} comparisonAverages={comparisonAvg!} competitorAverages={competitorAvg} data={data} />}
-      {tab === 'drivers' && <DriversTab creatives={filtered} averages={comparisonAvg!} />}
-      {tab === 'help' && <HelpTab />}
+          {/* Tab content */}
+          {tab === 'overview' && <OverviewTab creatives={filtered} allCreatives={data.creatives} comparisonCreatives={comparisonCreatives} comparisonHasFilters={comparisonHasFilters} averages={filteredAvg!} comparisonAverages={comparisonAvg!} competitorAverages={competitorAvg} data={data} />}
+          {tab === 'drivers' && <DriversTab creatives={filtered} averages={comparisonAvg!} />}
+          {tab === 'help' && <HelpTab />}
+        </div>
+      </section>
 
+      {chatOpen && (
+        <>
+          <div
+            role="separator"
+            aria-orientation="vertical"
+            title="Изменить ширину чата"
+            onMouseDown={() => {
+              resizingRef.current = true;
+              document.body.style.cursor = 'col-resize';
+              document.body.style.userSelect = 'none';
+            }}
+            className="hidden md:block w-1 shrink-0 cursor-col-resize rounded-full bg-transparent hover:bg-[var(--color-border-strong)] transition-colors"
+          />
+          <ChatDrawer
+            context={chatContext}
+            width={chatWidth}
+            onClose={() => setChatOpen(false)}
+          />
+        </>
+      )}
     </div>
   );
 }
