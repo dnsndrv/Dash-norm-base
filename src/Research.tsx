@@ -877,16 +877,13 @@ function OverviewTab({ creatives, allCreatives, comparisonCreatives, comparisonH
                       clip: false,
                       clamp: false,
                       font: { size: 11, weight: 700 },
-                      // chartjs-plugin-datalabels semantics for a BAR element:
-                      //   anchor 'end' = bar's data tip (where the value is)
-                      //   align  'end' = push label further in bar's growth
-                      //                  direction (away from the base)
-                      // For a positive bar growing right: align 'end' = right.
-                      // For a negative bar growing left:  align 'end' = LEFT.
-                      // Same config works symmetrically → labels always sit
-                      // just outside the tip of the bar.
-                      anchor: 'end',
-                      align: 'end',
+                      // Put labels outside the far end of each bar. For
+                      // negative horizontal bars Chart.js treats `end` as the
+                      // zero-side edge, so we explicitly use the left edge
+                      // (`start`) and absolute left alignment for the red
+                      // dislike dataset.
+                      anchor: (ctx) => (ctx.datasetIndex === 0 ? 'start' : 'end'),
+                      align: (ctx) => (ctx.datasetIndex === 0 ? 'left' : 'right'),
                       offset: 6,
                       color: (ctx) => {
                         const row = reactionRows[ctx.dataIndex];
