@@ -2,6 +2,7 @@ const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || 'https://dnsndrv.github.io'
 const LLM_API_URL = process.env.LLM_API_URL || 'https://openrouter.ai/api/v1/chat/completions';
 const LLM_MODEL = process.env.LLM_MODEL || 'openai/gpt-5.5';
 const LLM_API_KEY = process.env.LLM_API_KEY;
+const LLM_MAX_TOKENS = Number(process.env.LLM_MAX_TOKENS || 2000);
 
 function response(statusCode, body, origin = ALLOWED_ORIGIN) {
   return {
@@ -73,7 +74,7 @@ export async function handler(event) {
     body: JSON.stringify({
       model: LLM_MODEL,
       temperature: 0.2,
-      max_tokens: 700,
+      max_tokens: LLM_MAX_TOKENS,
       messages: [
         { role: 'system', content: system },
         { role: 'user', content: `Контекст дашборда:\n${contextText}\n\nВопрос:\n${question}` },

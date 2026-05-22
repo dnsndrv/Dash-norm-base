@@ -25,6 +25,7 @@ and returns:
 - `ALLOWED_ORIGIN` — defaults to `https://dnsndrv.github.io`
 - `LLM_API_URL` — defaults to `https://openrouter.ai/api/v1/chat/completions`
 - `LLM_MODEL` — defaults to `openai/gpt-5.5`
+- `LLM_MAX_TOKENS` — defaults to `2000`
 
 ## Frontend wiring
 
