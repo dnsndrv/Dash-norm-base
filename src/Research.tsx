@@ -1135,8 +1135,12 @@ function RatingTab({ creatives, allCreatives, comparisonCreatives, averages }: {
   };
 
   const SortIcon = ({ col }: { col: string }) => {
-    if (sortCol !== col) return null;
-    return sortDir === 'desc' ? <ChevronDown size={10} className="inline" /> : <ChevronUp size={10} className="inline" />;
+    if (sortCol === col) {
+      return sortDir === 'desc'
+        ? <ChevronDown size={11} className="inline ml-1 text-[var(--color-text)]" />
+        : <ChevronUp size={11} className="inline ml-1 text-[var(--color-text)]" />;
+    }
+    return <ChevronDown size={10} className="inline ml-1 text-[var(--color-text-muted)] opacity-45" />;
   };
 
   const avgIndex = avg(KEY_METRICS.map(k => averages[k]));
