@@ -970,7 +970,7 @@ function OverviewTab({ creatives, allCreatives, comparisonCreatives, comparisonH
                 </p>
                 {isFiltered && (
                   <p className="mt-1">
-                    Под полосой — отклонение позитива и негатива от выбранной базы сравнения
+                    Под полосой — отклонение позитива, «затрудняюсь ответить» и негатива от выбранной базы сравнения
                     в процентных пунктах. ▲ выше нормы, ▼ ниже (порог {SIG_PP}&nbsp;пп).
                   </p>
                 )}
@@ -985,7 +985,9 @@ function OverviewTab({ creatives, allCreatives, comparisonCreatives, comparisonH
                 const [pvLabel, dkLabel, nvLabel] = roundedPercentParts([pv, dk, nv]);
                 const gpv = (comparisonAvgEmotional[pair.positiveKey] ?? 0) * 100;
                 const gnv = (comparisonAvgEmotional[pair.negativeKey] ?? 0) * 100;
+                const gdk = Math.max(0, 100 - gpv - gnv);
                 const dpv = pv - gpv;
+                const ddk = dk - gdk;
                 const dnv = nv - gnv;
                 const arrow = (d: number) => (d >= SIG_PP ? '▲' : d <= -SIG_PP ? '▼' : '·');
                 const fmt = (d: number) => (d >= 0 ? '+' : '') + d.toFixed(1) + ' пп';
@@ -1028,9 +1030,12 @@ function OverviewTab({ creatives, allCreatives, comparisonCreatives, comparisonH
                         </div>
                       </div>
                       {isFiltered && (
-                        <div className="flex justify-between text-[10px] mt-0.5 leading-none">
+                        <div className="grid grid-cols-3 text-[10px] mt-0.5 leading-none">
                           <span className={cls(dpv)}>
                             {arrow(dpv)} {fmt(dpv)} <span className="text-[var(--color-text-muted)]">(норма {gpv.toFixed(0)}%)</span>
+                          </span>
+                          <span className={`${cls(ddk)} text-center`}>
+                            {arrow(ddk)} {fmt(ddk)} <span className="text-[var(--color-text-muted)]">(норма {gdk.toFixed(0)}%)</span>
                           </span>
                           <span className={cls(-dnv)}>
                             {arrow(dnv)} {fmt(dnv)} <span className="text-[var(--color-text-muted)]">(норма {gnv.toFixed(0)}%)</span>
