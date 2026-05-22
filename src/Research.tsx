@@ -77,42 +77,94 @@ export default function Research() {
   const [fCreatives, setFCreatives] = useState<Set<string>>(new Set());
 
 
-  // Cascading filters: each dropdown's option list is computed from the data
-  // narrowed by all OTHER active filters. This way picks at any level (Yandex/
-  // competitor → product → campaign → creative) constrain neighbors, including
-  // the "skip a level" case (product without campaign still limits creatives).
-  // The final `filtered` list applies all active filters together.
   type FilterKey = 'product' | 'campaign' | 'competitorType' | 'period' | 'format' | 'creatives';
+  type FilterState = {
+    product: string;
+    campaign: string;
+    competitorType: string;
+    period: string;
+    format: string;
+    creatives: Set<string>;
+  };
 
-  const matches = useCallback((c: Creative, exclude?: FilterKey) => (
-    (exclude === 'product'        || !fProduct    || c.product === fProduct) &&
-    (exclude === 'campaign'       || !fCampaign   || c.campaign === fCampaign) &&
-    (exclude === 'competitorType' || !fCompetitor || c.competitorType === fCompetitor) &&
-    (exclude === 'period'         || !fPeriod     || c.period === fPeriod) &&
-    (exclude === 'format'         || !fFormat     || c.format === fFormat) &&
-    (exclude === 'creatives'      || fCreatives.size === 0 || fCreatives.has(c.name))
-  ), [fProduct, fCampaign, fCompetitor, fPeriod, fFormat, fCreatives]);
+  const [cmpProduct, setCmpProduct] = useState('');
+  const [cmpCampaign, setCmpCampaign] = useState('');
+  const [cmpCompetitor, setCmpCompetitor] = useState('');
+  const [cmpPeriod, setCmpPeriod] = useState('');
+  const [cmpFormat, setCmpFormat] = useState('');
+  const [cmpCreatives, setCmpCreatives] = useState<Set<string>>(new Set());
+
+  const primaryFilters = useMemo<FilterState>(() => ({
+    product: fProduct,
+    campaign: fCampaign,
+    competitorType: fCompetitor,
+    period: fPeriod,
+    format: fFormat,
+    creatives: fCreatives,
+  }), [fProduct, fCampaign, fCompetitor, fPeriod, fFormat, fCreatives]);
+
+  const comparisonFilters = useMemo<FilterState>(() => ({
+    product: cmpProduct,
+    campaign: cmpCampaign,
+    competitorType: cmpCompetitor,
+    period: cmpPeriod,
+    format: cmpFormat,
+    creatives: cmpCreatives,
+  }), [cmpProduct, cmpCampaign, cmpCompetitor, cmpPeriod, cmpFormat, cmpCreatives]);
+
+  const filterIsActive = useCallback((filters: FilterState) => (
+    !!(filters.product || filters.campaign || filters.competitorType ||
+      filters.period || filters.format || filters.creatives.size)
+  ), []);
+
+  const matchesFilters = useCallback((c: Creative, filters: FilterState, exclude?: FilterKey) => (
+    (exclude === 'product'        || !filters.product        || c.product === filters.product) &&
+    (exclude === 'campaign'       || !filters.campaign       || c.campaign === filters.campaign) &&
+    (exclude === 'competitorType' || !filters.competitorType || c.competitorType === filters.competitorType) &&
+    (exclude === 'period'         || !filters.period         || c.period === filters.period) &&
+    (exclude === 'format'         || !filters.format         || c.format === filters.format) &&
+    (exclude === 'creatives'      || filters.creatives.size === 0 || filters.creatives.has(c.name))
+  ), []);
 
   const filtered = useMemo(() => {
     if (!data) return [];
-    return data.creatives.filter(c => matches(c));
-  }, [data, matches]);
+    return data.creatives.filter(c => matchesFilters(c, primaryFilters));
+  }, [matchesFilters, primaryFilters]);
+
+  const comparisonHasFilters = filterIsActive(comparisonFilters);
+  const comparisonCreatives = useMemo(() => {
+    if (!comparisonHasFilters) return data.creatives;
+    return data.creatives.filter(c => matchesFilters(c, comparisonFilters));
+  }, [comparisonHasFilters, matchesFilters, comparisonFilters]);
+
+  const makeOptions = useCallback((filters: FilterState, exclude: FilterKey) => {
+    return getUniqueValues(data.creatives.filter(c => matchesFilters(c, filters, exclude)), exclude as keyof Creative);
+  }, [matchesFilters]);
+
+  const makePeriodOptions = useCallback((filters: FilterState) => {
+    const allowed = new Set(data.creatives.filter(c => matchesFilters(c, filters, 'period')).map(c => c.period));
+    return data.periods.filter(p => allowed.has(p));
+  }, [matchesFilters]);
+
+  const makeCreativeOptions = useCallback((filters: FilterState) => {
+    const names = [...new Set(data.creatives.filter(c => matchesFilters(c, filters, 'creatives')).map(c => c.name))].filter(Boolean).sort();
+    return names.map(n => ({ value: n, label: n.length > 50 ? n.slice(0, 50) + '…' : n }));
+  }, [matchesFilters]);
 
   // Per-field option lists, built from the cross-filtered data minus that field.
-  const productOptions    = useMemo(() => data ? getUniqueValues(data.creatives.filter(c => matches(c, 'product')),        'product')        : [], [data, matches]);
-  const campaignOptions   = useMemo(() => data ? getUniqueValues(data.creatives.filter(c => matches(c, 'campaign')),       'campaign')       : [], [data, matches]);
-  const competitorOptions = useMemo(() => data ? getUniqueValues(data.creatives.filter(c => matches(c, 'competitorType')), 'competitorType') : [], [data, matches]);
-  const periodOptions     = useMemo(() => {
-    if (!data) return [];
-    const allowed = new Set(data.creatives.filter(c => matches(c, 'period')).map(c => c.period));
-    return data.periods.filter(p => allowed.has(p));
-  }, [data, matches]);
-  const formatOptions     = useMemo(() => data ? getUniqueValues(data.creatives.filter(c => matches(c, 'format')),         'format')         : [], [data, matches]);
-  const creativeOptions   = useMemo(() => {
-    if (!data) return [];
-    const names = [...new Set(data.creatives.filter(c => matches(c, 'creatives')).map(c => c.name))].filter(Boolean).sort();
-    return names.map(n => ({ value: n, label: n.length > 50 ? n.slice(0, 50) + '…' : n }));
-  }, [data, matches]);
+  const productOptions    = useMemo(() => makeOptions(primaryFilters, 'product'),        [makeOptions, primaryFilters]);
+  const campaignOptions   = useMemo(() => makeOptions(primaryFilters, 'campaign'),       [makeOptions, primaryFilters]);
+  const competitorOptions = useMemo(() => makeOptions(primaryFilters, 'competitorType'), [makeOptions, primaryFilters]);
+  const periodOptions     = useMemo(() => makePeriodOptions(primaryFilters),             [makePeriodOptions, primaryFilters]);
+  const formatOptions     = useMemo(() => makeOptions(primaryFilters, 'format'),         [makeOptions, primaryFilters]);
+  const creativeOptions   = useMemo(() => makeCreativeOptions(primaryFilters),           [makeCreativeOptions, primaryFilters]);
+
+  const cmpProductOptions    = useMemo(() => makeOptions(comparisonFilters, 'product'),        [makeOptions, comparisonFilters]);
+  const cmpCampaignOptions   = useMemo(() => makeOptions(comparisonFilters, 'campaign'),       [makeOptions, comparisonFilters]);
+  const cmpCompetitorOptions = useMemo(() => makeOptions(comparisonFilters, 'competitorType'), [makeOptions, comparisonFilters]);
+  const cmpPeriodOptions     = useMemo(() => makePeriodOptions(comparisonFilters),             [makePeriodOptions, comparisonFilters]);
+  const cmpFormatOptions     = useMemo(() => makeOptions(comparisonFilters, 'format'),         [makeOptions, comparisonFilters]);
+  const cmpCreativeOptions   = useMemo(() => makeCreativeOptions(comparisonFilters),           [makeCreativeOptions, comparisonFilters]);
 
   // Auto-clear selections that became invalid after a parent filter changed
   // (e.g. picked a product, then switched competitorType to one that doesn't
@@ -134,6 +186,22 @@ export default function Research() {
     if (changed) setFCreatives(next);
   }, [fCreatives, creativeOptions]);
 
+  useEffect(() => { if (cmpProduct    && !cmpProductOptions.includes(cmpProduct))        setCmpProduct(''); },    [cmpProduct, cmpProductOptions]);
+  useEffect(() => { if (cmpCampaign   && !cmpCampaignOptions.includes(cmpCampaign))      setCmpCampaign(''); },   [cmpCampaign, cmpCampaignOptions]);
+  useEffect(() => { if (cmpCompetitor && !cmpCompetitorOptions.includes(cmpCompetitor))  setCmpCompetitor(''); }, [cmpCompetitor, cmpCompetitorOptions]);
+  useEffect(() => { if (cmpPeriod     && !cmpPeriodOptions.includes(cmpPeriod))          setCmpPeriod(''); },     [cmpPeriod, cmpPeriodOptions]);
+  useEffect(() => { if (cmpFormat     && !cmpFormatOptions.includes(cmpFormat))          setCmpFormat(''); },     [cmpFormat, cmpFormatOptions]);
+  useEffect(() => {
+    if (cmpCreatives.size === 0) return;
+    const allowed = new Set(cmpCreativeOptions.map(o => o.value));
+    let changed = false;
+    const next = new Set<string>();
+    for (const v of cmpCreatives) {
+      if (allowed.has(v)) next.add(v); else changed = true;
+    }
+    if (changed) setCmpCreatives(next);
+  }, [cmpCreatives, cmpCreativeOptions]);
+
   const allAvg = useMemo(() => data ? computeAverages(data.creatives) : null, [data]);
 
   const competitorCreatives = useMemo(() => {
@@ -148,11 +216,16 @@ export default function Research() {
     [competitorCreatives],
   );
 
-  const hasFilters = !!(fProduct || fCampaign || fCompetitor || fPeriod || fFormat || fCreatives.size);
+  const hasFilters = filterIsActive(primaryFilters);
 
   const filteredAvg = useMemo(
     () => (hasFilters && filtered.length ? computeAverages(filtered) : allAvg),
     [filtered, allAvg, hasFilters],
+  );
+
+  const comparisonAvg = useMemo(
+    () => (comparisonCreatives.length ? computeAverages(comparisonCreatives) : allAvg),
+    [comparisonCreatives, allAvg],
   );
 
   return (
@@ -192,27 +265,49 @@ export default function Research() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3 mb-5 items-center">
-        <FilterSelect label="Яндекс / Конкуренты" value={fCompetitor} onChange={setFCompetitor} options={competitorOptions} />
-        <FilterSelect label="Продукт" value={fProduct} onChange={setFProduct} options={productOptions} />
-        <FilterSelect label="Кампания" value={fCampaign} onChange={setFCampaign} options={campaignOptions} />
-        <MultiFilterSelect label="Ролики" selected={fCreatives} onChange={setFCreatives} options={creativeOptions} />
-        {tab !== 'overview' && (
-          <>
-            <FilterSelect label="Период" value={fPeriod} onChange={setFPeriod} options={periodOptions} />
-            <FilterSelect label="Формат" value={fFormat} onChange={setFFormat} options={formatOptions} />
-          </>
-        )}
-        {hasFilters && (
+      <div className="mb-5 space-y-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
+        <div className="flex flex-wrap gap-3 items-center">
+          <span className="w-[118px] text-[11px] font-semibold uppercase tracking-wider text-[var(--color-text-secondary)]">
+            Что сравниваем
+          </span>
+          <FilterSelect label="Яндекс / Конкуренты" value={fCompetitor} onChange={setFCompetitor} options={competitorOptions} />
+          <FilterSelect label="Продукт" value={fProduct} onChange={setFProduct} options={productOptions} />
+          <FilterSelect label="Кампания" value={fCampaign} onChange={setFCampaign} options={campaignOptions} />
+          <MultiFilterSelect label="Ролики" selected={fCreatives} onChange={setFCreatives} options={creativeOptions} />
+          {tab !== 'overview' && (
+            <>
+              <FilterSelect label="Период" value={fPeriod} onChange={setFPeriod} options={periodOptions} />
+              <FilterSelect label="Формат" value={fFormat} onChange={setFFormat} options={formatOptions} />
+            </>
+          )}
           <span className="text-xs text-[var(--color-text-muted)] ml-auto">
             {filtered.length} из {data.creatives.length}
           </span>
-        )}
+        </div>
+
+        <div className="flex flex-wrap gap-3 items-center border-t border-[var(--color-border)] pt-2">
+          <span className="w-[118px] text-[11px] font-semibold uppercase tracking-wider text-[var(--color-text-secondary)]">
+            База сравнения
+          </span>
+          <FilterSelect label="Яндекс / Конкуренты" value={cmpCompetitor} onChange={setCmpCompetitor} options={cmpCompetitorOptions} />
+          <FilterSelect label="Продукт" value={cmpProduct} onChange={setCmpProduct} options={cmpProductOptions} />
+          <FilterSelect label="Кампания" value={cmpCampaign} onChange={setCmpCampaign} options={cmpCampaignOptions} />
+          <MultiFilterSelect label="Ролики" selected={cmpCreatives} onChange={setCmpCreatives} options={cmpCreativeOptions} />
+          {tab !== 'overview' && (
+            <>
+              <FilterSelect label="Период" value={cmpPeriod} onChange={setCmpPeriod} options={cmpPeriodOptions} />
+              <FilterSelect label="Формат" value={cmpFormat} onChange={setCmpFormat} options={cmpFormatOptions} />
+            </>
+          )}
+          <span className="text-xs text-[var(--color-text-muted)] ml-auto">
+            {comparisonHasFilters ? `${comparisonCreatives.length} из ${data.creatives.length}` : `вся база (${data.creatives.length})`}
+          </span>
+        </div>
       </div>
 
       {/* Tab content */}
-      {tab === 'overview' && <OverviewTab creatives={filtered} allCreatives={data.creatives} averages={filteredAvg!} globalAverages={allAvg!} competitorAverages={competitorAvg} data={data} />}
-      {tab === 'drivers' && <DriversTab creatives={filtered} averages={allAvg!} />}
+      {tab === 'overview' && <OverviewTab creatives={filtered} allCreatives={data.creatives} comparisonCreatives={comparisonCreatives} averages={filteredAvg!} comparisonAverages={comparisonAvg!} competitorAverages={competitorAvg} data={data} />}
+      {tab === 'drivers' && <DriversTab creatives={filtered} averages={comparisonAvg!} />}
       {tab === 'help' && <HelpTab />}
 
     </div>
@@ -248,9 +343,9 @@ interface KpiBenchmark {
 
 function KpiCard({ label, value, sub, question, zScore, ppDelta, benchmarks }: {
   label: string; value: string; sub?: string; question?: string;
-  /** z-score vs global norm. Drives color-coding; shown in hover tooltip. */
+  /** z-score vs comparison norm. Drives color-coding; shown in hover tooltip. */
   zScore?: number | null;
-  /** Delta vs "Общее" norm in raw proportion units (e.g. 0.032 = +3.2 п.п.).
+  /** Delta vs comparison norm in raw proportion units (e.g. 0.032 = +3.2 п.п.).
    *  When provided, the small badge under the value shows this instead of z,
    *  since п.п. is what marketers actually read. */
   ppDelta?: number | null;
@@ -293,7 +388,7 @@ function KpiCard({ label, value, sub, question, zScore, ppDelta, benchmarks }: {
           {badgeText}
           {showDelta && zLabel != null && deltaLabel && (
             <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-[220px] p-2.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] shadow-lg text-[11px] text-[var(--color-text)] text-left leading-relaxed z-50 whitespace-normal normal-case tracking-normal">
-              <div><span className="font-semibold">{deltaLabel}</span> относительно «Общее»</div>
+              <div><span className="font-semibold">{deltaLabel}</span> относительно базы сравнения</div>
               <div className="mt-1 text-[var(--color-text-muted)]">z = {zLabel} — стат. значимость (|z| {'>'} 1.96 ≈ заметно выше/ниже нормы)</div>
             </span>
           )}
@@ -329,9 +424,9 @@ function MetricCell({ value, avgVal, base }: { value: number | null; avgVal: num
 /* ============================================ */
 /* TAB 1: Overview                              */
 /* ============================================ */
-function OverviewTab({ creatives, allCreatives, averages, globalAverages, competitorAverages, data }: {
-  creatives: Creative[]; allCreatives: Creative[];
-  averages: Record<MetricKey, number | null>; globalAverages: Record<MetricKey, number | null>;
+function OverviewTab({ creatives, allCreatives, comparisonCreatives, averages, comparisonAverages, competitorAverages, data }: {
+  creatives: Creative[]; allCreatives: Creative[]; comparisonCreatives: Creative[];
+  averages: Record<MetricKey, number | null>; comparisonAverages: Record<MetricKey, number | null>;
   competitorAverages: Record<MetricKey, number | null> | null;
   data: DashboardData;
 }) {
@@ -339,6 +434,12 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
 
   const isFiltered = creatives.length !== allCreatives.length;
   const nFiltered = totalBase(creatives);
+  const comparisonLabel = comparisonCreatives.length === allCreatives.length
+    ? 'Общее'
+    : 'База сравнения';
+  const comparisonSubLabel = comparisonCreatives.length === allCreatives.length
+    ? `${allCreatives.length} креативов`
+    : `${comparisonCreatives.length} из ${allCreatives.length} креативов`;
 
   const BRAND_METRICS: { key: MetricKey; label: string }[] = [
     { key: 'brandRecall', label: 'Верно назвали бренд' },
@@ -361,14 +462,14 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
     if (!isFiltered) return {} as Record<MetricKey, number | null>;
     const result: Partial<Record<MetricKey, number | null>> = {};
     for (const m of allKpiMetrics) {
-      result[m.key] = zTestProp(averages[m.key], globalAverages[m.key], nFiltered);
+      result[m.key] = zTestProp(averages[m.key], comparisonAverages[m.key], nFiltered);
     }
     return result as Record<MetricKey, number | null>;
-  }, [averages, globalAverages, nFiltered, isFiltered]);
+  }, [averages, comparisonAverages, nFiltered, isFiltered]);
 
   const buildBenchmarks = (key: MetricKey): KpiBenchmark[] => {
     const bm: KpiBenchmark[] = [
-      { label: 'Общее', value: pct(globalAverages[key]) },
+      { label: comparisonLabel, value: pct(comparisonAverages[key]) },
     ];
     if (competitorAverages) {
       bm.push({ label: 'Конкуренты', value: pct(competitorAverages[key]) });
@@ -382,7 +483,7 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
 
   const computePpDelta = (key: MetricKey): number | null => {
     const a = averages[key];
-    const g = globalAverages[key];
+    const g = comparisonAverages[key];
     return a != null && g != null ? a - g : null;
   };
 
@@ -407,8 +508,8 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
   // понравилось / не понравилось" chart mark significant deviations vs norm.
   const avgLikes = useMemo(() => avgByKey(creatives, c => c.likes), [creatives]);
   const avgDislikes = useMemo(() => avgByKey(creatives, c => c.dislikes), [creatives]);
-  const globalAvgLikes = useMemo(() => avgByKey(allCreatives, c => c.likes), [allCreatives]);
-  const globalAvgDislikes = useMemo(() => avgByKey(allCreatives, c => c.dislikes), [allCreatives]);
+  const comparisonAvgLikes = useMemo(() => avgByKey(comparisonCreatives, c => c.likes), [comparisonCreatives]);
+  const comparisonAvgDislikes = useMemo(() => avgByKey(comparisonCreatives, c => c.dislikes), [comparisonCreatives]);
 
   const likeCategories = useMemo(() => {
     if (!data.likeLabels) return [];
@@ -478,7 +579,7 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
 
   // Emotional averages: filtered cohort + global baseline (for делta vs norm).
   const avgEmotional = useMemo(() => avgByKey(creatives, c => c.emotional), [creatives]);
-  const globalAvgEmotional = useMemo(() => avgByKey(allCreatives, c => c.emotional), [allCreatives]);
+  const comparisonAvgEmotional = useMemo(() => avgByKey(comparisonCreatives, c => c.emotional), [comparisonCreatives]);
 
   // Group by production type (ИИ vs Продакшн etc.) — moved here from the "Форматы" tab
   // so it sits next to the main KPI rows and gives a top-level cut before deep-dives.
@@ -509,7 +610,7 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
           significance (▲/▼) vs «база в целом». */}
       <BrandRecallOverview
         creatives={creatives}
-        baselineCreatives={allCreatives}
+        baselineCreatives={comparisonCreatives}
         only="recall"
       />
 
@@ -520,7 +621,7 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
         // column has a visible baseline to compare against. Using the GLOBAL
         // (all-creatives) average — not the filtered one — keeps the
         // benchmark stable when users narrow the cohort with the top filters.
-        const REF = 'Среднее по всем';
+        const REF = comparisonLabel;
         const groupLabels = [REF, ...prodTypes];
         const SIG_Z = 1.96;
         // Sum-of-bases per production type — used as `n` in z-test against
@@ -534,7 +635,7 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
         const zFor = (g: string, key: MetricKey): number | null => {
           if (g === REF) return null;
           const p = avg(prodTypeGroups[g].map(c => c.metrics[key]));
-          return zTestProp(p, globalAverages[key], groupBases[g] || 0);
+          return zTestProp(p, comparisonAverages[key], groupBases[g] || 0);
         };
         return (
         <ChartCard
@@ -543,8 +644,8 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
             <>
               <p>
                 Сравнение средних метрик по типу производства. Первая группа
-                «{REF}» — среднее по всем креативам базы норм (без учёта
-                фильтров наверху), это бенчмарк. Остальные группы — средние
+                «{REF}» — среднее по выбранной базе сравнения
+                ({comparisonSubLabel}), это бенчмарк. Остальные группы — средние
                 для роликов соответствующего production-типа в текущей выборке.
               </p>
               <p className="mt-1">
@@ -561,7 +662,7 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                 label: m.label,
                 data: groupLabels.map(g =>
                   g === REF
-                    ? pctN(globalAverages[m.key])
+                    ? pctN(comparisonAverages[m.key])
                     : pctN(avg(prodTypeGroups[g].map(c => c.metrics[m.key]))),
                 ),
                 backgroundColor: m.color,
@@ -579,7 +680,7 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                       const g = groupLabels[ctx.dataIndex];
                       if (g === REF) return '';
                       const m = prodTypeMetrics[ctx.datasetIndex];
-                      const ref = pctN(globalAverages[m.key]);
+                      const ref = pctN(comparisonAverages[m.key]);
                       const z = zFor(g, m.key);
                       if (ref == null) return '';
                       const sigTag =
@@ -651,7 +752,7 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
         const globalFor = (row: ReactionRow, side: Side): number | null => {
           const key = side === 'like' ? row.likeKey : row.dislikeKey;
           if (!key) return null;
-          return (side === 'like' ? globalAvgLikes : globalAvgDislikes)[key] ?? null;
+          return (side === 'like' ? comparisonAvgLikes : comparisonAvgDislikes)[key] ?? null;
         };
         const zFor = (row: ReactionRow, side: Side): number | null => {
           if (!isFiltered) return null;
@@ -681,7 +782,7 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                 {isFiltered && (
                   <p className="mt-1">
                     Цвет процента и значок рядом с баром — значимое отклонение
-                    текущей выборки от общей нормы по базе (|z|&nbsp;≥&nbsp;
+                    текущей выборки от выбранной базы сравнения (|z|&nbsp;≥&nbsp;
                     {SIG_Z.toFixed(2)}).{' '}
                     <span className="text-[var(--color-success)] font-medium">▲ зелёный</span> —
                     значимо выше нормы,{' '}
@@ -831,7 +932,7 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                 </p>
                 {isFiltered && (
                   <p className="mt-1">
-                    Под полосой — отклонение позитива и негатива от общей нормы
+                    Под полосой — отклонение позитива и негатива от выбранной базы сравнения
                     в процентных пунктах. ▲ выше нормы, ▼ ниже (порог {SIG_PP}&nbsp;пп).
                   </p>
                 )}
@@ -843,8 +944,8 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
                 const pv = (avgEmotional[pair.positiveKey] ?? 0) * 100;
                 const nv = (avgEmotional[pair.negativeKey] ?? 0) * 100;
                 const dk = Math.max(0, 100 - pv - nv);
-                const gpv = (globalAvgEmotional[pair.positiveKey] ?? 0) * 100;
-                const gnv = (globalAvgEmotional[pair.negativeKey] ?? 0) * 100;
+                const gpv = (comparisonAvgEmotional[pair.positiveKey] ?? 0) * 100;
+                const gnv = (comparisonAvgEmotional[pair.negativeKey] ?? 0) * 100;
                 const dpv = pv - gpv;
                 const dnv = nv - gnv;
                 const arrow = (d: number) => (d >= SIG_PP ? '▲' : d <= -SIG_PP ? '▼' : '·');
@@ -918,7 +1019,12 @@ function OverviewTab({ creatives, allCreatives, averages, globalAverages, compet
       {/* Rating table */}
       <div>
         <h2 className="text-sm font-semibold text-[var(--color-text)] mb-3">Рейтинг</h2>
-        <RatingTab creatives={creatives} allCreatives={allCreatives} averages={globalAverages} />
+        <RatingTab
+          creatives={creatives}
+          allCreatives={allCreatives}
+          comparisonCreatives={comparisonCreatives}
+          averages={comparisonAverages}
+        />
       </div>
     </div>
   );
@@ -941,8 +1047,11 @@ function CreativeName({ creative, maxLen, className }: { creative: Creative; max
 /* ============================================ */
 /* TAB 2: Creative Rating                       */
 /* ============================================ */
-function RatingTab({ creatives, allCreatives, averages }: {
-  creatives: Creative[]; allCreatives: Creative[]; averages: Record<MetricKey, number | null>;
+function RatingTab({ creatives, allCreatives, comparisonCreatives, averages }: {
+  creatives: Creative[];
+  allCreatives: Creative[];
+  comparisonCreatives: Creative[];
+  averages: Record<MetricKey, number | null>;
 }) {
   const [sortCol, setSortCol] = useState<string>('intent');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
@@ -991,7 +1100,8 @@ function RatingTab({ creatives, allCreatives, averages }: {
   return (
     <div>
       <p className="text-xs text-[var(--color-text-muted)] mb-2">
-        Цветовая индикация по z-критерию (95% и 90% уровень значимости). Индекс = среднее по 4 метрикам.
+        Цветовая индикация по z-критерию относительно выбранной базы сравнения (95% и 90% уровень значимости).
+        Индекс = среднее по 4 метрикам.
       </p>
       <div className="flex gap-4 mb-3 text-xs text-[var(--color-text-muted)]">
         <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[var(--color-success)]" /> z ≥ 1.96</span>
@@ -1032,7 +1142,7 @@ function RatingTab({ creatives, allCreatives, averages }: {
                     <>
                       <td className={`${cls} text-[#7C3AED] font-bold`}>∅</td>
                       <td colSpan={3} className={`${cls} text-[#7C3AED] font-semibold`}>
-                        Среднее по {allCreatives.length} креативам
+                        Среднее базы сравнения ({comparisonCreatives.length} из {allCreatives.length})
                       </td>
                       <td className={cls} />
                       <td className={`${cls} font-bold`}>{pct(averages.like)}</td>

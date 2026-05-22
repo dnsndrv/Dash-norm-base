@@ -18,9 +18,8 @@ interface Props {
   /** Source of creatives. In the standalone build this is always passed in;
    *  the legacy live-fetch fallback was removed. */
   creatives: Creative[];
-  /** Full unfiltered list of creatives — used as the baseline for the
-   *  significance markers (▲/▼ vs «база в целом»). If omitted, no markers
-   *  are shown. */
+  /** Comparison list of creatives — used as the baseline for the
+   *  significance markers (▲/▼). If omitted, no markers are shown. */
   baselineCreatives?: Creative[];
   /** Optional link shown in the header (e.g. "Подробнее в Brand Research"). */
   detailLink?: { to: string; label: string };
@@ -51,8 +50,8 @@ export default function BrandRecallOverview({
   const [expanded, setExpanded] = useState(false);
   const [showDefs, setShowDefs] = useState(false);
 
-  // Baseline averages across the FULL dataset (not the filtered cohort).
-  // Used to mark per-creative significance vs «база в целом» — ▲ if a row
+  // Baseline averages across the selected comparison list.
+  // Used to mark per-creative significance vs that baseline — ▲ if a row
   // is significantly above the baseline, ▼ if below. Falls back to the
   // creatives prop if no baseline was passed (≡ no comparison).
   const baseline = baselineCreatives ?? creatives;
