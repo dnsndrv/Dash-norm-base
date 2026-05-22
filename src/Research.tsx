@@ -1030,14 +1030,14 @@ function OverviewTab({ creatives, allCreatives, comparisonCreatives, comparisonH
                         </div>
                       </div>
                       {isFiltered && (
-                        <div className="grid grid-cols-3 text-[10px] mt-0.5 leading-none">
-                          <span className={cls(dpv)}>
+                        <div className="flex text-[10px] mt-0.5 leading-none">
+                          <span className={`${cls(dpv)} text-center whitespace-nowrap overflow-visible`} style={{ width: `${pv}%` }}>
                             {arrow(dpv)} {fmt(dpv)} <span className="text-[var(--color-text-muted)]">(норма {gpv.toFixed(0)}%)</span>
                           </span>
-                          <span className={`${cls(ddk)} text-center`}>
+                          <span className={`${cls(ddk)} text-center whitespace-nowrap overflow-visible`} style={{ width: `${dk}%` }}>
                             {arrow(ddk)} {fmt(ddk)} <span className="text-[var(--color-text-muted)]">(норма {gdk.toFixed(0)}%)</span>
                           </span>
-                          <span className={cls(-dnv)}>
+                          <span className={`${cls(-dnv)} text-center whitespace-nowrap overflow-visible`} style={{ width: `${nv}%` }}>
                             {arrow(dnv)} {fmt(dnv)} <span className="text-[var(--color-text-muted)]">(норма {gnv.toFixed(0)}%)</span>
                           </span>
                         </div>
