@@ -50,6 +50,17 @@ function orderLikeDislikeKeys(keys: string[], extras: string[]): string[] {
   return [...shared, ...onSide, ...rest];
 }
 
+function creativeCountLabel(count: number): string {
+  const mod10 = count % 10;
+  const mod100 = count % 100;
+  const word = mod10 === 1 && mod100 !== 11
+    ? 'креатив'
+    : mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)
+      ? 'креатива'
+      : 'креативов';
+  return `${count} ${word}`;
+}
+
 type TabKey = 'overview' | 'drivers' | 'help';
 
 const TABS: { key: TabKey; label: string; icon: typeof BarChart3 }[] = [
@@ -306,7 +317,7 @@ export default function Research() {
       </div>
 
       {/* Tab content */}
-      {tab === 'overview' && <OverviewTab creatives={filtered} allCreatives={data.creatives} comparisonCreatives={comparisonCreatives} averages={filteredAvg!} comparisonAverages={comparisonAvg!} competitorAverages={competitorAvg} data={data} />}
+      {tab === 'overview' && <OverviewTab creatives={filtered} allCreatives={data.creatives} comparisonCreatives={comparisonCreatives} comparisonHasFilters={comparisonHasFilters} averages={filteredAvg!} comparisonAverages={comparisonAvg!} competitorAverages={competitorAvg} data={data} />}
       {tab === 'drivers' && <DriversTab creatives={filtered} averages={comparisonAvg!} />}
       {tab === 'help' && <HelpTab />}
 
@@ -424,8 +435,9 @@ function MetricCell({ value, avgVal, base }: { value: number | null; avgVal: num
 /* ============================================ */
 /* TAB 1: Overview                              */
 /* ============================================ */
-function OverviewTab({ creatives, allCreatives, comparisonCreatives, averages, comparisonAverages, competitorAverages, data }: {
+function OverviewTab({ creatives, allCreatives, comparisonCreatives, comparisonHasFilters, averages, comparisonAverages, competitorAverages, data }: {
   creatives: Creative[]; allCreatives: Creative[]; comparisonCreatives: Creative[];
+  comparisonHasFilters: boolean;
   averages: Record<MetricKey, number | null>; comparisonAverages: Record<MetricKey, number | null>;
   competitorAverages: Record<MetricKey, number | null> | null;
   data: DashboardData;
@@ -468,6 +480,12 @@ function OverviewTab({ creatives, allCreatives, comparisonCreatives, averages, c
   }, [averages, comparisonAverages, nFiltered, isFiltered]);
 
   const buildBenchmarks = (key: MetricKey): KpiBenchmark[] => {
+    if (comparisonHasFilters) {
+      return [
+        { label: 'Выборка', value: pct(averages[key]) },
+        { label: 'База сравнения', value: pct(comparisonAverages[key]) },
+      ];
+    }
     const bm: KpiBenchmark[] = [
       { label: comparisonLabel, value: pct(comparisonAverages[key]) },
     ];
@@ -487,18 +505,31 @@ function OverviewTab({ creatives, allCreatives, comparisonCreatives, averages, c
     return a != null && g != null ? a - g : null;
   };
 
+  const formatPpDelta = (delta: number | null): string => (
+    delta != null ? `${delta >= 0 ? '+' : ''}${(delta * 100).toFixed(1)} п.п.` : '—'
+  );
+
   const renderKpiRow = (title: string, metrics: { key: MetricKey; label: string }[]) => (
     <div>
       <h2 className="text-sm font-semibold text-[var(--color-text)] mb-3">{title}</h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-        {metrics.map(m => (
-          <KpiCard key={m.key} label={metricLabels[m.key] || m.label} value={pct(averages[m.key])}
-            zScore={isFiltered ? zScores[m.key] : undefined}
-            ppDelta={isFiltered ? computePpDelta(m.key) : undefined}
-            benchmarks={buildBenchmarks(m.key)}
-            sub={subText}
-            question={metricQuestions[m.key]} />
-        ))}
+        {metrics.map(m => {
+          const delta = computePpDelta(m.key);
+          return (
+            <KpiCard
+              key={m.key}
+              label={metricLabels[m.key] || m.label}
+              value={comparisonHasFilters ? formatPpDelta(delta) : pct(averages[m.key])}
+              zScore={isFiltered ? zScores[m.key] : undefined}
+              ppDelta={!comparisonHasFilters && isFiltered ? delta : undefined}
+              benchmarks={buildBenchmarks(m.key)}
+              sub={comparisonHasFilters
+                ? `Выборка: ${creativeCountLabel(creatives.length)} · База: ${creativeCountLabel(comparisonCreatives.length)}`
+                : subText}
+              question={metricQuestions[m.key]}
+            />
+          );
+        })}
       </div>
     </div>
   );
