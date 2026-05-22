@@ -656,6 +656,8 @@ function OverviewTab({ creatives, allCreatives, comparisonCreatives, comparisonH
         }
         const valueFor = (type: string, key: MetricKey): number | null =>
           avg(prodTypeGroups[type].map(c => c.metrics[key]));
+        const pctValue = (value: number | null): number | null =>
+          value == null ? null : value * 100;
         const zTwoProp = (p1: number | null, n1: number, p2: number | null, n2: number): number | null => {
           if (p1 == null || p2 == null || n1 <= 0 || n2 <= 0) return null;
           const pooled = ((p1 * n1) + (p2 * n2)) / (n1 + n2);
@@ -695,7 +697,7 @@ function OverviewTab({ creatives, allCreatives, comparisonCreatives, comparisonH
               labels: prodTypeMetrics.map(m => m.label),
               datasets: visibleProdTypes.map((type, idx) => ({
                 label: `${type} (${prodTypeGroups[type].length})`,
-                data: prodTypeMetrics.map(m => pctN(valueFor(type, m.key))),
+                data: prodTypeMetrics.map(m => pctValue(valueFor(type, m.key))),
                 backgroundColor: CHART_COLORS[idx % CHART_COLORS.length],
                 borderRadius: 4,
               })),
@@ -731,7 +733,7 @@ function OverviewTab({ creatives, allCreatives, comparisonCreatives, comparisonH
                     const m = prodTypeMetrics[ctx.dataIndex];
                     const z = zFor(type, m.key);
                     const sig = z == null ? '' : z >= SIG_Z ? ' ▲' : z <= -SIG_Z ? ' ▼' : '';
-                    return `${v.toFixed(0)}%${sig}`;
+                    return `${v.toFixed(2)}%${sig}`;
                   },
                   // Marker colors the entire label so users see the direction
                   // of deviation at a glance; neutral cells stay dark gray.
