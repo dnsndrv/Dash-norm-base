@@ -1,5 +1,5 @@
 import { useMemo, useState, type KeyboardEvent, type ReactNode } from 'react';
-import { Bot, Loader2, PanelRightClose, Send } from 'lucide-react';
+import { Bot, Check, Copy, Loader2, PanelRightClose, Send } from 'lucide-react';
 
 type ChatRole = 'user' | 'assistant';
 
@@ -84,6 +84,43 @@ function renderInline(text: string) {
     }
     return <span key={index}>{part}</span>;
   });
+}
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  const onCopy = async () => {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        // Фолбэк для контекстов без Clipboard API (старые браузеры, не-HTTPS).
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // молча — ошибку показывать в чат не нужно, пользователь увидит, что галка не появилась
+    }
+  };
+  return (
+    <button
+      type="button"
+      onClick={onCopy}
+      className="mt-1 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] text-[var(--color-text-muted)] hover:bg-white hover:text-[var(--color-text-secondary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--color-primary)] cursor-pointer transition-colors"
+      aria-label={copied ? 'Скопировано' : 'Скопировать ответ'}
+      title={copied ? 'Скопировано' : 'Скопировать ответ'}
+    >
+      {copied ? <Check size={12} /> : <Copy size={12} />}
+      <span>{copied ? 'Скопировано' : 'Скопировать'}</span>
+    </button>
+  );
 }
 
 function ChatMessageText({ text }: { text: string }) {
@@ -250,6 +287,7 @@ export default function ChatDrawer({
             }`}
           >
             {msg.role === 'assistant' ? <ChatMessageText text={msg.text} /> : msg.text}
+            {msg.role === 'assistant' && index > 0 && <CopyButton text={msg.text} />}
           </div>
         ))}
         {loading && (
