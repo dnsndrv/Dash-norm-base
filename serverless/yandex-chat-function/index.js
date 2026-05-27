@@ -2,7 +2,12 @@ const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || 'https://dnsndrv.github.io'
 const LLM_API_URL = process.env.LLM_API_URL || 'https://openrouter.ai/api/v1/chat/completions';
 const LLM_MODEL = process.env.LLM_MODEL || 'openai/gpt-5.5';
 const LLM_API_KEY = process.env.LLM_API_KEY;
-const LLM_MAX_TOKENS = Number(process.env.LLM_MAX_TOKENS || 2000);
+// Если в env задан LLM_MAX_TOKENS — используем его, иначе совсем не передаём
+// max_tokens провайдеру, чтобы ответ не обрезался.
+const LLM_MAX_TOKENS = process.env.LLM_MAX_TOKENS ? Number(process.env.LLM_MAX_TOKENS) : null;
+// Контекст теперь несёт сырые строки таблицы → допускаем до ~1 MB JSON.
+const CONTEXT_LIMIT = Number(process.env.CONTEXT_LIMIT || 1_000_000);
+const QUESTION_LIMIT = Number(process.env.QUESTION_LIMIT || 2000);
 
 function response(statusCode, body, origin = ALLOWED_ORIGIN) {
   return {
@@ -19,8 +24,12 @@ function response(statusCode, body, origin = ALLOWED_ORIGIN) {
 }
 
 function compactContext(context) {
+  // Округляем дробные числа до 4 знаков, чтобы JSON был компактнее, но не
+  // теряем точность для процентных метрик.
   return JSON.stringify(context, (_key, value) => {
-    if (typeof value === 'number') return Math.round(value * 10000) / 10000;
+    if (typeof value === 'number' && !Number.isInteger(value)) {
+      return Math.round(value * 10000) / 10000;
+    }
     return value;
   });
 }
@@ -50,20 +59,42 @@ export async function handler(event) {
 
   const question = String(payload.question || '').trim();
   if (!question) return response(400, { error: 'Question is required' }, origin);
-  if (question.length > 1200) return response(413, { error: 'Question is too long' }, origin);
+  if (question.length > QUESTION_LIMIT) {
+    return response(413, { error: 'Question is too long' }, origin);
+  }
 
   const context = payload.context || {};
   const contextText = compactContext(context);
-  if (contextText.length > 50000) return response(413, { error: 'Context is too large' }, origin);
+  if (contextText.length > CONTEXT_LIMIT) {
+    return response(413, { error: 'Context is too large' }, origin);
+  }
 
   const system = [
-    'Ты аналитический помощник Brand Research dashboard.',
-    'Отвечай только на основе переданного JSON-контекста.',
-    'Если данных недостаточно, так и скажи.',
-    'Кратко объясняй, какая выборка и база сравнения использованы.',
-    'Проценты из долей форматиуй как проценты, deltaPp уже в процентных пунктах.',
-    'Не придумывай значения и не ссылайся на внешние источники.',
+    'Ты — аналитик Brand Research. Тебе передаётся фрагмент исходной таблицы дашборда:',
+    'выборка (`selection.rows`) и база сравнения (`comparison.rows`) — это массивы сырых',
+    'строк из таблицы, по одному ролику на строку, со всеми метриками и долями ответов.',
+    'Считай агрегаты, средние, доли и сравнения сам по этим строкам.',
+    'Используй `respondentBase` каждой строки как размер выборки n при оценке значимости',
+    '(z-test для долей, |z| ≥ 1.96 — значимо при p<0.05).',
+    'Подписи метрик и категорий лежат в `labels` — указывай в ответе человекочитаемые',
+    'названия, а не сырые ключи.',
+    'Сначала отвечай по сути вопроса, потом приводи цифры с указанием размера выборки.',
+    'Если данных недостаточно или нужное поле отсутствует — честно скажи об этом.',
+    'Не придумывай ролики, метрики или значения, которых нет в переданных строках.',
+    'Не используй markdown-таблицы. Можно списки и **жирный** текст для акцентов.',
   ].join(' ');
+
+  const llmBody = {
+    model: LLM_MODEL,
+    temperature: 0.2,
+    messages: [
+      { role: 'system', content: system },
+      { role: 'user', content: `Данные таблицы (JSON):\n${contextText}\n\nВопрос:\n${question}` },
+    ],
+  };
+  if (LLM_MAX_TOKENS && LLM_MAX_TOKENS > 0) {
+    llmBody.max_tokens = LLM_MAX_TOKENS;
+  }
 
   const llmResponse = await fetch(LLM_API_URL, {
     method: 'POST',
@@ -71,19 +102,15 @@ export async function handler(event) {
       'Authorization': `Bearer ${LLM_API_KEY}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      model: LLM_MODEL,
-      temperature: 0.2,
-      max_tokens: LLM_MAX_TOKENS,
-      messages: [
-        { role: 'system', content: system },
-        { role: 'user', content: `Контекст дашборда:\n${contextText}\n\nВопрос:\n${question}` },
-      ],
-    }),
+    body: JSON.stringify(llmBody),
   });
 
   if (!llmResponse.ok) {
-    return response(502, { error: `LLM request failed: ${llmResponse.status}` }, origin);
+    const errText = await llmResponse.text().catch(() => '');
+    return response(502, {
+      error: `LLM request failed: ${llmResponse.status}`,
+      details: errText.slice(0, 500) || undefined,
+    }, origin);
   }
 
   const data = await llmResponse.json();

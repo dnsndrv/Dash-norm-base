@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react';
+import { useMemo, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { Bot, Loader2, PanelRightClose, Send } from 'lucide-react';
 
 type ChatRole = 'user' | 'assistant';
@@ -8,35 +8,57 @@ interface ChatMessage {
   text: string;
 }
 
+export interface ChatContextRow {
+  name: string;
+  product: string;
+  campaign: string;
+  period: string;
+  format: string;
+  productionType: string;
+  competitorType: string;
+  /** Размер базы респондентов (n) для этого ролика — нужен для z-test. */
+  respondentBase: number;
+  metrics: Record<string, number | null>;
+  likes?: Record<string, number | null>;
+  dislikes?: Record<string, number | null>;
+  emotional?: Record<string, number | null>;
+  brandAttribution?: Record<string, number | null>;
+}
+
 export interface ChatContext {
   page: string;
   activeTab: string;
+  /** Подписи метрик и категорий — LLM работает с raw ключами,
+   *  это словарь key → человекочитаемая подпись. */
+  labels: {
+    metrics: Record<string, string>;
+    metricQuestions: Record<string, string>;
+    likes: Record<string, string>;
+    dislikes: Record<string, string>;
+    brandAttribution: Record<string, string>;
+    emotionalPairs: Array<{
+      positiveKey: string;
+      negativeKey: string;
+      positiveLabel: string;
+      negativeLabel: string;
+    }>;
+  };
   selection: {
     filters: Record<string, string | string[] | null>;
     count: number;
+    /** Всего роликов в исходной таблице. */
     total: number;
-    base: number;
+    respondentBase: number;
+    rows: ChatContextRow[];
   };
   comparison: {
     filters: Record<string, string | string[] | null>;
     isFiltered: boolean;
     count: number;
     total: number;
-    base: number;
+    respondentBase: number;
+    rows: ChatContextRow[];
   };
-  metrics: Array<{
-    key: string;
-    label: string;
-    selection: number | null;
-    comparison: number | null;
-    deltaPp: number | null;
-  }>;
-  topIntent: Array<Record<string, string | number | null>>;
-  productionTypes: Array<{
-    type: string;
-    count: number;
-    averages: Record<string, number | null>;
-  }>;
 }
 
 const CHAT_API_URL = import.meta.env.VITE_CHAT_API_URL as string | undefined;
@@ -130,9 +152,16 @@ export default function ChatDrawer({
   const contextLabel = useMemo(() => {
     const base = context.comparison.isFiltered
       ? `${context.comparison.count} в базе сравнения`
-      : 'вся база сравнения';
+      : `вся база сравнения · ${context.comparison.count}`;
     return `${context.selection.count} в выборке · ${base}`;
   }, [context]);
+
+  const onKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
+      event.preventDefault();
+      void sendQuestion();
+    }
+  };
 
   const sendQuestion = async (text = question.trim()) => {
     if (!text || loading) return;
@@ -257,12 +286,13 @@ export default function ChatDrawer({
             id="chat-question"
             value={question}
             onChange={e => setQuestion(e.target.value)}
+            onKeyDown={onKeyDown}
             rows={3}
-            placeholder="Спросите по текущей выборке..."
+            placeholder="Спросите по таблице… Enter — отправить, Shift+Enter — перенос строки"
             className="min-h-[76px] w-full resize-none bg-transparent px-2 py-1 text-[13px] leading-relaxed text-[var(--color-text)] outline-none placeholder:text-[var(--color-text-muted)]"
           />
           <div className="mt-2 flex items-center justify-between gap-2">
-            <span className="text-[10px] text-[var(--color-text-muted)]">Enter не отправляет, используйте кнопку</span>
+            <span className="text-[10px] text-[var(--color-text-muted)]">Enter — отправить · Shift+Enter — перенос строки</span>
             <button
               type="submit"
               disabled={!question.trim() || loading}

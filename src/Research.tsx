@@ -15,7 +15,7 @@ import type { DashboardData, Creative, MetricKey } from './research/types';
 import { MAIN_METRICS, KEY_METRICS, CHART_COLORS } from './research/types';
 import { pct, pctN, avg, computeAverages, getUniqueValues, zTestProp, zScoreColor, totalBase, avgByKey } from './research/utils';
 import BrandRecallOverview from './components/BrandRecallOverview';
-import ChatDrawer, { type ChatContext } from './components/ChatDrawer';
+import ChatDrawer, { type ChatContext, type ChatContextRow } from './components/ChatDrawer';
 import MultiFilterSelect from './components/MultiFilterSelect';
 // Static snapshot of /api/research/dashboard-data — refreshed via `npm run update-data`.
 import dashboardSnapshot from './data/dashboard.json';
@@ -273,64 +273,66 @@ export default function Research() {
       format: cmpFormat || null,
       creatives: Array.from(cmpCreatives),
     };
-    const metricSummary = MAIN_METRICS.map(m => ({
-      key: m.key,
-      label: data.metricLabels[m.key] || m.label,
-      selection: filteredAvg?.[m.key] ?? null,
-      comparison: comparisonAvg?.[m.key] ?? null,
-      deltaPp: filteredAvg?.[m.key] != null && comparisonAvg?.[m.key] != null
-        ? (filteredAvg[m.key]! - comparisonAvg[m.key]!) * 100
-        : null,
-    }));
-    const topIntent = [...filtered]
-      .filter(c => c.metrics.intent != null)
-      .sort((a, b) => (b.metrics.intent ?? 0) - (a.metrics.intent ?? 0))
-      .slice(0, 10)
-      .map(c => ({
-        name: c.name,
-        product: c.product,
-        campaign: c.campaign,
-        intent: c.metrics.intent,
-        like: c.metrics.like,
-        clarity: c.metrics.clarity,
-        productionType: c.productionType,
-      }));
-    const productionTypes = Object.entries(
-      filtered.reduce<Record<string, Creative[]>>((acc, creative) => {
-        const type = creative.productionType || 'Не указан';
-        (acc[type] ??= []).push(creative);
-        return acc;
-      }, {}),
-    ).map(([type, rows]) => ({
-      type,
-      count: rows.length,
-      averages: computeAverages(rows),
-    }));
+
+    // Сырые строки таблицы — без id/task/rutubeUrl, без null-значений
+    // в словарях, чтобы JSON оставался компактным. LLM сам считает
+    // агрегаты и сравнения по этим данным.
+    const dropNulls = (obj: Record<string, number | null> | undefined): Record<string, number | null> | undefined => {
+      if (!obj) return undefined;
+      const out: Record<string, number | null> = {};
+      for (const [k, v] of Object.entries(obj)) {
+        if (v != null) out[k] = v;
+      }
+      return Object.keys(out).length ? out : undefined;
+    };
+
+    const toRow = (c: Creative): ChatContextRow => ({
+      name: c.name,
+      product: c.product,
+      campaign: c.campaign,
+      period: c.period,
+      format: c.format,
+      productionType: c.productionType,
+      competitorType: c.competitorType,
+      respondentBase: c.base || 0,
+      metrics: dropNulls(c.metrics as unknown as Record<string, number | null>) ?? {},
+      likes: dropNulls(c.likes),
+      dislikes: dropNulls(c.dislikes),
+      emotional: dropNulls(c.emotional),
+      brandAttribution: dropNulls(c.brandAttribution),
+    });
 
     return {
       page: 'Brand Research',
       activeTab: tab,
+      labels: {
+        metrics: data.metricLabels,
+        metricQuestions: data.metricQuestions,
+        likes: data.likeLabels,
+        dislikes: data.dislikeLabels,
+        brandAttribution: data.brandAttributionLabels,
+        emotionalPairs: data.emotionalPairs,
+      },
       selection: {
         filters: activeFilters,
         count: filtered.length,
         total: data.creatives.length,
-        base: totalBase(filtered),
+        respondentBase: totalBase(filtered),
+        rows: filtered.map(toRow),
       },
       comparison: {
         filters: comparisonFiltersPayload,
         isFiltered: comparisonHasFilters,
         count: comparisonCreatives.length,
         total: data.creatives.length,
-        base: totalBase(comparisonCreatives),
+        respondentBase: totalBase(comparisonCreatives),
+        rows: comparisonCreatives.map(toRow),
       },
-      metrics: metricSummary,
-      topIntent,
-      productionTypes,
     };
   }, [
     fProduct, fCampaign, fCompetitor, fPeriod, fFormat, fCreatives,
     cmpProduct, cmpCampaign, cmpCompetitor, cmpPeriod, cmpFormat, cmpCreatives,
-    filtered, filteredAvg, comparisonAvg, comparisonHasFilters, comparisonCreatives, data, tab,
+    filtered, comparisonHasFilters, comparisonCreatives, data, tab,
   ]);
 
   useEffect(() => {
