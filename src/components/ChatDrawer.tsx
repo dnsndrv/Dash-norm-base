@@ -255,7 +255,7 @@ export default function ChatDrawer({
         {loading && (
           <div className="mr-8 rounded-2xl bg-[var(--color-bg-secondary)] px-3 py-2 text-[13px] text-[var(--color-text-muted)] flex items-center gap-2">
             <Loader2 size={14} className="animate-spin" />
-            Думаю по данным...
+            Анализирую данные...
           </div>
         )}
         {error && <p className="text-[11px] text-[var(--color-error)]">{error}</p>}
