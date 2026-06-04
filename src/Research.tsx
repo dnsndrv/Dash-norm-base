@@ -9,7 +9,7 @@ import {
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {
   ExternalLink, X, BarChart3, TrendingUp,
-  ChevronDown, ChevronUp, Info, Maximize2, HelpCircle,
+  ChevronDown, ChevronUp, Info, Maximize2, HelpCircle, RefreshCw,
 } from 'lucide-react';
 import type { DashboardData, Creative, MetricKey } from './research/types';
 import { MAIN_METRICS, KEY_METRICS, CHART_COLORS } from './research/types';
@@ -84,17 +84,49 @@ const TABS: { key: TabKey; label: string; icon: typeof BarChart3 }[] = [
 ];
 
 
-// Standalone build: data is bundled at build time from a snapshot of the
-// Aisha backend (/api/research/dashboard-data). The original page used
-// `useOutletContext<ProductConfig>` for tenant gating and `apiFetch` for live
-// loading — both stripped here since this is a single-page public dashboard.
-const data = dashboardSnapshot as unknown as DashboardData;
+// Standalone build: данные приходят из bundled snapshot, но если задан
+// VITE_DASHBOARD_API_URL — кнопка «Обновить» в шапке подтянет свежую версию
+// через Yandex Cloud Function (она читает Google Sheet через service account
+// и возвращает тот же формат JSON, что лежит в src/data/dashboard.json).
+const initialData = dashboardSnapshot as unknown as DashboardData;
+const DASHBOARD_API_URL = import.meta.env.VITE_DASHBOARD_API_URL as string | undefined;
 
 export default function Research() {
   const [tab, setTab] = useState<TabKey>('overview');
   const [chatOpen, setChatOpen] = useState(true);
   const [chatWidth, setChatWidth] = useState(420);
   const resizingRef = useRef(false);
+  const [data, setData] = useState<DashboardData>(initialData);
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
+  const [refreshedAt, setRefreshedAt] = useState<Date | null>(null);
+
+  const handleRefresh = useCallback(async () => {
+    if (refreshing) return;
+    setRefreshError(null);
+    if (!DASHBOARD_API_URL) {
+      setRefreshError('VITE_DASHBOARD_API_URL не задан в окружении сборки.');
+      return;
+    }
+    setRefreshing(true);
+    try {
+      const response = await fetch(DASHBOARD_API_URL, { method: 'GET' });
+      if (!response.ok) {
+        const text = await response.text().catch(() => '');
+        throw new Error(`HTTP ${response.status}${text ? `: ${text.slice(0, 200)}` : ''}`);
+      }
+      const fresh = await response.json() as DashboardData;
+      if (!Array.isArray(fresh?.creatives)) {
+        throw new Error('Ответ не похож на dashboard data');
+      }
+      setData(fresh);
+      setRefreshedAt(new Date());
+    } catch (e) {
+      setRefreshError(e instanceof Error ? e.message : 'Не удалось обновить данные');
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refreshing]);
 
   // Filters
   const [fProduct, setFProduct] = useState('');
@@ -364,7 +396,24 @@ export default function Research() {
             <div className="flex items-center gap-3">
               <span className="text-xs text-[var(--color-text-muted)]">
                 {data.creatives.length} креативов
+                {refreshedAt && (
+                  <span className="ml-1 text-[var(--color-text-muted)]">
+                    · обновлено {refreshedAt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                )}
               </span>
+              {DASHBOARD_API_URL && (
+                <button
+                  type="button"
+                  onClick={() => void handleRefresh()}
+                  disabled={refreshing}
+                  title={refreshing ? 'Обновляю…' : 'Подтянуть свежие данные из Google Sheet'}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                >
+                  <RefreshCw size={13} className={refreshing ? 'animate-spin' : ''} />
+                  {refreshing ? 'Обновляю…' : 'Обновить'}
+                </button>
+              )}
               {!chatOpen && (
                 <button
                   type="button"
@@ -376,6 +425,11 @@ export default function Research() {
               )}
             </div>
           </div>
+          {refreshError && (
+            <div className="mb-3 rounded-lg border border-[var(--color-error)]/20 bg-[var(--color-error-light)] px-3 py-2 text-[12px] text-[var(--color-error)]">
+              Не удалось обновить данные: {refreshError}
+            </div>
+          )}
           <p className="text-[13px] text-[var(--color-text-muted)] mb-5">
             Дашборд тестирования рекламных креативов · данные из{' '}
             <a href="https://docs.google.com/spreadsheets/d/1xb9WAV74CPxMXAuOIaLbrpjXzVYAf8Cz3D9a1GldjtQ"
