@@ -178,6 +178,14 @@ def _parse_rows(rows: list[list[Any]]) -> dict[str, Any]:
         except (ValueError, TypeError):
             base = 0
 
+        # Skip aggregator/service columns added inside the sheet
+        # ("Верхний квартиль", "Нижний квартиль" и т.п.) — у них нет ни
+        # продукта, ни кампании, ни базы респондентов.
+        product_val = txt(ROW_PRODUCT, ci)
+        campaign_val = txt(ROW_CAMPAIGN, ci)
+        if not product_val and not campaign_val and base == 0:
+            continue
+
         link = txt(ROW_LINK, ci) or None
 
         fmt_val = txt(ROW_DURATION, ci)
