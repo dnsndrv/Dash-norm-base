@@ -24,7 +24,7 @@ log.setLevel(logging.INFO)
 
 ALLOWED_ORIGIN = os.environ.get("ALLOWED_ORIGIN", "https://dnsndrv.github.io")
 GOOGLE_SHEET_ID = os.environ.get("GOOGLE_SHEET_ID", "1xb9WAV74CPxMXAuOIaLbrpjXzVYAf8Cz3D9a1GldjtQ")
-SHEET_NAME = os.environ.get("SHEET_NAME", "Ролики, аниматики (техническая)")
+SHEET_NAME = os.environ.get("SHEET_NAME", "Ролики, аниматики")
 
 ROW_TASK = 1
 ROW_PERIOD = 2
